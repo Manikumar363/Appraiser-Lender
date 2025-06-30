@@ -1,4 +1,6 @@
+'import client'
 import type React from "react"
+
 
 interface AuthLayoutProps {
   children: React.ReactNode

@@ -3,9 +3,10 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Search, Bell, MessageSquare } from "lucide-react"
+import { Search} from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter,usePathname } from "next/navigation"
+import { Notification, ChatAlertIcon, AddIcon, SearchIcon } from "./icons"
 
 interface LenderDashboardLayoutProps {
   children: React.ReactNode
@@ -144,8 +145,13 @@ const bottomNavigationItems = [
 ]
 
 const LenderDashboardLayout = ({ children }: LenderDashboardLayoutProps) => {
+  
   const [searchQuery, setSearchQuery] = useState("")
-  const router = useRouter()
+  const pathname = usePathname()
+  const router= useRouter()
+  
+  const shouldShowButton =
+    pathname === '/lender/dashboard' || pathname.startsWith('/lender/jobs');
 
   const handleLogout = () => {
     // Handle logout logic - clear tokens, etc.
@@ -154,6 +160,7 @@ const LenderDashboardLayout = ({ children }: LenderDashboardLayoutProps) => {
   }
 
   return (
+    
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
       <div className="w-64 bg-[#1e5ba8] text-white flex flex-col">
@@ -197,7 +204,7 @@ const LenderDashboardLayout = ({ children }: LenderDashboardLayoutProps) => {
                   href={item.href}
                   className="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors text-white/80 hover:bg-white/5 hover:text-white"
                 >
-                  <item.icon size={20} />
+                  <item.icon />
                   <span className="font-medium">{item.label}</span>
                 </Link>
               </li>
@@ -222,7 +229,7 @@ const LenderDashboardLayout = ({ children }: LenderDashboardLayoutProps) => {
           <div className="flex items-center justify-between">
             {/* Search */}
             <div className="flex-1 max-w-md relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60" size={20} />
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 outline-none ring-0" />
               <input
                 type="text"
                 placeholder="Search anything..."
@@ -234,12 +241,23 @@ const LenderDashboardLayout = ({ children }: LenderDashboardLayoutProps) => {
 
             {/* Header Actions */}
             <div className="flex items-center gap-3">
-              <button className="p-2 border border-white/30 rounded-lg hover:bg-white/10 transition-colors relative">
-                <Bell size={20} />
+              <div>
+                {shouldShowButton && (
+                 <button className=" hover:bg-white/10" >
+                   <AddIcon/>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                 </button>
+                )}
+              </div>
+              <button className=" hover:bg-white/10">
+                <Notification />
+
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
-              <button className="p-2 border border-white/30 rounded-lg hover:bg-white/10 transition-colors relative">
-                <MessageSquare size={20} />
+              <button className=" hover:bg-white/10"
+              onClick={()=>router.push("/lender/chats")}>
+                <ChatAlertIcon />
+
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
               <div className="w-10 h-10 rounded-lg overflow-hidden">

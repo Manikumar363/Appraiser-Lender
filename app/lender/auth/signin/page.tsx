@@ -1,32 +1,47 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import AuthLayout from "../../components/auth-layout"
 import { RoleSelector } from "../../components/role-selector"
 import { AuthInput } from "../../components/auth-input"
 import { useRouter } from "next/navigation"
+import axios from "@/lib/api/axios"; //  import your API
 
 export default function LenderSignInPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("lender")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle sign in logic here
-    console.log("Lender Sign in:", { selectedRole, email, password })
+    setLoading(true)
+    setError("")
 
-    // After successful authentication, redirect to lender dashboard
-    router.push("/lender/dashboard")
+    try{
+      const res= await axios.post('/lender/login',{
+        email,
+        password,
+      })
+
+      console.log("Login successful", res.data)
+
+      localStorage.setItem("Login successful", res.data)
+
+      router.push("/lender/dashboard")
+    }catch(err: any){
+      setError(err.response?.data?.message || "Invalid credentials")
+    }finally{
+      setLoading(false)
+    }
   }
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
     setSelectedRole(role)
-    // If user selects appraiser, redirect to appraiser auth
     if (role === "appraiser") {
       router.push("/appraiser/auth/signin")
     }
@@ -56,6 +71,8 @@ export default function LenderSignInPage() {
           icon="password"
         />
 
+        {error && <p className="text-red-600 text-sm">{error}</p>}
+
         <div className="text-right mb-6">
           <Link
             href="/lender/auth/forgot-password"
@@ -67,9 +84,10 @@ export default function LenderSignInPage() {
 
         <button
           type="submit"
-          className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#1a4f96] transition-colors text-lg shadow-sm"
+          className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#1a4f96] transition-colors text-lg shadow-sm disabled:opacity-50"
+          disabled={loading}
         >
-          Sign In
+          {loading ? "Signing In..." : "Sign In"}
         </button>
       </form>
 

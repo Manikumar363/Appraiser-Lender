@@ -1,12 +1,32 @@
-import LenderDashboardLayout from "../components/lender-dashboard-layout"
+'use client';
+
+import Link from 'next/link';
+import { DeleteIcon, ResetIcon,ArrowIcon } from "../components/icons";
+import LenderDashboardLayout from "../components/lender-dashboard-layout";
+
+const topNavigationItems = [
+  { icon: ResetIcon, label: "Reset Password", href: "/lender/settings/reset", active:true },
+  { icon: DeleteIcon, label: "Delete Account", href: "/lender/settings" }
+];
 
 export default function LenderSettingsPage() {
   return (
     <LenderDashboardLayout>
-      <div className="text-center py-12">
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">Settings</h1>
-        <p className="text-gray-600">Lender settings page content will be implemented here.</p>
+      <div className="divide-y divide-gray-300 px-4">
+        {topNavigationItems.map((item, index) => (
+          <Link
+            key={index}
+            href={item.href}
+            className="flex items-center justify-between py-5 hover:bg-gray-100 transition rounded-lg px-2"
+          >
+            <div className="flex items-center gap-4">
+              <item.icon className="w-10 h-10" />
+              <span className="text-gray-800 font-medium">{item.label}</span>
+            </div>
+            <ArrowIcon/>
+          </Link>
+        ))}
       </div>
     </LenderDashboardLayout>
-  )
+  );
 }

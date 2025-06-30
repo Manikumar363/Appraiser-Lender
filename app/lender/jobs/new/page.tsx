@@ -31,7 +31,7 @@ export default function NewJobRequestPage() {
     // Handle form submission logic here
     console.log("Form submitted:", formData)
     // Redirect back to jobs page or dashboard
-    router.push("/lender/jobs")
+    router.push("/lender/dashboard")
   }
 
   const purposeOptions = [
@@ -112,7 +112,7 @@ export default function NewJobRequestPage() {
                     type="text"
                     value={formData.propertyType}
                     onChange={(e) => handleInputChange("propertyType", e.target.value)}
-                    placeholder="Enter Property Address"
+                    placeholder="Enter Property Type"
                     className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
                   />
@@ -128,7 +128,7 @@ export default function NewJobRequestPage() {
                     type="text"
                     value={formData.propertyCost}
                     onChange={(e) => handleInputChange("propertyCost", e.target.value)}
-                    placeholder="Enter Property Address"
+                    placeholder="Enter Property Cost"
                     className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
                   />

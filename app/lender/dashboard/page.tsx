@@ -1,6 +1,9 @@
+"use client"
+
 import LenderDashboardLayout from "../components/lender-dashboard-layout"
 import { JobCard } from "../components/job-card"
 import { Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const jobsData = [
   {
@@ -24,19 +27,28 @@ const jobsData = [
 ]
 
 export default function LenderDashboardPage() {
+  const router = useRouter()
+
+  const handleNewJobRequest = () => {
+    router.push("/lender/jobs/new")
+  }
+
   return (
     <LenderDashboardLayout>
-      <div className="flex flex-col h-full">
+      <div className="space-y-6">
         {/* Job Cards */}
-        <div className="flex-1 space-y-4">
+        <div className="space-y-4">
           {jobsData.map((job) => (
             <JobCard key={job.id} title={job.title} location={job.location} status={job.status} />
           ))}
         </div>
 
-        {/* New Job Request Button - Fixed at bottom */}
-        <div className="pt-6 mt-auto">
-          <button className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2">
+        {/* New Job Request Button */}
+        <div className="pb-5">
+          <button
+            onClick={handleNewJobRequest}
+            className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+          >
             <Plus size={20} />
             New Job Request
           </button>
