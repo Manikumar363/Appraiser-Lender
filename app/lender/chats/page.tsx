@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
-import LenderDashboardLayout from "../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
 import { chatApi } from "@/lib/api/chat"
  import {useAuth} from "../../../hooks/use-auth"
 

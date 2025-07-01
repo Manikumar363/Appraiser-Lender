@@ -1,7 +1,7 @@
 "use client"
 
-import LenderDashboardLayout from "../components/lender-dashboard-layout"
-import { JobCard } from "../components/job-card"
+import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import { JobCard } from "../../../components/job-card"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 

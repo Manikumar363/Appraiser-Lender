@@ -1,6 +1,6 @@
 "use client"
 
-import LenderDashboardLayout from "../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../../components/lender-dashboard-layout"
 import { useRouter, useParams } from "next/navigation"
 import {
   ArrowLeft,

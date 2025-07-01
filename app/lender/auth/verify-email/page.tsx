@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import AuthLayout from "../../components/auth-layout"
-import { OTPInput } from "../../components/otp-input"
+import AuthLayout from "../../../../components/auth-layout"
+import { OTPInput } from "../../../../components/otp-input"
 
 export default function LenderVerifyEmailPage() {
   const [otp, setOtp] = useState("")

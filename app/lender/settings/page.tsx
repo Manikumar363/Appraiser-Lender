@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { DeleteIcon, ResetIcon,ArrowIcon } from "../components/icons";
-import LenderDashboardLayout from "../components/lender-dashboard-layout";
+import { DeleteIcon, ResetIcon,ArrowIcon } from "../../../components/icons";
+import LenderDashboardLayout from "../../../components/lender-dashboard-layout";
 
 const topNavigationItems = [
   { icon: ResetIcon, label: "Reset Password", href: "/lender/settings/reset", active:true },

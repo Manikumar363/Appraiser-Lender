@@ -4,8 +4,8 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
-import AuthLayout from "../../components/auth-layout"
-import { AuthInput } from "../../components/auth-input"
+import AuthLayout from "../../../../components/auth-layout"
+import { AuthInput } from "../../../../components/auth-input"
 import { useRouter } from "next/navigation"
 
 export default function LenderForgotPasswordPage() {

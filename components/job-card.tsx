@@ -1,4 +1,4 @@
-import { TimerIcon, BuildingIcon } from "../components/icons"
+import { TimerIcon, BuildingIcon } from "./icons"
 
 interface JobCardProps {
   title: string

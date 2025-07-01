@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import LenderDashboardLayout from "../../components/lender-dashboard-layout";
-import { LockIcon } from "../../components/icons"
+import LenderDashboardLayout from "../../../../components/lender-dashboard-layout";
+import { LockIcon } from "../../../../components/icons"
 
 export default function ResetPasswordForm() {
   const [oldPassword, setOldPassword] = useState('');

@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import LenderDashboardLayout from "../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../../components/lender-dashboard-layout"
 import { User, MapPin, DollarSign, Target, Users, ChevronDown } from "lucide-react"
 
 export default function NewJobRequestPage() {

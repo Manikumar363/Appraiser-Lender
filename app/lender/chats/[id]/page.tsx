@@ -1,6 +1,6 @@
 "use client"
 
-import LenderDashboardLayout from "../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../../components/lender-dashboard-layout"
 import { useRouter, useParams } from "next/navigation"
 import { useState, useEffect, useCallback } from "react"
 import {
@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/components/ui/use-toast"
 import { useAuth } from "../../../../hooks/use-auth"
-import { TimerIcon } from "../../components/icons"
+import { TimerIcon } from "../../../../components/icons"
 
 interface JobDetail {
   id: string
