@@ -1,13 +1,13 @@
 "use client"
 
-import { Mail, Lock, User, Phone } from "lucide-react"
+import { Mail, Lock, User, Phone ,Building } from "lucide-react"
 
 interface AuthInputProps {
-  type: "email" | "password" | "text" | "tel"
+  type: "email" | "password" | "text" | "tel" | "company"
   placeholder: string
   value: string
   onChange: (value: string) => void
-  icon?: "email" | "password" | "user" | "phone"
+  icon?: "email" | "password" | "user" | "phone" | "company"
 }
 
 export function AuthInput({ type, placeholder, value, onChange, icon }: AuthInputProps) {
@@ -16,6 +16,7 @@ export function AuthInput({ type, placeholder, value, onChange, icon }: AuthInpu
     password: Lock,
     user: User,
     phone: Phone,
+    company: Building, 
   }[icon || "email"]
 
   return (
