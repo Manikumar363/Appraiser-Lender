@@ -1,142 +1,112 @@
-'use client'; // Required for hooks in App Router
+"use client";
 
-import { useState } from 'react';
-import axios from '@/lib/api/axios'; // adjust if you name it differently
+import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { AuthIcons } from "../../components/AuthIcons";
 
 export default function AppraiserSignupPage() {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    company: '',
-  });
+  const router = useRouter();
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
 
-    try {
-      const response = await axios.post('/auth/signup', {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        companyName: formData.company,
-      });
-
-      console.log('Signup success:', response.data);
-      // TODO: redirect or show success toast
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.message || 'Signup failed.');
-    } finally {
-      setLoading(false);
+    if (!acceptTerms) {
+      alert("Please accept Terms & Privacy Policy");
+      return;
     }
+
+    console.log("Sign up:", { username, email, password, companyName });
+
+    // ➜ Simulate redirect to email verification
+    router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email)}`);
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row font-sans">
-      {/* Left Image Panel */}
-      <div
-        className="md:w-1/3 bg-cover bg-center hidden md:block"
-        style={{
-          backgroundImage: "url('/images/logo.png')", // Adjust the path to your image
-          minHeight: '100vh',
-        }}
-      />
+    <div className="flex flex-col justify-center max-w-md w-full mx-auto py-10">
+      <h2 className="text-xl font-semibold mb-2 text-gray-800">Sign Up as</h2>
 
-      {/* Right Form Section */}
-      <div className="w-full md:w-2/3 flex flex-col justify-center px-8 py-10 bg-white">
-        <h2 className="text-xl font-semibold text-black mb-2">Sign Up as</h2>
+      <div className="flex mb-6 border border-gray-300 rounded-full w-max overflow-hidden">
+        <button className="px-6 py-2 bg-blue-900 text-white rounded-full">Appraiser</button>
+        <button className="px-6 py-2 text-gray-600" onClick={() => router.push("/lender/auth/signup")}>
+          Lender
+        </button>
+      </div>
 
-        <div className="flex border border-gray-300 rounded-full w-max overflow-hidden mb-6">
-          <button className="px-6 py-2 bg-blue-900 text-white rounded-full">Appraiser</button>
-          <button className="px-6 py-2 text-gray-600">Lender</button>
+      <h1 className="text-3xl font-bold mb-6 text-gray-900">Create Your Appraiser Account</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <AuthIcons.User className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Type your username here"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full text-sm"
+          />
         </div>
 
-        <h1 className="text-2xl font-bold text-black mb-6">
-          Create Your Appraiser Account
-        </h1>
-
-        <form className="space-y-4 w-full max-w-md" onSubmit={handleSubmit}>
+        <div className="relative">
+          <AuthIcons.Mail className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
           <input
-            name="username"
-            type="text"
-            placeholder="Type your username here"
-            className={input}
-            value={formData.username}
-            onChange={handleChange}
-            required
-          />
-          <input
-            name="email"
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Type your email here"
-            className={input}
-            value={formData.email}
-            onChange={handleChange}
-            required
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full text-sm"
           />
+        </div>
+
+        <div className="relative">
+          <AuthIcons.Lock className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
           <input
-            name="password"
             type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder="Type your password here"
-            className={input}
-            value={formData.password}
-            onChange={handleChange}
-            required
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full text-sm"
           />
+        </div>
+
+        <div className="relative">
+          <AuthIcons.User className="absolute left-3 top-3 h-5 w-5 text-gray-500" />
           <input
-            name="company"
             type="text"
+            value={companyName}
+            onChange={(e) => setCompanyName(e.target.value)}
             placeholder="Enter Your Company Name"
-            className={input}
-            value={formData.company}
-            onChange={handleChange}
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full text-sm"
           />
+        </div>
 
-          <div className="flex items-center text-sm gap-2 mt-2">
-            <input type="checkbox" id="terms" className="h-4 w-4" required />
-            <label className="text-black" htmlFor="terms">
-              Terms of Use
-            </label>
-            <span className="text-gray-400">|</span>
-            <a href="#" className="text-blue-600 hover:underline">
-              Privacy Policy
-            </a>
-          </div>
+        <div className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            className="h-4 w-4"
+          />
+          <label htmlFor="terms" className="text-black">Terms of Use</label>
+          <span className="text-gray-400">|</span>
+          <Link href="#" className="text-blue-600 hover:underline">Privacy Policy</Link>
+        </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+        <button type="submit" className="w-full bg-blue-900 text-white py-3 rounded-full font-semibold">
+          Sign Up
+        </button>
+      </form>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-900 text-white py-3 rounded-full font-semibold mt-4"
-            disabled={loading}
-          >
-            {loading ? 'Signing up...' : 'Sign Up'}
-          </button>
-        </form>
-
-        <p className="text-black text-center text-sm mt-6">
-          Already Have An Account?{' '}
-          <a href="#" className="text-blue-700 font-medium">
-            Sign In
-          </a>
-        </p>
-      </div>
+      <p className="text-black text-center text-sm mt-6">
+        Already Have An Account?{" "}
+        <Link href="/appraiser/auth/signin" className="text-blue-700 font-medium">Sign In</Link>
+      </p>
     </div>
   );
 }
-
-const input =
-  'w-full px-4 py-3 border border-gray-300 rounded-full text-sm outline-none';
