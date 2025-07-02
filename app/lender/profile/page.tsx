@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../components/dashboard-layout"
 import { ProfileIcon, EmailIcon, CompanyIcon, DesignationIcon, CheckmarkIcon } from "../../../components/icons"
 import Image from "next/image"
 

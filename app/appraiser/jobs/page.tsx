@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import {
   ArrowLeft, Map, MessageSquare, Phone, ExternalLink
 } from "lucide-react"
-import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import DashboardLayout from "../../../components/dashboard-layout"
 import { JobCard } from "../../../components/job-card"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -34,7 +34,7 @@ export default function LenderDashboardPage() {
   }
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role="lender">
       <div className="space-y-6">
         {/* Job Cards */}
         <div className="space-y-4">
@@ -54,6 +54,6 @@ export default function LenderDashboardPage() {
           </button>
         </div>
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

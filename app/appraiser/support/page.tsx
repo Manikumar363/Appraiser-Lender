@@ -1,4 +1,4 @@
-import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../components/dashboard-layout"
 
 export default function LenderSupportPage() {
   return (

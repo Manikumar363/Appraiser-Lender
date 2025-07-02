@@ -1,6 +1,6 @@
 "use client"
 
-import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import DashboardLayout from "../../../components/dashboard-layout"
 import { JobCard } from "../../../components/job-card"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -39,7 +39,7 @@ export default function AppraiserDashboardPage() {
   const [isAvailable, setIsAvailable] = useState(true)
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role="appraiser">
       <div className="space-y-4">
         {/* Availability Toggle & Timer */}
         <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm mb-4">
@@ -84,6 +84,6 @@ export default function AppraiserDashboardPage() {
           ))}
         </div>
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

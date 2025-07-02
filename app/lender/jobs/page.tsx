@@ -9,7 +9,7 @@ import{
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, RightArrow, LoadIcon,ImageIcon, PDFIcon, CardIcon  } from "../../../components/icons"
-import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../components/dashboard-layout"
 
 interface Job {
   id: string

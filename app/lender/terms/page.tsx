@@ -1,6 +1,6 @@
 'use client';
 import { useState,useEffect } from "react";
-import LenderDashboardLayout from "../../../components/lender-dashboard-layout"
+import LenderDashboardLayout from "../../../components/dashboard-layout"
 
 interface Section {
   title: string;
