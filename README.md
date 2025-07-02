@@ -30,7 +30,7 @@ A fullstack web application designed to streamline communication and job managem
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/appraiser-lender.git
+git clone 
 cd appraiser-lender
 
 ### 2. Install Dependencies
