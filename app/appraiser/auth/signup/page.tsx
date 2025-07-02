@@ -25,7 +25,7 @@ export default function AppraiserSignUpPage() {
       return;
     }
 
-    console.log("Appraiser Sign up:", { selectedRole, username, email, password, phone });
+    console.log("Appraiser Sign up:", { selectedRole, username, email, password, company });
 
     // After successful registration, redirect to email verification
     router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email)}`);
