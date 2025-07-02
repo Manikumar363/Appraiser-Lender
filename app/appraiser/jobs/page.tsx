@@ -49,7 +49,7 @@ const jobs = [
   },
 ]
 
-const getStatusColor = (status) => {
+const getStatusColor = (status:string) => {
   switch (status) {
     case "active": return "bg-blue-500"
     case "client-visit": return "bg-yellow-500"
