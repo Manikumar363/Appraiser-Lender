@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import {
   ArrowLeft, Map, MessageSquare, Phone, ExternalLink
 } from "lucide-react"
-import LenderDashboardLayout from "../../../components/dashboard-layout"
+import DashboardLayout from "../../../components/dashboard-layout"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
@@ -78,7 +78,7 @@ export default function AppraiserJobsPage() {
   const selectedJob = selectedJobId ? jobs.find(j => j.id === selectedJobId) : null
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role="appraiser">
       <div className="p-6">
         {/* Filter Tabs */}
         <div className="flex gap-4 mb-6 ">
@@ -122,6 +122,6 @@ export default function AppraiserJobsPage() {
           ))}
         </div>
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import LenderDashboardLayout from "../../../../components/dashboard-layout";
+import DashboardLayout from "../../../../components/dashboard-layout";
 import { LockIcon } from "../../../../components/icons"
 
 export default function ResetPasswordForm() {
@@ -10,7 +10,7 @@ export default function ResetPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout>
     <div className="space-y-6 px-4 py-6">
       <div>
         <label className="block text-lg font-semibold text-gray-800 mb-2">
@@ -62,6 +62,6 @@ export default function ResetPasswordForm() {
         </div>
       </div>
     </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   );
 }

@@ -9,7 +9,7 @@ import{
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, RightArrow, LoadIcon,ImageIcon, PDFIcon, CardIcon  } from "../../../components/icons"
-import LenderDashboardLayout from "../../../components/dashboard-layout"
+import DashboardLayout from "../../../components/dashboard-layout"
 
 interface Job {
   id: string
@@ -202,7 +202,7 @@ export default function JobsPage() {
     const progressSteps = getProgressSteps(selectedJob.status)
 
     return (
-      <LenderDashboardLayout>
+      <DashboardLayout role="lender">
         <div className="p-6 bg-gray-50 min-h-screen">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -347,13 +347,13 @@ export default function JobsPage() {
             </Button>
           )}
         </div>
-      </LenderDashboardLayout>
+      </DashboardLayout>
     )
   }
 
   // Default view - Jobs List
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role="lender">
       <div className="p-6 bg-gray-50 min-h-screen">
         {/* Filter Tabs */}
         <div className="flex gap-4 mb-8">
@@ -487,6 +487,6 @@ export default function JobsPage() {
           </Button>
         </div>
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

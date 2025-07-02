@@ -1,6 +1,6 @@
 "use client"
 
-import LenderDashboardLayout from "../../../../components/dashboard-layout"
+import DashboardLayout from "../../../../components/dashboard-layout"
 import { useRouter, useParams } from "next/navigation"
 import { useState, useEffect, useCallback } from "react"
 import {
@@ -284,21 +284,21 @@ export default function JobDetailsPage() {
   // Loading state
   if (loading) {
     return (
-      <LenderDashboardLayout>
+      <DashboardLayout role="appraiser">
         <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
           <div className="flex items-center gap-2">
             <Loader2 className="w-6 h-6 animate-spin" />
             <span>Loading job details...</span>
           </div>
         </div>
-      </LenderDashboardLayout>
+      </DashboardLayout>
     )
   }
 
   // Error state
   if (error || !job) {
     return (
-      <LenderDashboardLayout>
+      <DashboardLayout role="appraiser">
         <div className="p-6 bg-gray-50 min-h-screen">
           <div className="flex items-center gap-4 mb-6">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="p-2">
@@ -312,7 +312,7 @@ export default function JobDetailsPage() {
             <Button onClick={() => router.push("/jobs")}>Back to Jobs</Button>
           </div>
         </div>
-      </LenderDashboardLayout>
+      </DashboardLayout>
     )
   }
 
@@ -320,7 +320,7 @@ export default function JobDetailsPage() {
   const canApply = job.applicationStatus === "not_applied" || !job.applicationStatus
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role="appraiser">
       <div className="p-6 bg-gray-50 min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -511,6 +511,6 @@ export default function JobDetailsPage() {
           </Button>
         )}
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

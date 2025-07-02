@@ -1,6 +1,6 @@
 "use client"
 
-import LenderDashboardLayout from "../../../../components/dashboard-layout"
+import DashboardLayout from "../../../../components/dashboard-layout"
 import { useRouter, useParams } from "next/navigation"
 import {
   ArrowLeft,
@@ -152,28 +152,28 @@ export default function JobDetailsPage() {
 
   if (!jobId) {
     return (
-      <LenderDashboardLayout>
+      <DashboardLayout>
         <div className="p-6">Loading...</div>
-      </LenderDashboardLayout>
+      </DashboardLayout>
     )
   }
 
   if (!job) {
     return (
-      <LenderDashboardLayout>
+      <DashboardLayout>
         <div className="p-6">
           <h1>Job not found</h1>
           <p>Job ID: {jobId}</p>
           <p>Available jobs: {Object.keys(jobDetails).join(", ")}</p>
         </div>
-      </LenderDashboardLayout>
+      </DashboardLayout>
     )
   }
 
   const progressSteps = getProgressSteps(job.status)
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout>
       <div className="p-6 bg-gray-50 min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -313,6 +313,6 @@ export default function JobDetailsPage() {
           </Button>
         )}
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

@@ -1,6 +1,6 @@
 'use client';
 import { useState,useEffect } from "react";
-import LenderDashboardLayout from "../../../components/dashboard-layout"
+import DashboardLayout from "../../../components/dashboard-layout"
 
 interface Section {
   title: string;
@@ -37,7 +37,7 @@ export default function LenderTermsPage() {
     fetchData();
   }, []);
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout>
 
        <div className="px-6 py-10 text-gray-800 max-w-4xl ml-8 space-y-8">
       <div>
@@ -63,6 +63,6 @@ export default function LenderTermsPage() {
         </section>
       ))}
     </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

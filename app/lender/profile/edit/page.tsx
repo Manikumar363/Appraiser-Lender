@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import LenderDashboardLayout from "../../../../components/dashboard-layout"
+import DashboardLayout from "../../../../components/dashboard-layout"
 import { ProfileIcon, EmailIcon, CompanyIcon, DesignationIcon, CheckmarkIcon } from "../../../../components/icons"
 import Image from "next/image"
 
@@ -34,7 +34,7 @@ export default function EditProfilePage() {
   }
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout>
       <div className="h-full overflow-hidden bg-white">
         <div className="p-8 h-full flex flex-col">
           {/* Profile Header */}
@@ -155,6 +155,6 @@ export default function EditProfilePage() {
           </form>
         </div>
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

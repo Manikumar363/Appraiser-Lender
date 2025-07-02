@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
-import LenderDashboardLayout from "../../../components/dashboard-layout"
+import DashboardLayout from "../../../components/dashboard-layout"
 import { chatApi } from "@/lib/api/chat"
  import {useAuth} from "../../../hooks/use-auth"
 
@@ -244,7 +244,7 @@ export default function ChatPage() {
   // Redirect if not authenticated (commented out for preview)
   // if (!isAuthenticated) {
   //   return (
-  //     <LenderDashboardLayout>
+  //     <DashboardLayout>
   //       <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
   //         <div className="text-center">
   //           <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
@@ -253,28 +253,28 @@ export default function ChatPage() {
   //           <Button onClick={() => router.push("/login")}>Go to Login</Button>
   //         </div>
   //       </div>
-  //     </LenderDashboardLayout>
+  //     </DashboardLayout>
   //   )
   // }
 
   // Loading state
   if (loading && conversations.length === 0) {
     return (
-      <LenderDashboardLayout>
+      <DashboardLayout role="appraiser">
         <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
           <div className="flex items-center gap-2">
             <Loader2 className="w-6 h-6 animate-spin" />
             <span>Loading conversations...</span>
           </div>
         </div>
-      </LenderDashboardLayout>
+      </DashboardLayout>
     )
   }
 
   // Error state
   if (error && conversations.length === 0) {
     return (
-      <LenderDashboardLayout>
+      <DashboardLayout role="appraiser">
         <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
           <div className="text-center">
             <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
@@ -286,12 +286,12 @@ export default function ChatPage() {
             </Button>
           </div>
         </div>
-      </LenderDashboardLayout>
+      </DashboardLayout>
     )
   }
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role="appraiser">
       <div className="p-6 bg-gray-50 min-h-screen">
         {/* Header */}
         <div className="mb-6">
@@ -469,6 +469,6 @@ export default function ChatPage() {
           </div>
         )}
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

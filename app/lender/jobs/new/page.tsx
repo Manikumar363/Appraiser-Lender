@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import LenderDashboardLayout from "../../../../components/dashboard-layout"
+import DashboardLayout from "../../../../components/dashboard-layout"
 import { User, MapPin, DollarSign, Target, Users, ChevronDown } from "lucide-react"
 
 export default function NewJobRequestPage() {
@@ -66,7 +66,7 @@ export default function NewJobRequestPage() {
   ]
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role="lender">
       <div className="h-full overflow-hidden">
         <div className="bg-white h-full p-6">
           <form onSubmit={handleSubmit} className="h-full flex flex-col">
@@ -223,6 +223,6 @@ export default function NewJobRequestPage() {
           </form>
         </div>
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   )
 }

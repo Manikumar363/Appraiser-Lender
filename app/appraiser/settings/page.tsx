@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { DeleteIcon, ResetIcon,ArrowIcon } from "../../../components/icons";
-import LenderDashboardLayout from "../../../components/dashboard-layout";
+import DashboardLayout from "../../../components/dashboard-layout";
 
 const topNavigationItems = [
   { icon: ResetIcon, label: "Reset Password", href: "/lender/settings/reset", active:true },
@@ -11,7 +11,7 @@ const topNavigationItems = [
 
 export default function LenderSettingsPage() {
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout>
       <div className="divide-y divide-gray-300 px-4">
         {topNavigationItems.map((item, index) => (
           <Link
@@ -27,6 +27,6 @@ export default function LenderSettingsPage() {
           </Link>
         ))}
       </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   );
 }

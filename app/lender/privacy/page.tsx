@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import LenderDashboardLayout from '../../../components/dashboard-layout';
+import DashboardLayout from '../../../components/dashboard-layout';
 
 
 interface Section {
@@ -60,7 +60,7 @@ export default function PrivacyPolicyPage() {
   }, []);
 
   return (
-    <LenderDashboardLayout>
+    <DashboardLayout role='lender'>
     <div className="px-2 py-4 text-gray-800 max-w-4xl ml-8 space-y-4">
       {/* Header */}
       <div>
@@ -87,6 +87,6 @@ export default function PrivacyPolicyPage() {
         </section>
       ))}
     </div>
-    </LenderDashboardLayout>
+    </DashboardLayout>
   );
 }
