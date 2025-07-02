@@ -32,6 +32,7 @@ A fullstack web application designed to streamline communication and job managem
 ```bash
 git clone https://github.com/yourusername/appraiser-lender.git
 cd appraiser-lender
+
 ### 2. Install Dependencies
 npm install --legacy-peer-deps
 
