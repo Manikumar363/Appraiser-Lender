@@ -260,7 +260,7 @@ export default function ChatPage() {
   // Loading state
   if (loading && conversations.length === 0) {
     return (
-      <DashboardLayout>
+      <DashboardLayout role="lender">
         <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
           <div className="flex items-center gap-2">
             <Loader2 className="w-6 h-6 animate-spin" />
@@ -274,7 +274,7 @@ export default function ChatPage() {
   // Error state
   if (error && conversations.length === 0) {
     return (
-      <DashboardLayout>
+      <DashboardLayout role="lender">
         <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
           <div className="text-center">
             <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
@@ -291,7 +291,7 @@ export default function ChatPage() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout role="lender">
       <div className="p-6 bg-gray-50 min-h-screen">
         {/* Header */}
         <div className="mb-6">
