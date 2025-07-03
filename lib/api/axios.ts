@@ -2,7 +2,7 @@ import axios from "axios"
 
 // Create centralized Axios instance
 const api = axios.create({
-  baseURL: 'https://appraiser-backend.onrender.com/api/v1',
+  baseURL: 'https://api.emadiappraisals.com/api/v1',
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

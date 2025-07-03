@@ -49,18 +49,20 @@ export default function LenderSignInPage() {
 
   return (
     <AuthLayout>
-      <div className="text-center mb-8">
-        <h1 className="text-2xl font-medium text-gray-800 mb-2">Sign In as</h1>
+      <div className="flex flex-col justify-center min-h-screen w-full items-center">
+      <div className="w-full max-w-[713px] px-6">
+      <div className="mb-4 mt-0">
+        <h1 className="text-[22px] font-medium text-gray-800">Sign In as</h1>
+      </div>
+      <div className="mb-6">
+        <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
+      </div>
+      <div className="mb-5">
+        <h2 className="text-[32px] font-bold text-gray-800 leading-snug mb-1">Welcome Back Lenders</h2>
+        <p className="text-gray-500 text-sm">Log in to manage your jobs and updates.</p>
       </div>
 
-      <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
-
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back Lenders</h2>
-        <p className="text-gray-500 text-base">Log in to manage your jobs and updates.</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <AuthInput type="email" placeholder="Type your email here" value={email} onChange={setEmail} icon="email" />
 
         <AuthInput
@@ -73,10 +75,10 @@ export default function LenderSignInPage() {
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 
-        <div className="text-right mb-6">
+        <div className="text-right -mt-3 mb-5">
           <Link
             href="/lender/auth/forgot-password"
-            className="text-gray-600 hover:text-[#1e5ba8] transition-colors text-base"
+            className="text-gray-600 hover:text-[#1e5ba8] transition-colors text-sm"
           >
             Forgot Password?
           </Link>
@@ -84,18 +86,20 @@ export default function LenderSignInPage() {
 
         <button
           type="submit"
-          className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#1a4f96] transition-colors text-lg shadow-sm disabled:opacity-50"
+          className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#154c8c] transition-colors text-base shadow-sm disabled:opacity-50"
           disabled={loading}
         >
           {loading ? "Signing In..." : "Sign In"}
         </button>
       </form>
 
-      <div className="text-center mt-8">
+      <div className="text-center mt-8 text-sm">
         <span className="text-gray-600">{"Don't Have An Account ? "}</span>
-        <Link href="/lender/auth/signup" className="text-[#1e5ba8] font-medium hover:underline">
+        <Link href="/lender/auth/signup" className="text-[#1e5ba8] font-semibold hover:underline">
           Create One
         </Link>
+      </div>
+      </div>
       </div>
     </AuthLayout>
   )

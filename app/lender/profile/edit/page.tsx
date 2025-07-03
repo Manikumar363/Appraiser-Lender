@@ -34,7 +34,7 @@ export default function EditProfilePage() {
   }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout role="lender">
       <div className="h-full overflow-hidden bg-white">
         <div className="p-8 h-full flex flex-col">
           {/* Profile Header */}

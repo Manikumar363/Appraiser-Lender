@@ -53,8 +53,9 @@ export default function LenderVerifyEmailPage() {
 
   return (
     <AuthLayout>
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Email Verification</h1>
+      <div className="flex flex-col justify-center items-center min-h-screen w-full text-center px-4">
+        
+        <h1 className="text-4xl font-bold text-gray-800 mb-4">Email Verification</h1>
 
         <p className="text-gray-600 mb-8 text-base">
           Enter the verification code we just sent on your email address{" "}
