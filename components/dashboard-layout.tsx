@@ -5,18 +5,14 @@ import { useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 
-// ✅ Your icon imports here
-import { Notification, ChatAlertIcon, AddIcon, SearchIcon } from "./icons"
-
-
 import {
+   Notification, ChatAlertIcon, AddIcon, SearchIcon,
   HomeIcon,
   JobsIcon,
   ProfileIcon,
   SettingsIcon,
   PrivacyIcon,
   TermsIcon,
-  HelpIcon,
   LogoutIcon,
 } from "./icons" 
 
@@ -42,14 +38,14 @@ const lenderBottomNav = [
   { icon: SettingsIcon, label: "Settings", href: "/lender/settings" },
   { icon: PrivacyIcon, label: "Privacy Policy", href: "/lender/privacy" },
   { icon: TermsIcon, label: "Terms & Condition", href: "/lender/terms" },
-  { icon: HelpIcon, label: "Help & Support", href: "/lender/support" },
+ 
 ]
 
 const appraiserBottomNav = [
   { icon: SettingsIcon, label: "Settings", href: "/appraiser/settings" },
   { icon: PrivacyIcon, label: "Privacy Policy", href: "/appraiser/privacy" },
   { icon: TermsIcon, label: "Terms & Condition", href: "/appraiser/terms" },
-  { icon: HelpIcon, label: "Help & Support", href: "/appraiser/support" },
+ 
 ]
 
 const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
@@ -150,34 +146,33 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             </div>
 
             {/* Header Actions */}
-            <div className="flex items-center gap-3">
-              <div>
-                {shouldShowButton && (
-                  <button className="hover:bg-white/10">
-                    <AddIcon />
-                    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-                  </button>
-                )}
-              </div>
-              <button className="hover:bg-white/10">
-                <Notification />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
-              <button
-                className="hover:bg-white/10"
-                onClick={() => router.push(`/${role}/chats`)}
-              >
-                <ChatAlertIcon />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-              </button>
-              <div className="w-10 h-10 rounded-lg overflow-hidden">
-                <img
-                  src="/images/profile-avatar.png"
-                  alt="User Profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
+<div className="flex items-center gap-3">
+  {shouldShowButton && (
+    <button className="relative hover:bg-white/10 p-2 rounded">
+      <AddIcon />
+      <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+    </button>
+  )}
+  <button className="relative hover:bg-white/10 p-2 rounded">
+    <Notification />
+    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+  </button>
+  <button
+    className="relative hover:bg-white/10 p-2 rounded"
+    onClick={() => router.push(`/${role}/chats`)}
+  >
+    <ChatAlertIcon />
+    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+  </button>
+  <div className="w-10 h-10 rounded-lg overflow-hidden">
+    <img
+      src="/images/profile-avatar.png"
+      alt="User Profile"
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+
           </div>
         </header>
 

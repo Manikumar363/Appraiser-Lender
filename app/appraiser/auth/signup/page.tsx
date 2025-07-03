@@ -79,7 +79,7 @@ export default function AppraiserSignUpPage() {
 
         <AuthInput
           type="tel"
-          placeholder="Enter Your Mobile Number"
+          placeholder="Enter Your Company Name"
           value={company}
           onChange={setCompany}
           icon="company"
