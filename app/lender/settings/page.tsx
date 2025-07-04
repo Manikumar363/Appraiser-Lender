@@ -11,7 +11,7 @@ const topNavigationItems = [
 
 export default function LenderSettingsPage() {
   return (
-    <DashboardLayout>
+    <DashboardLayout role='lender'>
       <div className="divide-y divide-gray-300 px-4">
         {topNavigationItems.map((item, index) => (
           <Link

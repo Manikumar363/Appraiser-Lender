@@ -1,279 +1,344 @@
 "use client"
 
-import DashboardLayout from "../../../../components/dashboard-layout"
-import { useRouter, useParams } from "next/navigation"
-import { useState, useEffect, useCallback } from "react"
-import {
-  ArrowLeft,
-  Building2,
-  MapPin,
-  Calendar,
-  MessageCircle,
-  Download,
-  FileText,
-  ImageIcon,
-  Loader2,
-  CheckCircle,
-  XCircle,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/components/ui/use-toast"
-import { useAuth } from "../../../../hooks/use-auth"
-import { TimerIcon } from "../../../../components/icons"
+import type React from "react"
 
-interface JobDetail {
+import { useState, useEffect, useCallback, useRef } from "react"
+import { useRouter, useParams } from "next/navigation"
+import { Building2, Paperclip, Send, ArrowLeft, Loader2, Check, X, Clock, CheckCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { useToast } from "@/components/ui/use-toast"
+import DashboardLayout from "../../../../components/dashboard-layout"
+import { chatApi } from "@/lib/api/chat"
+import {useAuth} from "../../../../hooks/use-auth"
+
+interface Message {
+  id: string
+  senderId: string
+  senderName: string
+  senderRole: "admin" | "lender" | "appraiser"
+  content: string
+  timestamp: string
+  isRead: boolean
+  status: "sent" | "pending_approval" | "approved" | "rejected"
+  approvedBy?: string
+  createdAt: string
+}
+
+interface ChatParticipant {
+  id: string
+  name: string
+  role: "admin" | "lender" | "appraiser"
+  avatar: string
+  isOnline?: boolean
+}
+
+interface ChatDetail {
   id: string
   title: string
   location: string
-  city: string
-  country: string
-  date: string
-  status: "client-visit" | "site-visit-scheduled" | "post-visit-summary" | "completed" | "cancelled"
-  statusText: string
-  files: Array<{
-    id: string
-    name: string
-    type: "pdf" | "image"
-    uploadDate: string
-  }>
-  amount: number
-  paymentStatus: "paid" | "pending"
-  description?: string
-  requirements?: string[]
-  company?: string
-  applicationStatus?: "not_applied" | "applied" | "under_review" | "accepted" | "rejected"
-  applicationDate?: string
+  participants: ChatParticipant[]
+  messages: Message[]
+  jobId?: string
+  status: "active" | "archived" | "closed"
 }
 
-const getProgressSteps = (status: string) => {
-  const steps = [
-    { name: "Job Request", key: "request" },
-    { name: "Job Tracking", key: "tracking" },
-    { name: "Report Review", key: "review" },
-  ]
-
-  let currentStep = 0
-  switch (status) {
-    case "client-visit":
-    case "site-visit-scheduled":
-      currentStep = 1
-      break
-    case "post-visit-summary":
-      currentStep = 2
-      break
-    case "completed":
-      currentStep = 3
-      break
-  }
-
-  return steps.map((step, index) => ({
-    ...step,
-    status: index < currentStep ? "completed" : index === currentStep ? "current" : "pending",
-  }))
+// Mock data for development
+const mockChatDetail: ChatDetail = {
+  id: "1",
+  title: "Residential Appraisal",
+  location: "Brampton, Canada",
+  participants: [
+    {
+      id: "admin_1",
+      name: "James Ryan",
+      role: "admin",
+      avatar: "/placeholder.svg?height=40&width=40",
+      isOnline: true,
+    },
+    {
+      id: "lender_1",
+      name: "Joe Done",
+      role: "lender",
+      avatar: "/placeholder.svg?height=40&width=40",
+      isOnline: true,
+    },
+    {
+      id: "appraiser_1",
+      name: "Sarah Wilson",
+      role: "appraiser",
+      avatar: "/placeholder.svg?height=40&width=40",
+      isOnline: false,
+    },
+  ],
+  messages: [
+    {
+      id: "msg_1",
+      senderId: "admin_1",
+      senderName: "James Ryan",
+      senderRole: "admin",
+      content: "Thanks, hope you have a great day!",
+      timestamp: "8:22 PM",
+      isRead: true,
+      status: "approved",
+      createdAt: "2024-01-01T20:22:00Z",
+    },
+    {
+      id: "msg_2",
+      senderId: "lender_1",
+      senderName: "Joe Done",
+      senderRole: "lender",
+      content: "Thanks, hope you have a great day!",
+      timestamp: "8:22 PM",
+      isRead: true,
+      status: "approved",
+      approvedBy: "admin_1",
+      createdAt: "2024-01-01T20:22:00Z",
+    },
+    {
+      id: "msg_3",
+      senderId: "appraiser_1",
+      senderName: "Sarah Wilson",
+      senderRole: "appraiser",
+      content: "Thanks, hope you have a great day!",
+      timestamp: "8:22 PM",
+      isRead: true,
+      status: "approved",
+      approvedBy: "admin_1",
+      createdAt: "2024-01-01T20:22:00Z",
+    },
+  ],
+  jobId: "1",
+  status: "active",
 }
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case "client-visit":
-    case "site-visit-scheduled":
-    case "post-visit-summary":
-      return "bg-orange-400 hover:bg-orange-500"
-    case "completed":
-      return "bg-green-500 hover:bg-green-600"
-    case "cancelled":
-      return "bg-red-500 hover:bg-red-600"
-    default:
-      return "bg-gray-400 hover:bg-gray-500"
-  }
-}
+export default function ChatDetailPage() {
+  const [chatDetail, setChatDetail] = useState<ChatDetail | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [newMessage, setNewMessage] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-const getApplicationStatusColor = (status?: string) => {
-  switch (status) {
-    case "applied":
-      return "bg-blue-500 hover:bg-blue-600"
-    case "under_review":
-      return "bg-yellow-500 hover:bg-yellow-600"
-    case "accepted":
-      return "bg-green-500 hover:bg-green-600"
-    case "rejected":
-      return "bg-red-500 hover:bg-red-600"
-    default:
-      return "bg-gray-400 hover:bg-gray-500"
-  }
-}
-
-// Mock data for development - replace with API call
-const mockJobDetails: Record<string, JobDetail> = {
-  "1": {
-    id: "1",
-    title: "Residential Appraisal",
-    location: "Ontario, Canada",
-    city: "Toronto",
-    country: "Canada",
-    date: "01/01/2024",
-    status: "client-visit",
-    statusText: "Client Visit",
-    files: [
-      { id: "1", name: "Floor Plan.pdf", type: "pdf", uploadDate: "1d ago" },
-      { id: "2", name: "Exterior Image.jpg", type: "image", uploadDate: "1d ago" },
-    ],
-    amount: 500,
-    paymentStatus: "paid",
-    description:
-      "Residential property appraisal for mortgage purposes. Property includes 3 bedrooms, 2 bathrooms, and a finished basement.",
-    requirements: ["Valid ID required", "Property access needed", "Recent utility bills"],
-    company: "ABC Appraisal Services",
-    applicationStatus: "not_applied",
-  },
-  "2": {
-    id: "2",
-    title: "Commercial Property Assessment",
-    location: "Toronto, Canada",
-    city: "Toronto",
-    country: "Canada",
-    date: "01/02/2024",
-    status: "site-visit-scheduled",
-    statusText: "Site Visit Scheduled",
-    files: [
-      { id: "3", name: "Property Details.pdf", type: "pdf", uploadDate: "2d ago" },
-      { id: "4", name: "Site Photos.jpg", type: "image", uploadDate: "1d ago" },
-    ],
-    amount: 750,
-    paymentStatus: "pending",
-    description: "Commercial property assessment for investment purposes. Large retail space in downtown core.",
-    requirements: ["Commercial appraisal license", "Experience with retail properties", "Available weekends"],
-    company: "XYZ Property Group",
-    applicationStatus: "applied",
-  },
-  "3": {
-    id: "3",
-    title: "Industrial Property Valuation",
-    location: "Toronto, Canada",
-    city: "Toronto",
-    country: "Canada",
-    date: "01/03/2024",
-    status: "post-visit-summary",
-    statusText: "Post Visit Summary",
-    files: [
-      { id: "5", name: "Visit Report.pdf", type: "pdf", uploadDate: "1d ago" },
-      { id: "6", name: "Interior Photos.jpg", type: "image", uploadDate: "1d ago" },
-      { id: "7", name: "Measurements.pdf", type: "pdf", uploadDate: "1d ago" },
-    ],
-    amount: 600,
-    paymentStatus: "paid",
-    description:
-      "Industrial property valuation for insurance purposes. Manufacturing facility with specialized equipment.",
-    requirements: ["Industrial appraisal experience", "Safety certification", "Equipment knowledge"],
-    company: "Industrial Valuations Inc",
-    applicationStatus: "under_review",
-  },
-  "4": {
-    id: "4",
-    title: "Luxury Home Appraisal",
-    location: "Ontario, Canada",
-    city: "Toronto",
-    country: "Canada",
-    date: "01/04/2024",
-    status: "completed",
-    statusText: "Completed",
-    files: [
-      { id: "8", name: "Final Report.pdf", type: "pdf", uploadDate: "1d ago" },
-      { id: "9", name: "Property Images.jpg", type: "image", uploadDate: "2d ago" },
-      { id: "10", name: "Appraisal Certificate.pdf", type: "pdf", uploadDate: "1d ago" },
-    ],
-    amount: 800,
-    paymentStatus: "paid",
-    description: "Luxury residential property appraisal. High-end finishes, custom features, and premium location.",
-    requirements: ["Luxury property experience", "High-value appraisal certification", "Discretion required"],
-    company: "Premium Appraisals Ltd",
-    applicationStatus: "accepted",
-  },
-}
-
-export default function JobDetailsPage() {
   const router = useRouter()
   const params = useParams()
   const { toast } = useToast()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const [job, setJob] = useState<JobDetail | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [applying, setApplying] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const chatId = params?.id as string
 
-  const jobId = params?.id as string
+  // Scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
 
-  // Fetch job details
-  const fetchJobDetails = useCallback(async () => {
-    if (!jobId) return
+  // Fetch chat details
+  const fetchChatDetail = useCallback(async () => {
+    if (!chatId) return
 
     try {
       setLoading(true)
       setError(null)
 
-      // For development, use mock data
-      // In production, replace with: const jobDetails = await jobsApi.getJobDetails(jobId)
-      const jobDetails = mockJobDetails[jobId]
-
-      if (!jobDetails) {
-        setError("Job not found")
-        return
+      // Try API call, fallback to mock data
+      try {
+        const response = await chatApi.getChatDetails(chatId)
+        setChatDetail(response)
+        setMessages(response.messages)
+      } catch (apiError) {
+        // Fallback to mock data for preview
+        console.log("Using mock data for preview")
+        await new Promise((resolve) => setTimeout(resolve, 500))
+        setChatDetail(mockChatDetail)
+        setMessages(mockChatDetail.messages)
       }
-
-      setJob(jobDetails)
     } catch (err: any) {
-      console.error("Error fetching job details:", err)
-      setError(err.response?.data?.message || "Failed to load job details")
+      console.error("Error fetching chat details:", err)
+      setError(err.response?.data?.message || "Failed to load chat")
 
       toast({
         title: "Error",
-        description: "Failed to load job details.",
+        description: "Failed to load chat details.",
         variant: "destructive",
       })
     } finally {
       setLoading(false)
     }
-  }, [jobId, toast])
+  }, [chatId, toast])
 
-  // Apply to job function
-  const handleApplyToJob = async () => {
-    if (!isAuthenticated || !job) {
-      router.push("/login")
-      return
-    }
+  // Send message
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!newMessage.trim() || !user || !chatDetail) return
 
     try {
-      setApplying(true)
+      setSending(true)
 
-      // For development, simulate API call
-      // In production, replace with: const result = await jobsApi.applyToJob(job.id, {...})
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate API delay
+      const messageData = {
+        content: newMessage.trim(),
+        type: "text" as const,
+      }
 
-      toast({
-        title: "Success!",
-        description: "Application submitted successfully!",
-        variant: "default",
-      })
+      // Determine message status based on user role
+      let messageStatus: Message["status"] = "sent"
+      if (user.role === "lender" || user.role === "appraiser") {
+        messageStatus = "pending_approval"
+      }
 
-      // Update job status
-      setJob((prev) => (prev ? { ...prev, applicationStatus: "applied" } : null))
+      // Create optimistic message
+      const optimisticMessage: Message = {
+        id: `temp_${Date.now()}`,
+        senderId: user.id,
+        senderName: user.name,
+        senderRole: user.role,
+        content: newMessage.trim(),
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        isRead: false,
+        status: messageStatus,
+        createdAt: new Date().toISOString(),
+      }
+
+      // Add message optimistically
+      setMessages((prev) => [...prev, optimisticMessage])
+      setNewMessage("")
+
+      try {
+        // Try API call
+        const response = await chatApi.sendMessage(chatId, messageData)
+
+        // Replace optimistic message with real one
+        setMessages((prev) => prev.map((msg) => (msg.id === optimisticMessage.id ? response : msg)))
+      } catch (apiError) {
+        // For preview, just keep the optimistic message
+        console.log("Message sent (preview mode)")
+      }
+
+      if (messageStatus === "pending_approval") {
+        toast({
+          title: "Message Sent",
+          description: "Your message is pending admin approval.",
+          variant: "default",
+        })
+      }
     } catch (err: any) {
-      console.error("Error applying to job:", err)
+      console.error("Error sending message:", err)
+
+      // Remove optimistic message on error
+      setMessages((prev) => prev.filter((msg) => msg.id !== `temp_${Date.now()}`))
 
       toast({
-        title: "Application Failed",
-        description: "Failed to submit application. Please try again.",
+        title: "Error",
+        description: "Failed to send message. Please try again.",
         variant: "destructive",
       })
     } finally {
-      setApplying(false)
+      setSending(false)
+    }
+  }
+
+  // Approve message (admin only)
+  const handleApproveMessage = async (messageId: string) => {
+    if (user?.role !== "admin") return
+
+    try {
+      // Update message status optimistically
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === messageId ? { ...msg, status: "approved" as const, approvedBy: user.id } : msg)),
+      )
+
+      toast({
+        title: "Message Approved",
+        description: "The message has been approved and is now visible to all participants.",
+        variant: "default",
+      })
+    } catch (err: any) {
+      console.error("Error approving message:", err)
+      toast({
+        title: "Error",
+        description: "Failed to approve message.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Reject message (admin only)
+  const handleRejectMessage = async (messageId: string) => {
+    if (user?.role !== "admin") return
+
+    try {
+      // Update message status optimistically
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === messageId ? { ...msg, status: "rejected" as const, approvedBy: user.id } : msg)),
+      )
+
+      toast({
+        title: "Message Rejected",
+        description: "The message has been rejected.",
+        variant: "default",
+      })
+    } catch (err: any) {
+      console.error("Error rejecting message:", err)
+      toast({
+        title: "Error",
+        description: "Failed to reject message.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Filter messages based on user role and approval status
+  const getVisibleMessages = () => {
+    if (!user) return []
+
+    return messages.filter((message) => {
+      // Admin sees all messages
+      if (user.role === "admin") return true
+
+      // Users see their own messages regardless of status
+      if (message.senderId === user.id) return true
+
+      // Users only see approved messages from others
+      return message.status === "approved"
+    })
+  }
+
+  // Get role color
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "text-green-500"
+      case "lender":
+        return "text-green-500"
+      case "appraiser":
+        return "text-green-500"
+      default:
+        return "text-gray-500"
+    }
+  }
+
+  // Get role display name
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "Admin"
+      case "lender":
+        return "Lender"
+      case "appraiser":
+        return "Appraiser"
+      default:
+        return role
     }
   }
 
   useEffect(() => {
-    fetchJobDetails()
-  }, [fetchJobDetails])
+    fetchChatDetail()
+  }, [fetchChatDetail])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
@@ -285,10 +350,10 @@ export default function JobDetailsPage() {
   if (loading) {
     return (
       <DashboardLayout role="lender">
-        <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="flex items-center justify-center h-screen">
           <div className="flex items-center gap-2">
             <Loader2 className="w-6 h-6 animate-spin" />
-            <span>Loading job details...</span>
+            <span>Loading chat...</span>
           </div>
         </div>
       </DashboardLayout>
@@ -296,220 +361,186 @@ export default function JobDetailsPage() {
   }
 
   // Error state
-  if (error || !job) {
+  if (error || !chatDetail) {
     return (
       <DashboardLayout role="lender">
-        <div className="p-6 bg-gray-50 min-h-screen">
-          <div className="flex items-center gap-4 mb-6">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} className="p-2">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <h1 className="text-xl font-semibold text-gray-900">Job not found</h1>
-          </div>
-          <div className="text-center py-8">
-            <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-red-600 mb-4">{error || "Job not found"}</p>
-            <Button onClick={() => router.push("/jobs")}>Back to Jobs</Button>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <p className="text-red-600 mb-4">{error || "Chat not found"}</p>
+            <Button onClick={() => router.push("/chat")}>Back to Chats</Button>
           </div>
         </div>
       </DashboardLayout>
     )
   }
 
-  const progressSteps = getProgressSteps(job.status)
-  const canApply = job.applicationStatus === "not_applied" || !job.applicationStatus
+  const visibleMessages = getVisibleMessages()
 
   return (
     <DashboardLayout role="lender">
-      <div className="p-6 bg-gray-50 min-h-screen">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => router.back()} className="p-2">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </div>
-          <h1 className="text-xl font-semibold text-gray-900">Job Details</h1>
-        </div>
-
-        {/* Job Info Card */}
-        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+      <div className="flex flex-col h-screen bg-gray-50">
+        {/* Chat Header */}
+        <div className="bg-blue-600 rounded-2xl mx-6 mt-6 p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push("/chat")}
+                className="text-white hover:bg-blue-700 p-2"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                <Building2 className="w-6 h-6 text-blue-600" />
               </div>
+
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-1">{job.title}</h2>
-                <p className="text-gray-600 text-sm">{job.location}</p>
-                {job.company && <p className="text-gray-500 text-xs">{job.company}</p>}
-              </div>
-              <div className="flex flex-col gap-2">
-                <Badge
-                  className={`${getStatusColor(job.status)} text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2`}
-                >
-                  <TimerIcon />
-                  {job.statusText}
-                </Badge>
-                {job.applicationStatus && (
-                  <Badge
-                    className={`${getApplicationStatusColor(job.applicationStatus)} text-white px-4 py-2 rounded-full text-sm font-medium`}
-                  >
-                    {job.applicationStatus.replace("_", " ").toUpperCase()}
-                  </Badge>
-                )}
+                <h1 className="text-lg font-semibold text-white">{chatDetail.title}</h1>
+                <p className="text-blue-100 text-sm">{chatDetail.location}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-blue-200 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-full bg-transparent"
-              >
-                <MapPin className="w-4 h-4 mr-2" />
-                {job.city}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-blue-200 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-full bg-transparent"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                {job.date}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-blue-200 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-full bg-transparent"
-              >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Message
-              </Button>
+            {/* Participants Avatars */}
+            <div className="flex">
+              <div className="relative" title="Team Members">
+                <img
+                  src="/images/team-avatars.png"
+                  alt="Team Members"
+                  className="border-2 border-white object-cover rounded-full opacity-100"
+                  style={{
+                    width: "80px",
+                    height: "40px",
+                    transform: "rotate(0deg)",
+                    opacity: 1,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Job Summary Progress */}
-        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Job Summary</h3>
-          <div className="flex items-center justify-center gap-8">
-            {progressSteps.map((step, index) => (
-              <div key={step.key} className="flex flex-col items-center">
+        {/* Messages Area */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+          {visibleMessages.map((message) => {
+            const isCurrentUser = message.senderId === user?.id
+            const needsApproval = message.status === "pending_approval"
+            const isRejected = message.status === "rejected"
+
+            return (
+              <div key={message.id} className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
-                    step.status === "completed"
-                      ? "bg-blue-600"
-                      : step.status === "current"
-                        ? "bg-white border-2 border-blue-600"
-                        : "bg-gray-400"
-                  }`}
+                  className={`flex items-start gap-3 max-w-[70%] ${isCurrentUser ? "flex-row-reverse" : "flex-row"}`}
                 >
-                  <div
-                    className={`w-6 h-6 rounded-full ${
-                      step.status === "completed" ? "bg-white" : step.status === "current" ? "bg-blue-600" : "bg-white"
-                    }`}
-                  />
+                  {/* Avatar */}
+                  <div className="relative flex-shrink-0">
+                    <img
+                      src={
+                        chatDetail.participants.find((p) => p.id === message.senderId)?.avatar ||
+                        "/placeholder.svg?height=40&width=40" ||
+                        "/placeholder.svg"
+                      }
+                      alt={message.senderName}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                    {message.status === "pending_approval" && (
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center">
+                        <Clock className="w-2 h-2 text-white" />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Message Content */}
+                  <div className={`${isCurrentUser ? "text-right" : "text-left"}`}>
+                    {/* Sender Info */}
+                    <div className={`flex items-center gap-2 mb-1 ${isCurrentUser ? "justify-end" : "justify-start"}`}>
+                      <span className="font-medium text-gray-900 text-sm">{message.senderName}</span>
+                      <span className={`text-xs font-medium ${getRoleColor(message.senderRole)}`}>
+                        {getRoleDisplayName(message.senderRole)}
+                      </span>
+                    </div>
+
+                    {/* Message Bubble */}
+                    <div
+                      className={`rounded-2xl px-4 py-3 ${
+                        isCurrentUser ? "bg-blue-600 text-white" : "bg-white text-gray-900 border border-gray-200"
+                      } ${needsApproval ? "opacity-70" : ""} ${isRejected ? "opacity-50 line-through" : ""}`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                    </div>
+
+                    {/* Message Footer */}
+                    <div className={`flex items-center gap-2 mt-1 ${isCurrentUser ? "justify-end" : "justify-start"}`}>
+                      <span className="text-xs text-gray-500">{message.timestamp}</span>
+
+                      {/* Message Status Icons */}
+                      {message.status === "approved" && <CheckCircle className="w-3 h-3 text-green-500" />}
+                      {message.status === "pending_approval" && <Clock className="w-3 h-3 text-orange-500" />}
+                      {message.status === "rejected" && <X className="w-3 h-3 text-red-500" />}
+                    </div>
+
+                    {/* Admin Approval Buttons */}
+                    {user?.role === "admin" && needsApproval && !isCurrentUser && (
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => handleApproveMessage(message.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs"
+                        >
+                          <Check className="w-3 h-3 mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleRejectMessage(message.id)}
+                          className="border-red-200 text-red-600 hover:bg-red-50 px-3 py-1 text-xs"
+                        >
+                          <X className="w-3 h-3 mr-1" />
+                          Reject
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <span className="text-sm text-gray-600 text-center">{step.name}</span>
               </div>
-            ))}
-          </div>
+            )
+          })}
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Job Description */}
-        {job.description && (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Job Description</h3>
-            <p className="text-gray-700 whitespace-pre-wrap">{job.description}</p>
-          </div>
-        )}
-
-        {/* Requirements */}
-        {job.requirements && job.requirements.length > 0 && (
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Requirements</h3>
-            <ul className="list-disc list-inside space-y-2">
-              {job.requirements.map((req, index) => (
-                <li key={index} className="text-gray-700">
-                  {req}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Uploaded Files */}
-        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            {job.files.map((file, index) => (
-              <div key={file.id || index} className="bg-gray-50 rounded-lg p-4 flex flex-col items-center text-center">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mb-2">
-                  {file.type === "pdf" ? (
-                    <FileText className="w-6 h-6 text-gray-600" />
-                  ) : (
-                    <ImageIcon className="w-6 h-6 text-gray-600" />
-                  )}
-                </div>
-                <p className="font-medium text-gray-900 text-sm mb-1">{file.name}</p>
-                <p className="text-xs text-gray-500">{file.uploadDate}</p>
-              </div>
-            ))}
-          </div>
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">
-            <Download className="w-4 h-4 mr-2" />
-            Download All
-          </Button>
-        </div>
-
-        {/* Transaction Summary */}
-        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-          <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                <ImageIcon className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-gray-900">${job.amount}</span>
+        {/* Message Input */}
+        <div className="p-6">
+          <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+            <div className="flex-1 relative">
+              <Input
+                type="text"
+                placeholder="Placeholder text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                disabled={sending}
+                className="w-full pl-12 pr-4 py-3 rounded-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 bg-white"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+              >
+                <Paperclip className="w-4 h-4" />
+              </Button>
             </div>
-            <Badge
-              className={`${
-                job.paymentStatus === "paid" ? "bg-green-500 hover:bg-green-600" : "bg-orange-400 hover:bg-orange-500"
-              } text-white px-4 py-2 rounded-full text-sm font-medium`}
+
+            <Button
+              type="submit"
+              disabled={!newMessage.trim() || sending}
+              className="bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full"
             >
-              {job.paymentStatus === "paid" ? "Paid" : "Pending"}
-            </Badge>
-          </div>
+              {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+            </Button>
+          </form>
         </div>
-
-        {/* Apply Button */}
-        {canApply && (
-          <Button
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-lg text-lg font-medium"
-            onClick={handleApplyToJob}
-            disabled={applying}
-          >
-            {applying ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Applying...
-              </>
-            ) : (
-              <>
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Apply to Job
-              </>
-            )}
-          </Button>
-        )}
-
-        {/* Accept Button for existing functionality */}
-        {job.status !== "completed" && job.applicationStatus === "accepted" && (
-          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg text-lg font-medium mt-4">
-            Accept Job
-          </Button>
-        )}
       </div>
     </DashboardLayout>
   )

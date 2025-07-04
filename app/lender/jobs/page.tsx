@@ -8,7 +8,7 @@ import{
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, RightArrow, LoadIcon,ImageIcon, PDFIcon, CardIcon  } from "../../../components/icons"
+import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, RightArrow, LoadIcon,ImageIcon, PDFIcon, CardIcon, LeftArrow, ArrowIcon  } from "../../../components/icons"
 import DashboardLayout from "../../../components/dashboard-layout"
 
 interface Job {
@@ -207,15 +207,15 @@ export default function JobsPage() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={handleBackToList} className="p-2">
-                <ArrowLeft className="w-5 h-5" />
+              <Button variant="ghost" size="lg" onClick={handleBackToList} className="p-2">
+                < ArrowIcon className="w-8 h-8" />
               </Button>
             </div>
             <h1 className="text-xl font-semibold text-gray-900">Job Details</h1>
           </div>
 
           {/* Job Info Card */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+          <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-2400 mb-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center">
@@ -265,7 +265,7 @@ export default function JobsPage() {
           </div>
 
           {/* Job Summary Progress */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+          <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">Job Summary</h3>
             <div className="flex items-center justify-center gap-8">
               {progressSteps.map((step, index) => (
@@ -296,16 +296,16 @@ export default function JobsPage() {
           </div>
 
           {/* Uploaded Files */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+          <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
             <div className="grid grid-cols-2 gap-4 mb-4">
               {selectedJob.files.map((file, index) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-4 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mb-2">
+                <div key={index} className="bg-cyan-50 rounded-lg p-4 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-cyan-50 rounded-lg flex items-center justify-center mb-2">
                     {file.type === "pdf" ? (
-                      <PDFIcon className="w-6 h-6 text-gray-600" />
+                      <PDFIcon className="w-8 h-8 text-gray-600" />
                     ) : (
-                      <ImageIcon className="w-6 h-6 text-gray-600" />
+                      <ImageIcon className="w-8 h-8 text-gray-600" />
                     )}
                   </div>
                   <p className="font-medium text-gray-900 text-sm mb-1">{file.name}</p>
@@ -319,9 +319,9 @@ export default function JobsPage() {
           </div>
 
           {/* Transaction Summary */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+          <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-            <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
+            <div className="flex items-center justify-between bg-cyan-50 rounded-lg p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center">
                   <CardIcon className="w-11 h-11 text-white" />
@@ -404,7 +404,7 @@ export default function JobsPage() {
           {filteredJobs.map((job) => (
             <div
               key={job.id}
-              className="bg-white rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
+              className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between">
                 {/* Left Section - Job Info */}
@@ -477,14 +477,14 @@ export default function JobsPage() {
         </div>
 
         {/* New Job Request Button */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2">
-          <Button
-            className="bg-blue-800 hover:bg-blue-700 text-white px-8 py-4 rounded-lg shadow-lg flex items-center gap-2 text-lg"
+        <div className="pb-5">
+          <button
             onClick={handleNewJobClick}
+            className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
           >
-            <Plus className="w-5 h-5" />
+            <Plus size={20} />
             New Job Request
-          </Button>
+          </button>
         </div>
       </div>
     </DashboardLayout>

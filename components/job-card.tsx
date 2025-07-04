@@ -29,7 +29,7 @@ export function JobCard({ title, location, status }: JobCardProps) {
   const StatusIconComponent = statusInfo.icon
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+    <div className="bg-cyan-50 rounded-xl p-6 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
       <div className="flex items-center gap-4">
         <div className="w-14 h-14 bg-[#1e5ba8] rounded-full flex items-center justify-center text-white shadow-md">
           <BuildingIcon />

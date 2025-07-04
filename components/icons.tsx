@@ -457,4 +457,10 @@ export const LogoutIcon = () => (
 </svg>
 
 )
+export const LeftArrow=( props: React.SVGProps<SVGSVGElement> )=>(
+  <svg {...props} width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="48" height="48" rx="18" fill="#F3F3F4"/>
+    <path d="M29 15L22.6648 17.7151C22.231 17.901 21.8606 18.2091 21.5988 18.6018V18.6018C19.4195 21.8707 19.4195 26.1293 21.5988 29.3982V29.3982C21.8606 29.7909 22.231 30.099 22.6648 30.2849L29 33" stroke="#676C75" stroke-width="2" stroke-linejoin="round"/>
+  </svg>
 
+)
