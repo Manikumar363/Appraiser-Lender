@@ -148,29 +148,28 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             {/* Header Actions */}
 <div className="flex items-center gap-3">
   {shouldShowButton && (
-    <button className="relative hover:bg-white/10 p-2 rounded">
-      <AddIcon />
-      <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+    <button className="inline-flex items-center justify-center hover:bg-white/10 rounded" onClick={() => router.push(`/${role}/jobs/new`)}>
+      <AddIcon/>
     </button>
   )}
-  <button className="relative hover:bg-white/10 p-2 rounded">
+  <button className="inline-flex items-center justify-center hover:bg-white/10 rounded">
     <Notification />
-    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+    
   </button>
   <button
-    className="relative hover:bg-white/10 p-2 rounded"
+    className="inline-flex items-center justify-center hover:bg-white/10 rounded"
     onClick={() => router.push(`/${role}/chats`)}
   >
     <ChatAlertIcon />
-    <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+    
   </button>
-  <div className="w-10 h-10 rounded-lg overflow-hidden">
+  <button onClick={() => router.push(`/${role}/profile`)} className="w-10 h-10 rounded-lg overflow-hidden">
     <img
       src="/images/profile-avatar.png"
       alt="User Profile"
       className="w-full h-full object-cover"
     />
-  </div>
+  </button>
 </div>
 
           </div>
