@@ -16,7 +16,7 @@ api.interceptors.request.use(
     const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `${token}`
     }
 
     return config
@@ -36,7 +36,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Token expired or invalid
       localStorage.removeItem("authToken")
-      window.location.href = "/login"
+      window.location.href = "/appraiser/auth/signin" // Redirect to login
+      console.error("Unauthorized - redirecting to login")
     }
 
     if (error.response?.status === 403) {
