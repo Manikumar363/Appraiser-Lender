@@ -10,7 +10,8 @@ import { AuthInput } from "../../../../components/auth-input"
 import { useRouter } from "next/navigation"
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { authApi } from "@/lib/api/auth";
+import { userAuth } from "@/lib/api/userAuth";
+
 
 export default function LenderSignUpPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("lender")
@@ -23,42 +24,58 @@ export default function LenderSignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
 
-    if (!acceptTerms) {
-      alert("Please accept the Terms of Use and Privacy Policy");
-      return;
-    }
+  if (!acceptTerms) {
+    alert("Please accept the Terms of Use and Privacy Policy");
+    return;
+  }
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      let countryCode = "";
-      let phoneNumber = "";
+    let countryCode = "";
+    let phoneNumber = "";
 
-      if (phone.startsWith("+")) {
-        const match = phone.match(/^\+\d+/);
-        if (match) {
-          countryCode = match[0];
-          phoneNumber = phone.slice(countryCode.length);
-        } else {
-          countryCode = "+1";
-          phoneNumber = phone;
-        }
+    if (phone.startsWith("+")) {
+      const match = phone.match(/^\+\d+/);
+      if (match) {
+        countryCode = match[0];
+        phoneNumber = phone.slice(countryCode.length);
       } else {
         countryCode = "+1";
         phoneNumber = phone;
       }
-
-      ;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Sign up failed. Try again.");
-    } finally {
-      setLoading(false);
+    } else {
+      countryCode = "+1";
+      phoneNumber = phone;
     }
-  };
+
+    // ✅ CORRECTED: use userAuth.signUp instead of userAuth()
+    const response = await userAuth.signUp({
+      username,
+      email,
+      password,
+      phone: phoneNumber,
+      country_code: countryCode,
+    });
+
+    console.log("Signup Success:", response);
+
+    // ✅ Store for OTP page
+    localStorage.setItem("signupEmail", email);
+
+    // ✅ Redirect to OTP verification screen
+    router.push(`/lender/auth/verify-email?email=${email}`);
+  } catch (err: any) {
+    console.error("Signup error:", err);
+    setError(err.response?.data?.message || "Sign up failed. Try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
     setSelectedRole(role)
@@ -147,12 +164,14 @@ export default function LenderSignUpPage() {
             )}
           </label>
         </div>
+       
         <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center">
           <span className="flex flex-wrap gap-2">
           <Link href="/lender/terms" className="text-[#1e5ba8] hover:underline font-medium">
             Terms of Use
           </Link>
-          <span>and</span>
+          <span></span>
+          
           <Link href="/lender/privacy" className="text-[#1e5ba8] hover:underline font-medium">
             Privacy Policy
           </Link>
@@ -164,8 +183,9 @@ export default function LenderSignUpPage() {
       <button
         type="submit"
         className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
+        disabled={loading}
       >
-        Sign Up
+        {loading ? "Signing up..." : "Sign Up"}
       </button>
     </form>
 

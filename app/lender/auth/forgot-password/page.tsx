@@ -7,18 +7,33 @@ import Link from "next/link"
 import AuthLayout from "../../../../components/auth-layout"
 import { AuthInput } from "../../../../components/auth-input"
 import { useRouter } from "next/navigation"
+import { userAuth } from "@/lib/api/userAuth"
 
 export default function LenderForgotPasswordPage() {
   const [email, setEmail] = useState("")
   const router = useRouter()
+  const [loading, setLoading]= useState(false)
+  const [error, setError]= useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit =async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
+    setLoading(true)
     // Handle forgot password logic here
-    console.log("Lender Forgot password for:", email)
+     try {
+    // 🔥 Call forgot password API
+    const res = await userAuth.forgotPassword(email)
 
-    // After sending reset email, redirect to verification or show success message
+    console.log("Forgot password response:", res)
+
+    // ✅ Redirect to verify email/OTP screen
     router.push(`/lender/auth/verify-email?email=${encodeURIComponent(email)}`)
+  } catch (err: any) {
+    console.error("Forgot password error:", err)
+    setError(err.response?.data?.message || "Something went wrong. Try again.")
+  } finally {
+    setLoading(false)
+  }
   }
 
   return (
@@ -42,12 +57,16 @@ export default function LenderForgotPasswordPage() {
         />
 
         <button
-          type="submit"
-          className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#1a4f96] transition-colors"
+         type="submit"
+         disabled={loading}
+         className={`w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium transition-colors ${
+           loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#1a4f96]"
+         }`}
         >
-          Send Code
+          {loading ? "Sending..." : "Send Code"}
         </button>
       </form>
+      {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
     </div>
   </div>
     </AuthLayout>

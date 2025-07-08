@@ -4,11 +4,15 @@ import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import AuthLayout from "../../../../components/auth-layout"
 import { OTPInput } from "../../../../components/otp-input"
+import {userAuth} from "@/lib/api/userAuth";
 
 export default function LenderVerifyEmailPage() {
   const [otp, setOtp] = useState("")
   const [timeLeft, setTimeLeft] = useState(60)
   const [canResend, setCanResend] = useState(false)
+  const [error, setError]= useState("");
+  const [loading, setLoading]= useState(false);
+
   const router = useRouter()
   const searchParams = useSearchParams()
   const email = searchParams.get("email") || "abc@gmail.com"
@@ -28,28 +32,45 @@ export default function LenderVerifyEmailPage() {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
 
-  const handleOTPComplete = (otpValue: string) => {
-    // Handle OTP verification logic here
-    console.log("Lender OTP entered:", otpValue)
-  }
+  const handleVerify= async()=>{
+    if(otp.length===4){
+      setLoading(true);
+      setError("");
 
-  const handleVerify = () => {
-    if (otp.length === 4) {
-      // Handle verification logic here
-      console.log("Verifying Lender OTP:", otp)
-      router.push("/lender/dashboard")
+      try{
+        const response = await userAuth.verifyRegisterOtp(email,otp);
+        console.log("OTP verified!", response);
+
+        // localStorage.setItem("authToken", response.token || "");
+        // console.log("OTP verify response:", response);
+
+        router.push("/lender/auth/signin");
+
+      }catch(err:any){
+        console.error("OTP verify error:", err);
+        setError(err?.response?.data?.message || "Verification failed");
+      }finally{
+        setLoading(false);
+      }
     }
-  }
 
-  const handleResendOTP = () => {
+  };
+
+  const handleResendOTP = async () => {
     if (canResend) {
-      // Handle resend OTP logic here
-      console.log("Resending Lender OTP")
-      setTimeLeft(60)
-      setCanResend(false)
-      setOtp("")
+      try {
+        await userAuth.resendRegisterOtp(email);
+        console.log("OTP resent!");
+        setOtp("");
+        setTimeLeft(60);
+        setCanResend(false);
+        setError("");
+      } catch (err: any) {
+        console.error("Resend error:", err);
+        setError("Failed to resend OTP. Try again.");
+      }
     }
-  }
+  };
 
   return (
     <AuthLayout>
@@ -62,7 +83,9 @@ export default function LenderVerifyEmailPage() {
           <span className="text-orange-500 font-medium">{email}</span>
         </p>
 
-        <OTPInput length={4} value={otp} onChange={setOtp} onComplete={handleOTPComplete} />
+        <OTPInput length={4} value={otp} onChange={setOtp} onComplete={()=>{}}/>
+
+        {error && <p className="text-red-600 mt-2 text-sm">{error}</p>}
 
         <div className="flex items-center justify-center gap-4 mb-8">
           <div className="bg-gray-200 text-gray-600 px-6 py-3 rounded-full font-medium text-base">
@@ -90,7 +113,7 @@ export default function LenderVerifyEmailPage() {
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
-          Verify
+          {loading ? "Verifying..." : "Verify"}
         </button>
       </div>
     </AuthLayout>
