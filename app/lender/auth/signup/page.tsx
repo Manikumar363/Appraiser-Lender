@@ -52,8 +52,7 @@ export default function LenderSignUpPage() {
         phoneNumber = phone;
       }
 
-      await authApi.signUp(username, email, password, phoneNumber, countryCode);
-      router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email)}`);
+      ;
     } catch (err: any) {
       setError(err.response?.data?.message || "Sign up failed. Try again.");
     } finally {
