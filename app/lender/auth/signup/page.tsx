@@ -8,6 +8,9 @@ import AuthLayout from "../../../../components/auth-layout"
 import { RoleSelector } from "../../../../components/role-selector"
 import { AuthInput } from "../../../../components/auth-input"
 import { useRouter } from "next/navigation"
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import { authApi } from "@/lib/api/auth";
 
 export default function LenderSignUpPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("lender")
@@ -17,19 +20,46 @@ export default function LenderSignUpPage() {
   const [phone, setPhone] = useState("")
   const [acceptTerms, setAcceptTerms] = useState(false)
   const router = useRouter()
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!acceptTerms) {
-      alert("Please accept the Terms of Use and Privacy Policy")
-      return
-    }
-    // Handle sign up logic here
-    console.log("Lender Sign up:", { selectedRole, username, email, password, phone })
+    e.preventDefault();
+    setError("");
 
-    // After successful registration, redirect to email verification
-    router.push(`/lender/auth/verify-email?email=${encodeURIComponent(email)}`)
-  }
+    if (!acceptTerms) {
+      alert("Please accept the Terms of Use and Privacy Policy");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      let countryCode = "";
+      let phoneNumber = "";
+
+      if (phone.startsWith("+")) {
+        const match = phone.match(/^\+\d+/);
+        if (match) {
+          countryCode = match[0];
+          phoneNumber = phone.slice(countryCode.length);
+        } else {
+          countryCode = "+1";
+          phoneNumber = phone;
+        }
+      } else {
+        countryCode = "+1";
+        phoneNumber = phone;
+      }
+
+      await authApi.signUp(username, email, password, phoneNumber, countryCode);
+      router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email)}`);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Sign up failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
     setSelectedRole(role)
@@ -75,16 +105,24 @@ export default function LenderSignUpPage() {
         icon="password"
       />
 
-      <AuthInput
-        type="tel"
-        placeholder="Enter Your Mobile Number"
+      <div className="relative">
+        <label className="block text-gray-700 mb-2 text-sm font-medium">Phone Number</label>
+        <PhoneInput
+        country={"us"}
         value={phone}
         onChange={setPhone}
-        icon="phone"
-      />
+        placeholder="Type your phone number here" // ✅ add this!
+        inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
+        containerClass="!w-full"
+        buttonClass="!border-r !border-black !rounded-l-full"
+        enableSearch
+        />
+
+      </div>
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {/* Terms Checkbox */}
-      <div className="flex items-start gap-3 mb-5">
+      <div className="flex justify-center">
         <div className="relative pt-1">
           <input
             type="checkbox"
@@ -110,13 +148,12 @@ export default function LenderSignUpPage() {
             )}
           </label>
         </div>
-        <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer leading-relaxed">
+        <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center">
           <span className="flex flex-wrap gap-2">
           <Link href="/lender/terms" className="text-[#1e5ba8] hover:underline font-medium">
             Terms of Use
           </Link>
-          <span>    </span>
-          {" "}
+          <span>and</span>
           <Link href="/lender/privacy" className="text-[#1e5ba8] hover:underline font-medium">
             Privacy Policy
           </Link>
@@ -127,7 +164,7 @@ export default function LenderSignUpPage() {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm"
+        className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
       >
         Sign Up
       </button>

@@ -5,8 +5,10 @@ import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import DashboardLayout from "../../../../components/dashboard-layout"
-import { ProfileIcon, EmailIcon, CompanyIcon, DesignationIcon, CheckmarkIcon } from "../../../../components/icons"
+import { EmailIcon, CompanyIcon, DesignationIcon, CheckmarkIcon, ThirdPrimaryIcon } from "../../../../components/icons"
 import Image from "next/image"
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -62,9 +64,9 @@ export default function EditProfilePage() {
           {/* Edit Profile Form */}
           <form onSubmit={handleUpdateProfile} className="flex-1 space-y-4 max-w-4xl mx-auto w-full">
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
                 <div className="mr-3">
-                  <ProfileIcon />
+                  <ThirdPrimaryIcon />
                 </div>
                 <input
                   type="text"
@@ -72,13 +74,13 @@ export default function EditProfilePage() {
                   value={formData.username}
                   onChange={handleInputChange}
                   placeholder="Type your username here"
-                  className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none"
+                  className="flex-1 bg-transparent text-sm text-gray-600 placeholder-gray-500 outline-none"
                 />
               </div>
             </div>
 
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
                 <div className="mr-3">
                   <EmailIcon />
                 </div>
@@ -88,13 +90,13 @@ export default function EditProfilePage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Type your email here"
-                  className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none"
+                  className="flex-1 bg-transparent text-sm text-gray-600 placeholder-gray-500 outline-none"
                 />
               </div>
             </div>
 
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
                 <div className="mr-3">
                   <CompanyIcon />
                 </div>
@@ -104,13 +106,13 @@ export default function EditProfilePage() {
                   value={formData.company}
                   onChange={handleInputChange}
                   placeholder="Enter Your Company Name"
-                  className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none"
+                  className="flex-1 bg-transparent text-sm text-gray-600 placeholder-gray-500 outline-none"
                 />
               </div>
             </div>
 
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
                 <div className="mr-3">
                   <DesignationIcon />
                 </div>
@@ -120,34 +122,28 @@ export default function EditProfilePage() {
                   value={formData.designation}
                   onChange={handleInputChange}
                   placeholder="Enter Your Designation"
-                  className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none"
+                  className="flex-1 bg-transparent text-sm text-gray-600 placeholder-gray-500 outline-none"
                 />
               </div>
             </div>
 
-            <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
-                <div className="flex items-center mr-3">
-                  <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded">🇦🇺</span>
-                  <svg className="w-3 h-3 text-gray-400 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="+ 00 0000 0000"
-                  className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none"
-                />
-              </div>
+            <div className="w-full">
+              <PhoneInput
+  country={"us"}
+  value={formData.phone}
+   onChange={(phone) => setFormData({ ...formData, phone })}
+  placeholder="Type your phone number here" // ✅ add this!
+  inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !placeholder-gray-500 !border !border-gray-500 focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
+  containerClass="!w-full"
+  buttonClass="!border-r !border-gray-500 !rounded-l-full"
+  enableSearch
+/>
             </div>
 
             <div className="pt-4">
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full font-medium text-lg transition-colors"
+                className="w-full bg-blue-800 hover:bg-blue-800 text-white py-4 rounded-full font-medium text-lg transition-colors"
               >
                 Update Profile
               </button>

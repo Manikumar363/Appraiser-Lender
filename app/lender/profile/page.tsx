@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation"
 import DashboardLayout from "../../../components/dashboard-layout"
-import { ProfileIcon, EmailIcon, CompanyIcon, DesignationIcon, CheckmarkIcon } from "../../../components/icons"
+import { EmailIcon, CompanyIcon, DesignationIcon, CheckmarkIcon, ThirdPrimaryIcon } from "../../../components/icons"
 import Image from "next/image"
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 export default function LenderProfilePage() {
   const router = useRouter()
@@ -11,6 +13,10 @@ export default function LenderProfilePage() {
   const handleEditProfile = () => {
     router.push("/lender/profile/edit")
   }
+  const profileData = {
+  phone: '+1 000 000 000',
+  countryCode: 'AU',
+};
 
   return (
     <DashboardLayout role="lender">
@@ -29,16 +35,16 @@ export default function LenderProfilePage() {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Joe Done</h1>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-gray-600">abc@gmail.com</span>
+              <span className="text-gray-700">abc@gmail.com</span>
               <CheckmarkIcon />
             </div>
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-gray-600">000-000-000</span>
+              <span className="text-gray-700">000-000-000</span>
               <CheckmarkIcon />
             </div>
             <button
               onClick={handleEditProfile}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2 rounded-full font-medium transition-colors"
+              className="bg-blue-800 hover:bg-blue-800 text-white px-8 py-2 rounded-full font-medium transition-colors"
             >
               Edit Profile
             </button>
@@ -47,16 +53,16 @@ export default function LenderProfilePage() {
           {/* Profile Form Fields (Read-only display) */}
           <div className="flex-1 space-y-4 max-w-4xl mx-auto w-full">
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
-                  <ProfileIcon />
+                  <ThirdPrimaryIcon/>
                 </div>
                 <span className="text-gray-500 text-sm">Type your username here</span>
               </div>
             </div>
 
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600">
                 <div className="mr-3">
                   <EmailIcon />
                 </div>
@@ -65,7 +71,7 @@ export default function LenderProfilePage() {
             </div>
 
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600">
                 <div className="mr-3">
                   <CompanyIcon />
                 </div>
@@ -74,7 +80,7 @@ export default function LenderProfilePage() {
             </div>
 
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600">
                 <div className="mr-3">
                   <DesignationIcon />
                 </div>
@@ -82,14 +88,18 @@ export default function LenderProfilePage() {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
-                <div className="flex items-center mr-3">
-                  <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded">🇦🇺</span>
-                </div>
-                <span className="text-gray-500 text-sm">+ 00 0000 0000</span>
-              </div>
-            </div>
+            <div className="w-full relative">
+              <PhoneInput
+                country={"us"}
+                value={profileData.phone}
+                disabled
+                placeholder="Type your phone number here" // ✅ add this!
+                inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !placeholder-gray-500 !border !border-gray-500 focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
+                containerClass="!w-full"
+                buttonClass="!border-r !border-gray-500 !rounded-l-full"
+                enableSearch={false}
+              />
+            </div>              
           </div>
         </div>
       </div>

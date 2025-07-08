@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import DashboardLayout from "../../../../components/dashboard-layout"
 import { MapPin, Target, Users, ChevronDown} from "lucide-react"
-import { UserIcon,TargettIcon, DollerIcon, ProfileeIcon } from "../../../../components/icons"
+import { UserIcon,TargettIcon, DollerIcon, SecondaryProfileIcon } from "../../../../components/icons"
 
 
 export default function NewJobRequestPage() {
@@ -166,7 +166,7 @@ export default function NewJobRequestPage() {
               <div>
                 <label className="block text-base font-medium text-gray-900 mb-2">Intended Use Of Appraisal</label>
                 <div className="relative">
-                  <ProfileeIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700"/>
+                  <SecondaryProfileIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700"/>
                   <select
                     value={formData.intendedUse}
                     onChange={(e) => handleInputChange("intendedUse", e.target.value)}
@@ -191,7 +191,7 @@ export default function NewJobRequestPage() {
               <div>
                 <label className="block text-base font-medium text-gray-900 mb-2">Requested By</label>
                 <div className="relative">
-                  <ProfileeIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700" />
+                  <SecondaryProfileIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-700" />
                   <select
                     value={formData.requestedBy}
                     onChange={(e) => handleInputChange("requestedBy", e.target.value)}
