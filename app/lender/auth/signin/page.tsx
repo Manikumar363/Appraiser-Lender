@@ -7,7 +7,7 @@ import AuthLayout from "../../../../components/auth-layout"
 import { RoleSelector } from "../../../../components/role-selector"
 import { AuthInput } from "../../../../components/auth-input"
 import { useRouter } from "next/navigation"
-import axios from "@/lib/api/axios"; //  import your API
+import { userAuth } from "@/lib/api/userAuth" //  import your API
 
 export default function LenderSignInPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("lender")
@@ -23,14 +23,17 @@ export default function LenderSignInPage() {
     setError("")
 
     try{
-      const res= await axios.post('/lender/login',{
+      const res= await userAuth.signIn(
         email,
-        password,
-      })
+        password,)
 
-      console.log("Login successful", res.data)
-
-      localStorage.setItem("Login successful", res.data)
+      console.log("Login successful", res)
+      
+      if(res.token){
+      localStorage.setItem("Login successful", res.token)
+      }else{
+        throw new Error("Token not received")
+      }
 
       router.push("/lender/dashboard")
     }catch(err: any){

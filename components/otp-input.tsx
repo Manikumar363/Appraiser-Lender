@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface OTPInputProps {
   length: number;
@@ -11,7 +10,12 @@ interface OTPInputProps {
 }
 
 export function OTPInput({ length, onComplete, value, onChange }: OTPInputProps) {
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+
+  // Autofocus first input on mount
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
 
   const handleChange = (index: number, digit: string) => {
     if (!/^\d*$/.test(digit)) return;
@@ -41,9 +45,10 @@ export function OTPInput({ length, onComplete, value, onChange }: OTPInputProps)
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text").slice(0, length);
     if (/^\d+$/.test(pastedData)) {
-      onChange(pastedData.padEnd(length, ""));
-      if (pastedData.length === length) {
-        onComplete(pastedData);
+      const cleanPasted = pastedData.padEnd(length, "");
+      onChange(cleanPasted);
+      if (cleanPasted.length === length) {
+        onComplete(cleanPasted);
       }
     }
   };
@@ -53,14 +58,18 @@ export function OTPInput({ length, onComplete, value, onChange }: OTPInputProps)
       {Array.from({ length }, (_, index) => (
         <input
           key={index}
-          ref={(el) => (inputRefs.current[index] = el)}
+          ref={(el) => {
+            inputRefs.current[index] = el;
+          }}
           type="text"
+          inputMode="numeric"
+          pattern="[0-9]*"
           maxLength={1}
           value={value[index] || ""}
           onChange={(e) => handleChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           onPaste={handlePaste}
-          className="w-16 h-16 text-center text-2xl font-semibold bg-white border-2 border-gray-300 rounded-full focus:outline-none focus:border-[#1e5ba8] focus:ring-0 transition-all text-gray-700"
+          className="w-16 h-16 text-center text-2xl font-semibold bg-white border-2 border-gray-300 rounded-full focus:outline-none focus:border-[#1e5ba8] text-gray-700 transition-all"
         />
       ))}
     </div>
