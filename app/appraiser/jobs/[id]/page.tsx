@@ -152,7 +152,7 @@ export default function JobDetailsPage() {
 
   if (!jobId) {
     return (
-      <DashboardLayout>
+      <DashboardLayout role="appraiser">
         <div className="p-6">Loading...</div>
       </DashboardLayout>
     )
@@ -160,7 +160,7 @@ export default function JobDetailsPage() {
 
   if (!job) {
     return (
-      <DashboardLayout>
+      <DashboardLayout role="appraiser">
         <div className="p-6">
           <h1>Job not found</h1>
           <p>Job ID: {jobId}</p>
@@ -173,7 +173,7 @@ export default function JobDetailsPage() {
   const progressSteps = getProgressSteps(job.status)
 
   return (
-    <DashboardLayout>
+    <DashboardLayout role="appraiser">
       <div className="p-6 bg-gray-50 min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

@@ -39,4 +39,56 @@ export const authApi = {
     })
     return response.data.data
   },
+
+  //appraiser
+  signIn: async (email: string, password: string): Promise<{ token: string }> => {
+  const response = await api.post("/user/login", { email, password });
+  return response.data;
+},
+
+  signUp: async (
+  username: string,
+  email: string,
+  password: string,
+  phone: string,
+  country_code: string
+) => {
+  return await api.post("/user/register", {
+    name: username,
+    email,
+    password,
+    phone,
+    country_code,
+  });
+},
+
+
+
+  verifyRegisterOtp: async (email: string, otp: string) => {
+    const res = await api.post("/user/verify-Reg-Otp", { email, otp });
+    return res.data;
+  },
+
+  // ✅ Resend Register OTP
+  resendRegisterOtp: async (email: string) => {
+    const res = await api.post("/user/resend-otp", { email });
+    return res.data;
+  },
+
+  // ✅ Forgot Password
+  forgotPassword: async (email: string) => {
+    const res = await api.post("/user/forgot-password", { email });
+    return res.data;
+  },
+
+  // ✅ Reset Password
+  resetPassword: async (email: string, otp: string, newPassword: string) => {
+    const res = await api.post("/user/reset-password", {
+      email,
+      otp,
+      newPassword,
+    });
+    return res.data;
+  },
+    
 }

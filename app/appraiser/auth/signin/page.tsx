@@ -7,7 +7,7 @@ import AuthLayout from "@/components/auth-layout";
 import { RoleSelector } from "@/components/role-selector";
 import { AuthInput } from "@/components/auth-input";
 import { useRouter } from "next/navigation";
-import axios from "@/lib/api/axios"; // adjust if needed
+import { authApi } from "@/lib/api/auth"; // ✅ use your authApi
 
 export default function AppraiserSignInPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("appraiser");
@@ -23,14 +23,9 @@ export default function AppraiserSignInPage() {
     setError("");
 
     try {
-      const res = await axios.post("/appraiser/login", {
-        email,
-        password,
-      });
+      const res = await authApi.signIn(email, password);
 
-      console.log("Login successful", res.data);
-
-      localStorage.setItem("Login successful", res.data);
+      localStorage.setItem("authToken", res.token);
 
       router.push("/appraiser/dashboard");
     } catch (err: any) {
