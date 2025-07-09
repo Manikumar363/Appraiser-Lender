@@ -195,7 +195,7 @@ export default function ChatPage() {
 
   return (
     <DashboardLayout role="lender">
-      <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="p-6  min-h-screen">
         {/* Conversations List */}
         <div className="space-y-4 max-w-6xl mx-auto">
           {loading && (

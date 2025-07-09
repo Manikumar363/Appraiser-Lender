@@ -85,13 +85,13 @@ export default function LenderVerifyEmailPage() {
         {error && <p className="text-red-600 mt-2 text-sm">{error}</p>}
 
         <div className="flex items-center justify-center gap-4 mb-8">
-          <div className="bg-blue-200 text-blue-800 px-6 py-3 rounded-full font-medium text-base border border-[#014F9D]">
+          <div className="bg-blue-200 text-blue-800 px-5 py-2 rounded-full font-medium text-base border border-[#014F9D]">
             {formatTime(timeLeft)}
           </div>
           <button
             onClick={handleResend}
             disabled={!canResend}
-            className={`px-6 py-3 rounded-full font-medium transition-colors text-base ${
+            className={`px-5 py-2 rounded-full font-medium transition-colors text-base ${
               canResend
                 ? "bg-orange-600 text-white hover:bg-orange-600"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"

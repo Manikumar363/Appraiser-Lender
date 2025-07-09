@@ -49,7 +49,7 @@ export default function LenderSignInPage() {
       <div className="flex flex-col justify-center min-h-screen w-full items-center">
       <div className="w-full max-w-[713px] px-6">
       <div className="mb-4 mt-0">
-        <h1 className="text-[22px] font-medium text-gray-800">Sign In as</h1>
+        <h1 className="text-3xl font-semibold text-gray-800">Sign In as</h1>
       </div>
       <div className="mb-6">
         <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
@@ -75,7 +75,7 @@ export default function LenderSignInPage() {
         <div className="text-right -mt-3 mb-5">
           <Link
             href="/lender/auth/forgot-password"
-            className="text-gray-600 hover:text-[#1e5ba8] transition-colors text-sm"
+            className="text-[#333333] font-semibold text-sm"
           >
             Forgot Password?
           </Link>
@@ -92,7 +92,7 @@ export default function LenderSignInPage() {
 
       <div className="text-center mt-8 text-sm">
         <span className="text-gray-600">{"Don't Have An Account ? "}</span>
-        <Link href="/lender/auth/signup" className="text-[#1e5ba8] font-semibold hover:underline">
+        <Link href="/lender/auth/signup" className="text-[#333333] font-semibold ">
           Create One
         </Link>
       </div>

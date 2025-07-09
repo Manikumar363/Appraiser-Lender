@@ -158,7 +158,7 @@ export default function AppraiserProfilePage() {
           >
             {/* Name */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
                   <ThirdPrimaryIcon />
                 </div>
@@ -178,7 +178,7 @@ export default function AppraiserProfilePage() {
 
             {/* Email */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
                   <EmailIcon />
                 </div>
@@ -198,7 +198,7 @@ export default function AppraiserProfilePage() {
 
             {/* Company */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
                   <CompanyIcon />
                 </div>
@@ -218,7 +218,7 @@ export default function AppraiserProfilePage() {
 
             {/* Designation */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
                   <DesignationIcon />
                 </div>
@@ -238,7 +238,7 @@ export default function AppraiserProfilePage() {
 
             {/* Phone */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">📞</div>
                 <input
                   type="tel"
@@ -264,7 +264,7 @@ export default function AppraiserProfilePage() {
                   disabled={submitLoading}
                   className="w-full bg-blue-800 hover:bg-blue-800 text-white py-3 rounded-full font-medium"
                 >
-                  {submitLoading ? "Updating..." : "Save Changes"}
+                  {submitLoading ? "Updating..." : "Update Profile"}
                 </button>
               </div>
             )}

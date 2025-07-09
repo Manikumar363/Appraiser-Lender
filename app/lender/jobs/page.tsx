@@ -122,36 +122,41 @@ const getProgressSteps = (status: string) => {
     { name: "Job Request", key: "request" },
     { name: "Job Tracking", key: "tracking" },
     { name: "Report Review", key: "review" },
-  ]
+  ];
 
-  let currentStep = 0
+  let currentStep = 0;
   switch (status) {
     case "client-visit":
     case "site-visit-scheduled":
-      currentStep = 1
-      break
+      currentStep = 1;
+      break;
     case "post-visit-summary":
-      currentStep = 2
-      break
+      currentStep = 2;
+      break;
     case "completed":
-      currentStep = 3
-      break
+      currentStep = 3;
+      break;
   }
 
   return steps.map((step, index) => ({
     ...step,
-    status: index < currentStep ? "completed" : index === currentStep ? "current" : "pending",
-  }))
-}
+    status:
+      index < currentStep
+        ? "completed"
+        : index === currentStep
+        ? "current"
+        : "pending",
+  }));
+};
 
 const getStatusColor = (status: Job["status"]) => {
   switch (status) {
     case "client-visit":
     case "site-visit-scheduled":
     case "post-visit-summary":
-      return "bg-orange-400 hover:bg-orange-500"
+      return "bg-[#FFC107] hover:bg-[#e6b306]"
     case "completed":
-      return "bg-green-500 hover:bg-green-600"
+      return "bg-[#00F90A] hover:bg-[#e6b306]"
     case "cancelled":
       return "bg-red-500 hover:bg-red-600"
     default:
@@ -203,7 +208,7 @@ export default function JobsPage() {
 
     return (
       <DashboardLayout role="lender">
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-6  min-h-screen">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
@@ -217,19 +222,25 @@ export default function JobsPage() {
           {/* Job Info Card */}
           <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-2400 mb-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center">
                   <BuildingIcon className="w-6 h-6 text-white" />
                 </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900 mb-1">{selectedJob.title}</h2>
-                  <p className="text-gray-600 text-sm">{selectedJob.location}</p>
+
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-semibold text-gray-900">{selectedJob.title}</h2>
+
+                  <div className="flex flex-col">
+                    <p className="text-gray-600 text-sm mb-1">{selectedJob.location}</p>
+                    <Badge
+                      className={`${getStatusColor(selectedJob.status)} text-white px-4 py-2 rounded-full text-xs font-medium w-fit`}
+                    >
+                      <LoadIcon className="w-4 h-4 mr-2"/>
+                      {selectedJob.statusText}
+                      
+                    </Badge>
+                  </div>
                 </div>
-                <Badge
-                  className={`${getStatusColor(selectedJob.status)} text-white px-4 py-2 rounded-full text-sm font-medium ml-4`}
-                >
-                  {selectedJob.statusText}
-                </Badge>
               </div>
 
               <div className="flex items-center gap-3">
@@ -268,48 +279,47 @@ export default function JobsPage() {
           <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">Job Summary</h3>
             <div className="flex items-center justify-center gap-8">
-              {progressSteps.map((step, index) => (
-                <div key={step.key} className="flex flex-col items-center">
-                  <div
-                    className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
+            {progressSteps.map((step, index) => (
+              <div key={step.key} className="flex flex-col items-center">
+                {/* OUTER CIRCLE */}
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center mb-2
+                    ${
                       step.status === "completed"
                         ? "bg-blue-800"
                         : step.status === "current"
-                          ? "bg-white border-2 border-blue-800"
-                          : "bg-gray-400"
+                        ? "bg-white border-[14px] border-blue-800"
+                        : "bg-gray-400"
                     }`}
-                  >
-                    <div
-                      className={`w-6 h-6 rounded-full ${
-                        step.status === "completed"
-                          ? "bg-white"
-                          : step.status === "current"
-                            ? "bg-blue-800"
-                            : "bg-white"
-                      }`}
-                    />
-                  </div>
-                  <span className="text-sm text-gray-600 text-center">{step.name}</span>
+                >
+                  {/* INNER CIRCLE ONLY FOR CURRENT */}
+                  {step.status === "current" && (
+                    <div className=" bg-blue-700" />
+                  )}
                 </div>
-              ))}
-            </div>
+
+                {/* STEP LABEL */}
+                <span className="text-sm text-gray-600 text-center">{step.name}</span>
+              </div>
+            ))}
+         </div>
           </div>
 
           {/* Uploaded Files */}
-          <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+          <div className=" mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div className="flex flex-wrap justify-start gap-4 mb-4">
               {selectedJob.files.map((file, index) => (
-                <div key={index} className="bg-cyan-50 rounded-lg p-4 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 bg-cyan-50 rounded-lg flex items-center justify-center mb-2">
+                <div key={index} className="bg-cyan-50 rounded-xl py-4 px-3  w-[200px] flex flex-col items-center text-center shadow-md">
+                  <div className="w-10 h-10 flex items-center justify-center mb-2">
                     {file.type === "pdf" ? (
-                      <PDFIcon className="w-8 h-8 text-gray-600" />
+                      <PDFIcon className="w-6 h-6 text-gray-700" />
                     ) : (
-                      <ImageIcon className="w-8 h-8 text-gray-600" />
+                      <ImageIcon className="w-6 h-6 text-gray-700" />
                     )}
                   </div>
-                  <p className="font-medium text-gray-900 text-sm mb-1">{file.name}</p>
-                  <p className="text-xs text-gray-500">{file.uploadDate}</p>
+                  <p className="font-medium text-gray-900 text-sm mb-1 truncate">{file.name}</p>
+                  <p className="text-sm text-gray-500">{file.uploadDate}</p>
                 </div>
               ))}
             </div>
@@ -319,12 +329,12 @@ export default function JobsPage() {
           </div>
 
           {/* Transaction Summary */}
-          <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+          <div className=" mb-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-            <div className="flex items-center justify-between bg-cyan-50 rounded-lg p-4">
+            <div className="bg-cyan-50 rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center">
-                  <CardIcon className="w-11 h-11 text-white" />
+                  <CardIcon className="w-8 h-8 text-white" />
                 </div>
                 <span className="text-xl font-semibold text-gray-900">${selectedJob.amount}</span>
               </div>
@@ -354,44 +364,45 @@ export default function JobsPage() {
   // Default view - Jobs List
   return (
     <DashboardLayout role="lender">
-      <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="flex flex-col h-full">
+      <div className="p-5 flex-grow">
         {/* Filter Tabs */}
         <div className="flex gap-4 mb-8">
           <Button
-            className={`px-8 py-2 rounded-full ${
+            className={`w-[225px] py-2 rounded-full ${
               activeFilter === "all"
                 ? "bg-blue-800 hover:bg-blue-700 text-white"
-                : "border-gray-300 text-gray-600 hover:bg-gray-100 bg-transparent border"
+                : "border-blue-800 text-blue-800 hover:bg-blue-50 bg-transparent border"
             }`}
             onClick={() => setActiveFilter("all")}
           >
             All
           </Button>
           <Button
-            className={`px-8 py-2 rounded-full ${
+            className={`w-[225px] py-2 rounded-full ${
               activeFilter === "in-progress"
                 ? "bg-blue-800 hover:bg-blue-700 text-white"
-                : "border-gray-300 text-gray-600 hover:bg-gray-100 bg-transparent border"
+                : "border-blue-800 text-blue-800 hover:bg-blue-50 bg-transparent border"
             }`}
             onClick={() => setActiveFilter("in-progress")}
           >
             In Progress
           </Button>
           <Button
-            className={`px-8 py-2 rounded-full ${
+            className={`w-[225px] py-2 rounded-full ${
               activeFilter === "completed"
                 ? "bg-blue-800 hover:bg-blue-700 text-white"
-                : "border-gray-300 text-gray-600 hover:bg-gray-100 bg-transparent border"
+                : "border-blue-800 text-blue-800 hover:bg-blue-50 bg-transparent border"
             }`}
             onClick={() => setActiveFilter("completed")}
           >
             Completed
           </Button>
           <Button
-            className={`px-8 py-2 rounded-full ${
+            className={`w-[225px] py-2 rounded-full ${
               activeFilter === "cancel"
                 ? "bg-blue-800 hover:bg-blue-700 text-white"
-                : "border-gray-300 text-gray-600 hover:bg-gray-100 bg-transparent border"
+                : "border-blue-800 text-blue-800 hover:bg-blue-50 bg-transparent border"
             }`}
             onClick={() => setActiveFilter("cancel")}
           >
@@ -417,7 +428,7 @@ export default function JobsPage() {
                   {/* Job Details */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.title}</h3>
-                    <p className="text-gray-600 text-sm">{job.location}</p>
+                    <p className="tex           t-gray-600 text-sm">{job.location}</p>
                   </div>
 
                   {/* Status Badge */}
@@ -473,11 +484,13 @@ export default function JobsPage() {
                 </div>
               </div>
             </div>
+            
           ))}
+        </div>
         </div>
 
         {/* New Job Request Button */}
-        <div className="pb-5">
+        <div className="pb-2">
           <button
             onClick={handleNewJobClick}
             className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"

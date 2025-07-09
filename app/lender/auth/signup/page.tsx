@@ -138,7 +138,7 @@ export default function LenderSignUpPage() {
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       {/* Terms Checkbox */}
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-3">
         <div className="relative pt-1">
           <input
             type="checkbox"
@@ -164,6 +164,7 @@ export default function LenderSignUpPage() {
             )}
           </label>
         </div>
+        
        
         <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center">
           <span className="flex flex-wrap gap-2">
@@ -192,7 +193,7 @@ export default function LenderSignUpPage() {
     {/* Footer Link */}
     <div className="text-center mt-4">
       <span className="text-gray-700 text-base">Already Have An Account? </span>
-      <Link href="/lender/auth/signin" className="text-[#1e5ba8] font-medium hover:underline text-base">
+      <Link href="/lender/auth/signin" className="text-[#333333] font-medium hover:underline text-base">
         Sign In
       </Link>
     </div>

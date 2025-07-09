@@ -35,16 +35,20 @@ export default function LenderDashboardPage() {
 
   return (
     <DashboardLayout role="lender">
-      <div className="space-y-6">
+      <div className="flex flex-col h-full">
+      <div className="space-y-6 flex-grow">
         {/* Job Cards */}
         <div className="space-y-4">
           {jobsData.map((job) => (
             <JobCard key={job.id} title={job.title} location={job.location} status={job.status} />
           ))}
         </div>
+        </div>
 
         {/* New Job Request Button */}
-        <div className="pb-5">
+        
+       
+        <div className="pb-5 ">
           <button
             onClick={handleNewJobRequest}
             className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
@@ -53,7 +57,7 @@ export default function LenderDashboardPage() {
             New Job Request
           </button>
         </div>
-      </div>
+        </div>
     </DashboardLayout>
   )
 }

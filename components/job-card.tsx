@@ -9,17 +9,17 @@ interface JobCardProps {
 const statusConfig = {
   "in-progress": {
     label: "In Progress",
-    className: "bg-gradient-to-r from-yellow-400 to-amber-500 text-white shadow-lg",
+    className: " bg-[#FFC107] text-white",
     icon: TimerIcon,
   },
   active: {
     label: "Active",
-    className: "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg",
+    className: "bg-[#00F90A] text-white ",
     icon: TimerIcon,
   },
   cancelled: {
     label: "Cancel",
-    className: "bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg",
+    className: "bg-[#FD5D2D] text-white",
     icon: TimerIcon,
   },
 }
@@ -29,9 +29,9 @@ export function JobCard({ title, location, status }: JobCardProps) {
   const StatusIconComponent = statusInfo.icon
 
   return (
-    <div className="bg-cyan-50 rounded-xl p-6 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+    <div className="bg-cyan-50 rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
       <div className="flex items-center gap-4">
-        <div className="w-14 h-14 bg-[#1e5ba8] rounded-full flex items-center justify-center text-white shadow-md">
+        <div className="w-12 h-12 bg-[#1e5ba8] rounded-full flex items-center justify-center text-white shadow-md">
           <BuildingIcon />
         </div>
         <div>

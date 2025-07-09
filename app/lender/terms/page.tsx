@@ -37,7 +37,7 @@ export default function LenderTermsPage() {
     fetchData();
   }, []);
   return (
-    <DashboardLayout>
+    <DashboardLayout role="lender">
 
        <div className="px-6 py-10 text-gray-800 max-w-4xl ml-8 space-y-8">
       <div>
