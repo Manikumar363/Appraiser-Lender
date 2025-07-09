@@ -30,6 +30,8 @@ export default function AppraiserSignInPage() {
       router.push("/appraiser/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || "Invalid credentials");
+      
+      return false;
     } finally {
       setLoading(false);
     }

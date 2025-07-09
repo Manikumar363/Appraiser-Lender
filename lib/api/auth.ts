@@ -19,10 +19,10 @@ export interface ApiResponse<T> {
 
 // Auth API functions
 export const authApi = {
-  // Update password
-  updatePassword: async (passwordData: UpdatePasswordRequest): Promise<UpdatePasswordResponse> => {
-    const response = await api.patch<ApiResponse<UpdatePasswordResponse>>("/api/auth/update-password", passwordData)
-    return response.data.data
+  // Update password with userId, newPassword, confirmPassword
+  updatePassword: async (data: { userId: string; newPassword: string; confirmPassword: string }) => {
+    const res = await api.patch("/user/change-password", data)
+    return res.data
   },
 
   // Verify current password
@@ -42,27 +42,25 @@ export const authApi = {
 
   //appraiser
   signIn: async (email: string, password: string): Promise<{ token: string }> => {
-  const response = await api.post("/user/login", { email, password });
-  return response.data;
-},
+    const response = await api.post("/user/login", { email, password });
+    return response.data;
+  },
 
   signUp: async (
-  username: string,
-  email: string,
-  password: string,
-  phone: string,
-  country_code: string
-) => {
-  return await api.post("/user/register", {
-    name: username,
-    email,
-    password,
-    phone,
-    country_code,
-  });
-},
-
-
+    username: string,
+    email: string,
+    password: string,
+    phone: string,
+    country_code: string
+  ) => {
+    return await api.post("/user/register", {
+      name: username,
+      email,
+      password,
+      phone,
+      country_code,
+    });
+  },
 
   verifyRegisterOtp: async (email: string, otp: string) => {
     const res = await api.post("/user/verify-Reg-Otp", { email, otp });
@@ -77,18 +75,20 @@ export const authApi = {
 
   // ✅ Forgot Password
   forgotPassword: async (email: string) => {
-    const res = await api.post("/user/forgot-password", { email });
-    return res.data;
+    return await api.post("/user/forgot-password", { email })
   },
+  // ✅ Verify OTP for Forgot Password
+  verifyOtp: async (email: string, otp: string) => {
+    return await api.post("/user/verify-otp", { email, otp })
+  },
+  // ✅ Set New Password (for forgot password flow)
+setNewPassword: async (userId: string, newPassword: string, confirmPassword: string) => {
+  const res = await api.put("/user/reset-password", {
+    userId,
+    newPassword,
+    confirmPassword
+  })
+  return res.data
+},
 
-  // ✅ Reset Password
-  resetPassword: async (email: string, otp: string, newPassword: string) => {
-    const res = await api.post("/user/reset-password", {
-      email,
-      otp,
-      newPassword,
-    });
-    return res.data;
-  },
-    
 }

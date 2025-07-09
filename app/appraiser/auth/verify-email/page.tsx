@@ -1,54 +1,66 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import AuthLayout from "@/components/auth-layout";
-import { OTPInput } from "@/components/otp-input";
-import { authApi } from "@/lib/api/auth";
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import AuthLayout from "@/components/auth-layout"
+import { OTPInput } from "@/components/otp-input"
+import { authApi } from "@/lib/api/auth"
 
 export default function AppraiserVerifyEmailPage() {
-  const [otp, setOtp] = useState("");
-  const [timeLeft, setTimeLeft] = useState(60);
-  const [canResend, setCanResend] = useState(false);
-  const [error, setError] = useState("");
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
+  const [otp, setOtp] = useState("")
+  const [timeLeft, setTimeLeft] = useState(60)
+  const [canResend, setCanResend] = useState(false)
+  const [error, setError] = useState("")
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const email = searchParams.get("email") || ""
+  const type = searchParams.get("type") || "register" // default to register if missing
 
   useEffect(() => {
     if (timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
+      return () => clearTimeout(timer)
     } else {
-      setCanResend(true);
+      setCanResend(true)
     }
-  }, [timeLeft]);
+  }, [timeLeft])
 
   const handleVerify = async () => {
-    if (otp.length !== 4) return;
+    if (otp.length !== 4) return
     try {
-      await authApi.verifyRegisterOtp(email, otp);
-      router.push("/appraiser/dashboard");
+      if (type === "register") {
+        await authApi.verifyRegisterOtp(email, otp)
+        router.push("/appraiser/dashboard")
+      } else if (type === "reset") {
+        await authApi.verifyOtp(email, otp)
+        router.push(`/appraiser/auth/set-new-password?email=${encodeURIComponent(email)}`)
+      } else {
+        throw new Error("Invalid verification type.")
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid OTP.");
+      console.error(err)
+      setError(err.response?.data?.message || "Invalid OTP.")
+      return false
     }
-  };
+  }
 
   const handleResend = async () => {
-  if (!canResend) return;
-
-  try {
-    console.log("Resending OTP for:", email);
-    await authApi.resendRegisterOtp(email);
-    console.log("OTP resent successfully!");
-    setTimeLeft(60);
-    setCanResend(false);
-    setOtp("");
-  } catch (err: any) {
-    console.error("Resend failed:", err);
-    setError(err.response?.data?.message || "Failed to resend OTP.");
+    if (!canResend) return
+    try {
+      if (type === "register") {
+        await authApi.resendRegisterOtp(email)
+      } else if (type === "reset") {
+        await authApi.forgotPassword(email) // for reset, you trigger forgot again to resend OTP
+      }
+      setTimeLeft(60)
+      setCanResend(false)
+      setOtp("")
+    } catch (err: any) {
+      console.error(err)
+      setError(err.response?.data?.message || "Failed to resend OTP.")
+    }
   }
-};
 
   return (
     <AuthLayout>
@@ -85,5 +97,5 @@ export default function AppraiserVerifyEmailPage() {
         </button>
       </div>
     </AuthLayout>
-  );
+  )
 }
