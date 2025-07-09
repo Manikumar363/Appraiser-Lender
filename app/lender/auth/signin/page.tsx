@@ -23,25 +23,19 @@ export default function LenderSignInPage() {
     setError("")
 
     try{
-      const res= await userAuth.signIn(
-        email,
-        password,)
+      const res= await userAuth.signIn(email,password,);
 
-      console.log("Login successful", res)
+      console.log("Login successful", res);
       
-      if(res.token){
-      localStorage.setItem("Login successful", res.token)
-      }else{
-        throw new Error("Token not received")
-      }
-
-      router.push("/lender/dashboard")
+      localStorage.setItem("authToken", res.token);
+      router.push("/lender/dashboard");
     }catch(err: any){
-      setError(err.response?.data?.message || "Invalid credentials")
+      setError(err.response?.data?.message || "Invalid credentials");
+      return false
     }finally{
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
     setSelectedRole(role)

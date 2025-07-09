@@ -1,108 +1,276 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import DashboardLayout from "../../../components/dashboard-layout"
-import { EmailIcon, CompanyIcon, DesignationIcon, CheckmarkIcon, ThirdPrimaryIcon } from "../../../components/icons"
-import Image from "next/image"
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
+import { useEffect, useState } from "react";
+import DashboardLayout from "@/components/dashboard-layout";
+import { profileApi } from "@/lib/api/profile";
+import api from "@/lib/api/axios";
+import Image from "next/image";
+import {
+  EmailIcon,
+  CompanyIcon,
+  DesignationIcon,
+  ThirdPrimaryIcon,
+  CheckmarkIcon,
+} from "@/components/icons";
 
-export default function LenderProfilePage() {
-  const router = useRouter()
+export default function AppraiserProfilePage() {
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    company_name: "",
+    designation: "",
+    phone: "",
+    image: "",
+  });
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
-  const handleEditProfile = () => {
-    router.push("/lender/profile/edit")
-  }
-  const profileData = {
-  phone: '+1 000 000 000',
-  countryCode: 'AU',
-};
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await profileApi.getLenderProfile();
+        if (res.success) {
+          setProfile(res.user);
+          setFormData({
+            name: res.user.name || "",
+            email: res.user.email || "",
+            company_name: res.user.company_name || "",
+            designation: res.user.designation || "",
+            phone: res.user.phone || "",
+            image: res.user.image || "",
+          });
+        } else {
+          console.error("❌ Failed to load profile");
+        }
+      } catch (err) {
+        console.error("❌ Error fetching profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const res = await api.patch(
+        "/lender/profile",
+        {
+          name: formData.name,
+          email: formData.email,
+          company_name: formData.company_name,
+          designation: formData.designation,
+          phone: formData.phone,
+        },
+        {
+          headers: {
+            Authorization: `${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+      console.log("✅ Profile updated:", res.data);
+
+      setSuccess("Profile updated successfully!");
+      setIsEditing(false);
+
+      // Optionally refresh profile
+      const updatedProfile = await profileApi.getLenderProfile();
+      if (updatedProfile.success) {
+        setProfile(updatedProfile.user);
+      }
+    } catch (err: any) {
+      console.error("❌ Failed to update profile:", err);
+      setError(err.response?.data?.message || "Failed to update profile");
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
+  if (loading) return <div className="p-10 text-center">Loading...</div>;
+  if (!profile) return <div className="p-10 text-center text-red-600">Profile failed to load.</div>;
 
   return (
     <DashboardLayout role="lender">
-      <div className="h-full overflow-hidden bg-white">
+      <div className="h-full overflow-hidden">
         <div className="p-8 h-full flex flex-col">
-          {/* Profile Header */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
               <Image
-                src="/images/profile-avatar.png"
+                src={formData.image || "/images/profile-avatar.png"}
                 alt="Profile Avatar"
                 width={96}
                 height={96}
                 className="w-full h-full object-cover"
               />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Joe Done</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              {formData.name || "Your Name"}
+            </h1>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-gray-700">abc@gmail.com</span>
+              <span className="text-gray-600">
+                {formData.email || "Your Email"}
+              </span>
               <CheckmarkIcon />
             </div>
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-gray-700">000-000-000</span>
+              <span className="text-gray-600">{formData.phone || "Your Phone"}</span>
               <CheckmarkIcon />
             </div>
-            <button
-              onClick={handleEditProfile}
-              className="bg-blue-800 hover:bg-blue-800 text-white px-8 py-2 rounded-full font-medium transition-colors"
-            >
-              Edit Profile
-            </button>
+
+            {!isEditing ? (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-blue-800 hover:bg-blue-800 text-white px-6 py-2 rounded-full font-medium transition"
+              >
+                Edit Profile
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsEditing(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full font-medium transition"
+              >
+                Cancel
+              </button>
+            )}
           </div>
 
-          {/* Profile Form Fields (Read-only display) */}
-          <div className="flex-1 space-y-4 max-w-4xl mx-auto w-full">
+          <form
+            onSubmit={handleUpdateProfile}
+            className="flex-1 space-y-4 max-w-4xl mx-auto w-full"
+          >
+            {/* Name */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border border-gray-600">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
                 <div className="mr-3">
-                  <ThirdPrimaryIcon/>
+                  <ThirdPrimaryIcon />
                 </div>
-                <span className="text-gray-500 text-sm">Type your username here</span>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder="Your Name"
+                  readOnly={!isEditing}
+                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
+                    !isEditing ? "cursor-not-allowed" : ""
+                  }`}
+                />
               </div>
             </div>
 
+            {/* Email */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
                 <div className="mr-3">
                   <EmailIcon />
                 </div>
-                <span className="text-gray-500 text-sm">Type your email here</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Your Email"
+                  readOnly={!isEditing}
+                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
+                    !isEditing ? "cursor-not-allowed" : ""
+                  }`}
+                />
               </div>
             </div>
 
+            {/* Company */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
                 <div className="mr-3">
                   <CompanyIcon />
                 </div>
-                <span className="text-gray-500 text-sm">Enter Your Company Name</span>
+                <input
+                  type="text"
+                  name="company_name"
+                  value={formData.company_name}
+                  onChange={handleInputChange}
+                  placeholder="Company Name"
+                  readOnly={!isEditing}
+                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
+                    !isEditing ? "cursor-not-allowed" : ""
+                  }`}
+                />
               </div>
             </div>
 
+            {/* Designation */}
             <div className="relative">
-              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border  border-gray-600">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
                 <div className="mr-3">
                   <DesignationIcon />
                 </div>
-                <span className="text-gray-500 text-sm">Enter Your Designation</span>
+                <input
+                  type="text"
+                  name="designation"
+                  value={formData.designation}
+                  onChange={handleInputChange}
+                  placeholder="Your Designation"
+                  readOnly={!isEditing}
+                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
+                    !isEditing ? "cursor-not-allowed" : ""
+                  }`}
+                />
               </div>
             </div>
 
-            <div className="w-full relative">
-              <PhoneInput
-                country={"us"}
-                value={profileData.phone}
-                disabled
-                placeholder="Type your phone number here" // ✅ add this!
-                inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !placeholder-gray-500 !border !border-gray-500 focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
-                containerClass="!w-full"
-                buttonClass="!border-r !border-gray-500 !rounded-l-full"
-                enableSearch={false}
-              />
-            </div>              
-          </div>
+            {/* Phone */}
+            <div className="relative">
+              <div className="flex items-center bg-gray-50 rounded-full px-4 py-3 border">
+                <div className="mr-3">📞</div>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="Phone Number"
+                  readOnly={!isEditing}
+                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
+                    !isEditing ? "cursor-not-allowed" : ""
+                  }`}
+                />
+              </div>
+            </div>
+
+            {error && <p className="text-red-600">{error}</p>}
+            {success && <p className="text-green-600">{success}</p>}
+
+            {isEditing && (
+              <div>
+                <button
+                  type="submit"
+                  disabled={submitLoading}
+                  className="w-full bg-blue-800 hover:bg-blue-800 text-white py-3 rounded-full font-medium"
+                >
+                  {submitLoading ? "Updating..." : "Save Changes"}
+                </button>
+              </div>
+            )}
+          </form>
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }

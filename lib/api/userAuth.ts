@@ -17,7 +17,7 @@ export const userAuth = {
     phone,
     country_code,
   }: SignupPayload): Promise<{ message: string; userId?: string }> => {
-    const response = await api.post("/user/register", {
+    const response = await api.post("/lender/register", {
       name: username,
       email,
       password,
@@ -32,13 +32,26 @@ export const userAuth = {
     email: string,
     password: string
   ): Promise<{ token: string }> => {
-    const response = await api.post("/user/login", { email, password });
+    const response = await api.post("/lender/login", { email, password });
+
+    // const token = response.data.token;
+    
+    // store the token
+    // localStorage.setItem("authToken", token);
+
+    // delete role by checking email domain or endpoint pattern
+    // if(email.includes("lender") || window.location.pathname.includes("/lender")){
+      // localStorage.setItem("userRole", "lender");
+    // }else{
+      // localStorage.setItem("userRole", "appraiser");
+    // }
+
     return response.data;
   },
 
   verifyRegisterOtp: async (email: string, otp: string) => {
   try {
-    const response = await api.post("/user/verify-Reg-Otp", { email, otp });
+    const response = await api.post("/lender/verify-Reg-Otp", { email, otp });
     return response.data;
   } catch (error: any) {
     console.error("verifyRegisterOtp error:", error.response?.data || error.message);
@@ -49,12 +62,23 @@ export const userAuth = {
   resendRegisterOtp: async (
     email: string
   ): Promise<{ success: boolean; message: string }> => {
-    const response = await api.post("/user/resend-otp", { email });
+    const response = await api.post("/lender/resend-otp", { email });
     return response.data;
   },
 
   forgotPassword: async (email: string): Promise<any> => {
-  const res = await api.post("/user/forgot-password", { email })
+  const res = await api.post("/lender/forgot-password", { email })
+ },
+ verifyOtp: async (email: string, otp: string)=>{
+  return await api.post("/lender/verify-otp", {email, otp})
+ },
+
+ setNewPassword: async(userId: string, newPassword: string, confirmPassword: string)=>{
+  const res= await api.put("/lender/reset-password",{
+    userId,
+    newPassword,
+    confirmPassword
+  })
   return res.data
  }
 

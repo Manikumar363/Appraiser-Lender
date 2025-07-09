@@ -27,10 +27,10 @@ export default function LenderForgotPasswordPage() {
     console.log("Forgot password response:", res)
 
     // ✅ Redirect to verify email/OTP screen
-    router.push(`/lender/auth/verify-email?email=${encodeURIComponent(email)}`)
+    router.push(`/lender/auth/verify-email?email=${encodeURIComponent(email)}&type=reset`)
   } catch (err: any) {
     console.error("Forgot password error:", err)
-    setError(err.response?.data?.message || "Something went wrong. Try again.")
+    setError(err.response?.data?.message || "Something went wrong.Please try again.")
   } finally {
     setLoading(false)
   }

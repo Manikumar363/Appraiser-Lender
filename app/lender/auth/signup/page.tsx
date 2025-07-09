@@ -167,12 +167,12 @@ export default function LenderSignUpPage() {
        
         <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center">
           <span className="flex flex-wrap gap-2">
-          <Link href="/lender/terms" className="text-[#1e5ba8] hover:underline font-medium">
+          <Link href="/lender/terms" className="text-[#333333] hover:underline font-medium">
             Terms of Use
           </Link>
           <span></span>
           
-          <Link href="/lender/privacy" className="text-[#1e5ba8] hover:underline font-medium">
+          <Link href="/lender/privacy" className="text-[#333333] hover:underline font-medium">
             Privacy Policy
           </Link>
           </span>
