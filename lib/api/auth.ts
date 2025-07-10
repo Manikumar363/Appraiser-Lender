@@ -91,4 +91,19 @@ setNewPassword: async (userId: string, newPassword: string, confirmPassword: str
   return res.data
 },
 
+resetPassword: async (
+    oldPassword: string,
+    newPassword: string
+  ) => {
+    return await api.put("/user/change-password", {
+      oldPassword: oldPassword,
+      newPassword: newPassword
+    });
+  },
+
+  // ✅ DELETE ACCOUNT
+  deleteAccount: async () => {
+    return await api.delete("/user/profile");
+  },
+
 }

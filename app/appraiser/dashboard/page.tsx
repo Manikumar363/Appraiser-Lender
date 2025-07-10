@@ -40,8 +40,8 @@ export default function AppraiserDashboardPage() {
       <div className="space-y-6">
         {/* ✅ Availability Toggle */}
         <AvailabilityToggle
-          isAvailable={isAvailable}
-          onToggle={() => setIsAvailable(!isAvailable)}
+       
+         
         />
 
         {/* ✅ Job Cards with Building Icon */}

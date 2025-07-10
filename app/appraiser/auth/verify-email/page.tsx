@@ -31,7 +31,7 @@ export default function AppraiserVerifyEmailPage() {
     try {
       if (type === "register") {
         await authApi.verifyRegisterOtp(email, otp)
-        router.push("/appraiser/dashboard")
+        router.push("/appraiser/auth/signin")
       } else if (type === "reset") {
         await authApi.verifyOtp(email, otp)
         router.push(`/appraiser/auth/set-new-password?email=${encodeURIComponent(email)}`)
