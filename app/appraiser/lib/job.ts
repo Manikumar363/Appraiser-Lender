@@ -1,6 +1,5 @@
 import api from "@/lib/api/axios";
 
-
 // Types
 export interface AppraiserJob {
   id: string;
@@ -78,10 +77,12 @@ export const appraiserJobsApi = {
   },
 
   // ✅ Get Duration
-  getTimerDuration: async (): Promise<string> => {
+  getTimerDuration: async (): Promise<{ duration: string; user: TimerData["user"] }> => {
     const res = await api.get("/user/get-duration");
     console.log("✅ getTimerDuration:", res.data);
-    return res.data.duration || "00:00:00";
+    return {
+      duration: res.data.duration || "00:00:00",
+      user: res.data.user || { id: "", available: false },
+    };
   },
 };
-
