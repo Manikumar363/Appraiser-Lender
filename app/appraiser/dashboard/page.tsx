@@ -47,7 +47,7 @@ export default function AppraiserDashboardPage() {
         const [jobList, durationRes, statusCheck] = await Promise.all([
           appraiserJobsApi.getPendingJobs(),
           appraiserJobsApi.getTimerDuration(),
-          appraiserJobsApi.stopTimer(), // ⛔️ Don't stop — just get status
+          appraiserJobsApi.stopTimer(), 
         ]);
 
         setJobs(jobList);
@@ -85,28 +85,30 @@ export default function AppraiserDashboardPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow border">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 flex items-center justify-center">
               <HomeTimerIcon color={isRunning ? "#00F90A" : "#9CA3AF"} />
-            </div>
-            <div className="flex flex-col">
+              </div>
+              <div className="flex flex-col justify-center">
               <div className="text-sm font-medium text-gray-700">{timer}</div>
               <div className="text-sm text-gray-500">
-                {isRunning ? "Timer is running" : "Timer is stopped"}
+                {isRunning ? "Available for new job requests." : "Timer is stopped"}
+              </div>
               </div>
             </div>
           </div>
-          <div
+            <div
             onClick={handleToggle}
             className={`w-11 h-6 rounded-full relative cursor-pointer transition duration-300 ${
-              isRunning ? "bg-green-600" : "bg-gray-300"
+              isRunning ? "bg-[#00F90A]" : "bg-gray-300"
             }`}
-          >
+            >
             <div
               className={`w-4 h-4 bg-white rounded-full shadow absolute top-1 left-1 transition-transform duration-300 ${
-                isRunning ? "translate-x-5" : ""
+              isRunning ? "translate-x-5" : ""
               }`}
             />
-          </div>
+            </div>
         </div>
 
         {loading ? (
