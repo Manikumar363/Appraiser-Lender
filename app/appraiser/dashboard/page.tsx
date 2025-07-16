@@ -21,6 +21,28 @@ export default function AppraiserDashboardPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [loading, setLoading] = useState(true);
 
+//accpt and decline job
+const handleAcceptJob = async (jobId: string) => {
+  try {
+    await appraiserJobsApi.acceptJob(jobId);
+    setJobs(prev => prev.filter(job => job.job.id !== jobId));
+  } catch (err) {
+    console.error("❌ Accept job failed", err);
+    alert("Failed to accept the job.");
+  }
+};
+
+const handleDeclineJob = async (jobId: string) => {
+  try {
+    await appraiserJobsApi.declineJob(jobId);
+    setJobs(prev => prev.filter(job => job.job.id !== jobId));
+  } catch (err) {
+    console.error("❌ Decline job failed", err);
+    alert("Failed to decline the job.");
+  }
+};
+
+
   // 🔁 Tick logic
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -52,7 +74,7 @@ export default function AppraiserDashboardPage() {
 
         setJobs(jobList);
         setTimer(durationRes.duration);
-        setIsRunning(statusCheck.status); // ✅ Only trust `status`
+        setIsRunning(statusCheck.status); 
       } catch (err) {
         console.error("Init error:", err);
       } finally {
@@ -117,6 +139,7 @@ export default function AppraiserDashboardPage() {
           <p className="text-center text-sm text-gray-400">No jobs assigned yet.</p>
         ) : (
           <div className="space-y-4">
+          
             {jobs.map((job) => (
               <div
                 key={job.id}
@@ -135,12 +158,20 @@ export default function AppraiserDashboardPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="w-10 h-10 flex items-center justify-center rounded-full bg-[#054c99] hover:bg-[#043a77] transition">
-                    <CheckCircle className="text-white" size={20} />
-                  </button>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-400 hover:bg-gray-100 transition">
-                    <XCircle className="text-gray-600" size={20} />
-                  </button>
+                 <button
+  onClick={() => handleAcceptJob(job.job.id)}
+  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#054c99] hover:bg-[#043a77] transition"
+>
+  <CheckCircle className="text-white" size={20} />
+</button>
+
+<button
+  onClick={() => handleDeclineJob(job.job.id)}
+  className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-400 hover:bg-gray-100 transition"
+>
+  <XCircle className="text-gray-600" size={20} />
+</button>
+
                 </div>
               </div>
             ))}

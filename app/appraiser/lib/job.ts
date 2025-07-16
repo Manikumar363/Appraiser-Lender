@@ -57,10 +57,13 @@ export interface TimerData {
 export const appraiserJobsApi = {
   // ✅ Get Pending Jobs
   getPendingJobs: async (): Promise<AppraiserJob[]> => {
-    const res = await api.get("/user/pending-jobs?page=1&limit=10");
-    console.log("✅ getPendingJobs:", res.data);
-    return res.data.jobs || [];
-  },
+  const res = await api.get("/user/pending-jobs?page=1&limit=10");
+  console.log("✅ getPendingJobs:", res.data);
+  if (res.data && Array.isArray(res.data.jobs)) {
+    return res.data.jobs;
+  }
+  return [];
+},
 
   // ✅ Start Timer
   startTimer: async (): Promise<TimerData> => {
@@ -85,4 +88,18 @@ export const appraiserJobsApi = {
       user: res.data.user || { id: "", available: false },
     };
   },
+  // Accept job
+acceptJob: async (jobId: string) => {
+  const res = await api.post(`/user/accept-job/${jobId}`);
+  console.log("✅ acceptJob:", res.data);
+  return res.data;
+},
+
+// Decline job
+declineJob: async (jobId: string) => {
+  const res = await api.post(`/user/decline-job/${jobId}`);
+  console.log("✅ declineJob:", res.data);
+  return res.data;
+},
+
 };
