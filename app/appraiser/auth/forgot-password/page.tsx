@@ -24,8 +24,8 @@ export default function LenderForgotPasswordPage() {
 
       console.log("✅ Forgot password email sent:", email)
 
-      // ✅ Redirect to your reusable verify-email page with type=reset
-      router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email)}&type=reset`)
+      // // ✅ Redirect to your reusable verify-email page with type=reset
+      // router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email)}&type=reset`)
     } catch (err: any) {
       console.error(err)
       setError(err.response?.data?.message || "Something went wrong. Please try again.")

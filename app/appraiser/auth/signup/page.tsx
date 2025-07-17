@@ -1,7 +1,6 @@
 "use client";
 
-import type React from "react";
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import AuthLayout from "@/components/auth-layout";
 import { RoleSelector } from "@/components/role-selector";
@@ -21,39 +20,63 @@ export default function AppraiserSignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Field refs for focus after error (optional)
+  const usernameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
+    // --- Field-level validation ---
+    if (!username.trim()) {
+      setError("Please enter your username.");
+      if (usernameRef.current) usernameRef.current.focus();
+      return;
+    }
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      if (emailRef.current) emailRef.current.focus();
+      return;
+    }
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      if (passwordRef.current) passwordRef.current.focus();
+      return;
+    }
+    if (!fullPhone || fullPhone.replace(/\D/g, "").length < 10) {
+      setError("Please enter a valid phone number.");
+      return;
+    }
     if (!acceptTerms) {
-      alert("Please accept the Terms of Use and Privacy Policy");
+      setError("Please accept the Terms of Use and Privacy Policy.");
       return;
     }
 
-    try {
-      setLoading(true);
-
-      let countryCode = "";
-      let phoneNumber = "";
-
-      if (fullPhone.startsWith("+")) {
-        const match = fullPhone.match(/^\+\d+/);
-        if (match) {
-          countryCode = match[0];
-          phoneNumber = fullPhone.slice(countryCode.length);
-        } else {
-          countryCode = "+1";
-          phoneNumber = fullPhone;
-        }
+    // --- Phone parsing ---
+    let countryCode = "";
+    let phoneNumber = "";
+    if (fullPhone.startsWith("+")) {
+      const match = fullPhone.match(/^\+\d+/);
+      if (match) {
+        countryCode = match[0];
+        phoneNumber = fullPhone.slice(countryCode.length).replace(/\D/g, "");
       } else {
         countryCode = "+1";
         phoneNumber = fullPhone;
       }
+    } else {
+      countryCode = "+1";
+      phoneNumber = fullPhone;
+    }
 
-      await authApi.signUp(username, email, password, phoneNumber, countryCode);
-      router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email)}`);
+    try {
+      setLoading(true);
+      await authApi.signUp(username.trim(), email.trim(), password, phoneNumber, countryCode);
+      router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email.trim())}`);
     } catch (err: any) {
       setError(err.response?.data?.message || "Sign up failed. Try again.");
     } finally {
@@ -80,52 +103,62 @@ export default function AppraiserSignUpPage() {
       </h2>
 
       <div className="w-full max-w-[713px] mx-auto">
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
           <AuthInput
+            ref={usernameRef}
             type="text"
             placeholder="Type your username here"
             value={username}
             onChange={setUsername}
             icon="user"
+            name="username"
+            autoComplete="username"
+            autoFocus
           />
 
           <AuthInput
+            ref={emailRef}
             type="email"
             placeholder="Type your email here"
             value={email}
             onChange={setEmail}
             icon="email"
+            name="email"
+            autoComplete="email"
           />
 
           <AuthInput
+            ref={passwordRef}
             type="password"
             placeholder="Type your password here"
             value={password}
             onChange={setPassword}
             icon="password"
+            name="password"
+            autoComplete="new-password"
           />
 
-          {/* ✅ Matching PhoneInput Style */}
-          {/* ✅ Styled PhoneInput field with label, same look as AuthInput */}
-<div className="relative">
-  <label className="block text-gray-900 mb-2 text-sm font-medium">Phone Number</label>
-  <PhoneInput
-  country={"us"}
-  value={fullPhone}
-  onChange={setFullPhone}
-  placeholder="Type your phone number here" // ✅ add this!
-  inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
-  containerClass="!w-full"
-  buttonClass="!border-r !border-black !rounded-l-full"
-  enableSearch
-/>
-
-</div>
-
+          {/* Phone Input - styled to match AuthInput */}
+          <div className="relative mb-6">
+            <label htmlFor="phone" className="block text-gray-900 mb-2 text-sm font-medium">
+              Phone Number
+            </label>
+            <PhoneInput
+              country={"us"}
+              value={fullPhone}
+              onChange={setFullPhone}
+              placeholder="Type your phone number here"
+              inputProps={{ id: "phone", name: "phone", autoComplete: "tel" }}
+              inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
+              containerClass="!w-full"
+              buttonClass="!border-r !border-black !rounded-l-full"
+              enableSearch
+            />
+          </div>
 
           {error && <p className="text-red-600 text-sm">{error}</p>}
 
-          {/* ✅ Terms and Conditions */}
+          {/* Terms checkbox */}
           <div className="flex justify-center">
             <div className="flex items-start gap-3 mb-5 max-w-[600px]">
               <div className="pt-1">
@@ -158,17 +191,16 @@ export default function AppraiserSignUpPage() {
                 className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center"
               >
                 <Link href="/appraiser/terms" className="text-[#1e5ba8] hover:underline font-medium">
-                  Terms of Use 
+                  Terms of Use
                 </Link>
                 <span>and</span>
                 <Link href="/appraiser/privacy" className="text-[#1e5ba8] hover:underline font-medium">
-                  Privacy Policy 
+                  Privacy Policy
                 </Link>
               </label>
             </div>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
@@ -178,7 +210,6 @@ export default function AppraiserSignUpPage() {
           </button>
         </form>
 
-        {/* Footer */}
         <div className="text-center mt-4">
           <span className="text-gray-700 text-base">Already Have An Account? </span>
           <Link href="/appraiser/auth/signin" className="text-[#1e5ba8] font-medium hover:underline text-base">
