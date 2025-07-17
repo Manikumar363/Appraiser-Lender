@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation"
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { userAuth } from "@/lib/api/userAuth";
+import { set } from "date-fns"
 
 
 export default function LenderSignUpPage() {
@@ -23,13 +24,27 @@ export default function LenderSignUpPage() {
   const router = useRouter()
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError("");
+  setFieldErrors({});
 
+
+  // ✅ Validate fields
+  const errors: {[key: string]: string} = {};
+  if(!username.trim()) errors.username= "Username is required";
+  if(!email.trim()) errors.email= "Email is required";
+  if(!password.trim()) errors.password= "Password is required";
+  if(!phone.trim()) errors.phone= "Phone number is required";
   if (!acceptTerms) {
     alert("Please accept the Terms of Use and Privacy Policy");
+    return;
+  }
+
+  if(Object.keys(errors).length > 0) {
+    setFieldErrors(errors);
     return;
   }
 
@@ -93,9 +108,9 @@ export default function LenderSignUpPage() {
        <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
       </div>
     
-     <h2 className="text-3xl font-bold text-gray-800 mb-4 w-full max-w-[713px] mx-auto">Create Your Lender Account</h2>
+     <h2 className="text-3xl font-bold text-gray-800 mb-3 w-full max-w-[713px] mx-auto">Create Your Lender Account</h2>
 
-      <div className="w-full max-w-[713px] mx-auto">
+      <div className="w-full max-w-[765px] mx-auto">
     <form onSubmit={handleSubmit} className="space-y-5">
       <AuthInput
         type="text"
@@ -104,6 +119,9 @@ export default function LenderSignUpPage() {
         onChange={setUsername}
         icon="user"
       />
+      {fieldErrors.username && (
+        <p className="text-red-600 text-sm">{fieldErrors.username}</p>
+      )}
 
       <AuthInput
         type="email"
@@ -112,6 +130,9 @@ export default function LenderSignUpPage() {
         onChange={setEmail}
         icon="email"
       />
+      {fieldErrors.email && (
+        <p className="text-red-600 text-sm">{fieldErrors.email}</p>
+      )}
 
       <AuthInput
         type="password"
@@ -120,6 +141,11 @@ export default function LenderSignUpPage() {
         onChange={setPassword}
         icon="password"
       />
+      {fieldErrors.password && (
+        <p className="text-red-600 text-sm">{fieldErrors.password}</p>
+      )}
+
+      {/* Phone Input */}
 
       <div className="relative">
         <label className="block text-gray-700 mb-2 text-sm font-medium">Phone Number</label>
@@ -128,17 +154,20 @@ export default function LenderSignUpPage() {
         value={phone}
         onChange={setPhone}
         placeholder="Type your phone number here" // ✅ add this!
-        inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
+        inputClass="!w-[765px] !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
         containerClass="!w-full"
         buttonClass="!border-r !border-black !rounded-l-full"
         enableSearch
         />
+        {fieldErrors.phone && (
+          <p className="text-red-600 text-sm mt-1">{fieldErrors.phone}</p>
+        )}
 
       </div>
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {error && <p className="text-red-600 text-sm">{error}</p>}    
 
       {/* Terms Checkbox */}
-      <div className="flex justify-center gap-3">
+      <div className=" w-[765px] mx-auto flex items-center justify-center gap-3">
         <div className="relative pt-1">
           <input
             type="checkbox"
@@ -166,7 +195,7 @@ export default function LenderSignUpPage() {
         </div>
         
        
-        <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center">
+        <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center justify-center">
           <span className="flex flex-wrap gap-2">
           <Link href="/lender/terms" className="text-[#333333] hover:underline font-medium">
             Terms of Use
@@ -183,7 +212,7 @@ export default function LenderSignUpPage() {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
+        className="w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
         disabled={loading}
       >
         {loading ? "Signing up..." : "Sign Up"}
@@ -191,7 +220,7 @@ export default function LenderSignUpPage() {
     </form>
 
     {/* Footer Link */}
-    <div className="text-center mt-4">
+    <div className=" w-[765px] mx-auto text-center mt-4"> {/* change w-[765px] mx-auto at buttons and text tags in authentication pages, it will correctly align */}
       <span className="text-gray-700 text-base">Already Have An Account? </span>
       <Link href="/lender/auth/signin" className="text-[#333333] font-medium hover:underline text-base">
         Sign In

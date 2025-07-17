@@ -1,36 +1,39 @@
 "use client"
 
+
+import { useEffect, useState } from "react"
 import DashboardLayout from "../../../components/dashboard-layout"
 import { JobCard } from "../../../components/job-card"
 import { Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { getMyJobs, Job } from "@/lib/api/jobs1";
 
-const jobsData = [
-  {
-    id: 1,
-    title: "Residential Appraisal",
-    location: "Ontario, Canada",
-    status: "in-progress" as const,
-  },
-  {
-    id: 2,
-    title: "Residential Appraisal",
-    location: "Ontario, Canada",
-    status: "active" as const,
-  },
-  {
-    id: 3,
-    title: "Residential Appraisal",
-    location: "Ontario, Canada",
-    status: "cancelled" as const,
-  },
-]
+
+
 
 export default function LenderDashboardPage() {
   const router = useRouter()
+  const [jobs, setJobs] = useState<Job[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+
+  useEffect(()=>{
+    setLoading(true)
+    getMyJobs("All")
+      .then((data) => {
+        setJobs(data)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error("Fetch jobs error:", err);  // <-- add this
+        setError("Failed to fetch jobs")
+        setLoading(false)
+      })
+  },[])
 
   const handleNewJobRequest = () => {
-    router.push("/lender/jobs/new")
+    router.push("/lender/dashboard/new")
   }
 
   return (
@@ -39,9 +42,21 @@ export default function LenderDashboardPage() {
       <div className="space-y-6 flex-grow">
         {/* Job Cards */}
         <div className="space-y-4">
-          {jobsData.map((job) => (
-            <JobCard key={job.id} title={job.title} location={job.location} status={job.status} />
-          ))}
+            {loading && <div>Loading...</div>}
+            {error && <div className="text-red-500">{error}</div>}
+            {!loading && !error && jobs.length === 0 && (
+              <div>No jobs found.</div>
+            )}
+            {jobs.map((job) => {
+              return (
+                <JobCard
+                  key={job.id}
+                  title={job.purpose}
+                  location={job.address}
+                  status={job.status}
+                />
+              );
+            })}
         </div>
         </div>
 
@@ -51,7 +66,7 @@ export default function LenderDashboardPage() {
         <div className="pb-5 ">
           <button
             onClick={handleNewJobRequest}
-            className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-[#014F9D] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
           >
             <Plus size={20} />
             New Job Request

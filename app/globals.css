@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -56,4 +58,14 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+/* Hide default date picker icon for Chrome, Safari, Edge */
+.hide-date-icon::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+/* Hide for Firefox */
+.hide-date-icon::-moz-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
 }

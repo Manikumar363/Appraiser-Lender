@@ -39,7 +39,7 @@ export default function LenderForgotPasswordPage() {
   return (
     <AuthLayout>
       <div className="flex items-center justify-center min-h-screen px-6">
-    <div className="w-full max-w-[713px]">
+    <div className="w-full max-w-[765px]">
       <div className="mb-4">
         <h1 className="text-4xl font-bold text-gray-900 mb-5">Forgot Password</h1>
         <p className="text-gray-800 text-base">
@@ -59,7 +59,7 @@ export default function LenderForgotPasswordPage() {
         <button
          type="submit"
          disabled={loading}
-         className={`w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium transition-colors ${
+         className={`w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-medium transition-colors ${
            loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#1a4f96]"
          }`}
         >

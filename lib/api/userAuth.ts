@@ -80,7 +80,20 @@ export const userAuth = {
     confirmPassword
   })
   return res.data
- }
- 
+ },
+
+ resetPassword: async(
+  oldPassword: string,
+  newPassword: string,
+ )=> {
+  return await api.put("/lender/change-password", {
+    oldPassword: oldPassword,
+    newPassword: newPassword
+  });
+ },
+
+ deleteAccount: async () => {
+  return await api.delete("/lender/profile");
+  },
 
 };

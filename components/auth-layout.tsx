@@ -17,7 +17,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
       </div>
 
       {/* Right side - Form (60% width) */}
-      <div className="w-full lg:w-[60%] bg-gray-50 overflow-y-auto">
+      <div className="w-full lg:w-[60%] bg-[#FFFFFF] overflow-y-auto">
         <div className="min-h-screen flex justify-start items-start px-6 lg:px-12 py-12">
          <div className="w-full max-w-[713px] flex flex-col gap-6 px-6">
           {children}

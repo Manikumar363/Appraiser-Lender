@@ -82,9 +82,11 @@ export default function LenderVerifyEmailPage() {
 
         <OTPInput length={4} value={otp} onChange={setOtp} onComplete={()=>{}}/>
 
-        {error && <p className="text-red-600 mt-2 text-sm">{error}</p>}
+        {error && (
+           <p className="text-red-600 text-sm text-center mt-0 mb-0">{error}</p>
+        )}
 
-        <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="flex items-center justify-center gap-4 mb-8 mt-2">
           <div className="bg-blue-200 text-blue-800 px-5 py-2 rounded-full font-medium text-base border border-[#014F9D]">
             {formatTime(timeLeft)}
           </div>

@@ -1,6 +1,8 @@
 'use client';
 import { useState,useEffect } from "react";
 import DashboardLayout from "../../../components/dashboard-layout"
+import { contentApi } from "@/lib/api/contentApi";
+import { set } from "date-fns";
 
 interface Section {
   title: string;
@@ -8,32 +10,23 @@ interface Section {
   list?: string[];
 }
 export default function LenderTermsPage() {
-  const [sections, setSections] = useState<Section[]>([]);
+  const [contentHtml, setContentHtml] = useState<string>("");
 
   useEffect(() => {
     // Simulating API fetch
     const fetchData = async () => {
-      const dataFromApi: Section[] = [
-        {
-          title: '1. Terms',
-          content:
-            'Tellus at sit ante rutrum suspendisse pretium, vitae vel dignissim. Nunc, scelerisque adipiscing condimentum...',
-        },
-        {
-          title: '2. Use License',
-          content:
-            'Fermentum erat nisl duis varius risus. Augue ac facilisi porta metus enim. Ullamcorper lacus praesent rhoncus...',
-          list: [
-            'Fermentum erat nisl duis varius risus.',
-            'Augue ac facilisi porta metus enim.',
-            'Ullamcorper lacus praesent rhoncus...',
-          ],
-        },
-      ];
+      try{
+      const res = await contentApi.getAll();
 
-      setSections(dataFromApi);
+      const terms = res.content.find(
+        (item:any) => item.type === "TERMS_AND_CONDITOINS_LENDER"
+      );
+      setContentHtml(terms?.content || "<P>No terms found.</P>");
+      }catch(err){
+        setContentHtml("<p>Failed to load terms.</p>");
+      }
+      
     };
-
     fetchData();
   }, []);
   return (
@@ -49,19 +42,9 @@ export default function LenderTermsPage() {
         </h1>
       </div>
 
-      {sections.map((section, idx) => (
-        <section key={idx} className="space-y-4">
-          <h3 className="text-xl font-bold text-gray-800">{section.title}</h3>
-          <p className="text-gray-600 leading-relaxed">{section.content}</p>
-          {section.list && (
-            <ul className="list-disc list-inside text-gray-600 space-y-1">
-              {section.list.map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          )}
+        <section className="prose max-w-none">
+          <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
         </section>
-      ))}
     </div>
     </DashboardLayout>
   )

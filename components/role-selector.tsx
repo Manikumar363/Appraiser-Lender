@@ -7,10 +7,10 @@ interface RoleSelectorProps {
 
 export function RoleSelector({ selectedRole, onRoleChange }: RoleSelectorProps) {
   const baseButton =
-    "flex-1 py-4 px-6 rounded-full border transition-all text-lg font-medium";
+    "flex-1 h-[56px] flex items-center justify-center py-4 px-6 rounded-full border transition-all text-lg font-medium";
 
   return (
-    <div className="flex gap-3 mb-8">
+    <div className="flex gap-3 mb-8 w-[765px] h-[56px] ">
       <button
       type="button"
       onClick={() => onRoleChange("appraiser")}

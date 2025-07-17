@@ -1,32 +1,37 @@
 import { TimerIcon, BuildingIcon } from "./icons"
+import { getStatusColor,Job } from "../lib/api/jobs1"
+
+type JobStatus =
+  | "in-progress"
+  | "completed"
+  | "cancelled"
+  | "pending"
+  | "accepted"
+  | "client-visit"
+  | "site-visit-scheduled"
+  | "post-visit-summary"
 
 interface JobCardProps {
   title: string
   location: string
-  status: "in-progress" | "active" | "cancelled"
+  status: Job["status"]
 }
 
-const statusConfig = {
-  "in-progress": {
-    label: "In Progress",
-    className: " bg-[#FFC107] text-white",
-    icon: TimerIcon,
-  },
-  active: {
-    label: "Active",
-    className: "bg-[#00F90A] text-white ",
-    icon: TimerIcon,
-  },
-  cancelled: {
-    label: "Cancel",
-    className: "bg-[#FD5D2D] text-white",
-    icon: TimerIcon,
-  },
+const statusConfig: Record<JobStatus, { label: string; icon: any }> = {
+  "in-progress": { label: "In Progress", icon: TimerIcon },
+  completed: { label: "Completed", icon: TimerIcon },
+  cancelled: { label: "Cancelled", icon: TimerIcon },
+  pending: { label: "Pending", icon: TimerIcon },
+  accepted: { label: "Accepted", icon: TimerIcon },
+  "client-visit": { label: "Client Visit", icon: TimerIcon },
+  "site-visit-scheduled": { label: "Site Visit Scheduled", icon: TimerIcon },
+  "post-visit-summary": { label: "Post Visit Summary", icon: TimerIcon },
 }
 
 export function JobCard({ title, location, status }: JobCardProps) {
-  const statusInfo = statusConfig[status]
+  const statusInfo = statusConfig[status] || statusConfig["in-progress"]
   const StatusIconComponent = statusInfo.icon
+  const badgeColor = getStatusColor(status)
 
   return (
     <div className="bg-cyan-50 rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
@@ -39,10 +44,9 @@ export function JobCard({ title, location, status }: JobCardProps) {
           <p className="text-gray-500 text-sm">{location}</p>
         </div>
       </div>
-
       <div className="flex items-center gap-2">
         <span
-          className={`px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 ${statusInfo.className}`}
+          className={`px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 text-white ${badgeColor}`}
         >
           <StatusIconComponent />
           {statusInfo.label}

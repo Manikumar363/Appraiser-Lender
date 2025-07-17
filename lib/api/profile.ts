@@ -24,7 +24,8 @@ export const profileApi = {
 
   // Get lender profile
   getLenderProfile: async ()=>{
-    const res= await api.get("/lender/profile");    
+    const res= await api.get("/lender/profile");
+    console.log("📤 API -> getLenderProfile returned:", res.data);    
     return res.data;
   },
 
@@ -34,8 +35,12 @@ export const profileApi = {
     email?: string;
     phone?: string;
     country_code?: string;
-    company_name?: string;
-    designation?: string;
+    address?: string;
+    province?: string;
+    city?: string;
+    postal_code?: string;
+    applicant?: string;
+    location?: string;
     image?: string;
   })=>{
     const res= await api.patch("/lender/profile", data);

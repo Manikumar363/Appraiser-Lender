@@ -68,7 +68,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <div className="w-64 bg-[#1e5ba8] text-white flex flex-col">
+      <div className="w-64 bg-[#014F9D] text-white flex flex-col">
         {/* Logo */}
         <div className="p-6 flex items-center justify-between">
           <img
@@ -131,7 +131,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-[#1e5ba8] text-white px-6 py-4">
+        <header className="bg-[#014F9D] text-white px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Search */}
             <div className="flex-1 max-w-md relative">
@@ -148,11 +148,13 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             {/* Header Actions */}
 <div className="flex items-center gap-3">
   {shouldShowButton && (
-    <button className="inline-flex items-center justify-center hover:bg-white/10 rounded" onClick={() => router.push(`/${role}/jobs/new`)}>
+    <button className="inline-flex items-center justify-center hover:bg-white/10 rounded" onClick={() => router.push(`/${role}/dashboard/new`)}>
       <AddIcon/>
     </button>
   )}
-  <button className="inline-flex items-center justify-center hover:bg-white/10 rounded">
+  <button className="inline-flex items-center justify-center hover:bg-white/10 rounded"
+  onClick={()=> router.push(`/${role}/notification`)}
+  >
     <Notification />
     
   </button>
