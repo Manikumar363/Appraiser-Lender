@@ -61,14 +61,24 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
     (pathname === `/${role}/dashboard` || pathname.startsWith(`/${role}/jobs`))
 
   const handleLogout = () => {
-    console.log(`Logging out ${role}...`)
-    router.push(`/${role}/auth/signin`)
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("authToken")
+        localStorage.removeItem("userData")
+        localStorage.removeItem("userRole")
+        sessionStorage.clear()
+      }
+      console.log(`Logging out ${role}...`)
+      router.push(`/${role}/auth/signin`)
+    } catch (error) {
+      console.error("Error during logout:", error)
+    }
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen flex bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-[#014F9D] text-white flex flex-col">
+      <div className="w-64 bg-[#014F9D] text-white flex flex-col sticky top-0 h-screen">
         {/* Logo */}
         <div className="p-6 flex items-center justify-between">
           <img
@@ -128,14 +138,14 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         </nav>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      {/* Main */}
+      <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
         <header className="bg-[#014F9D] text-white px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Search */}
             <div className="flex-1 max-w-md relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 outline-none ring-0" />
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60" />
               <input
                 type="text"
                 placeholder="Search anything..."
@@ -145,40 +155,46 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
               />
             </div>
 
-            {/* Header Actions */}
-<div className="flex items-center gap-3">
-  {shouldShowButton && (
-    <button className="inline-flex items-center justify-center hover:bg-white/10 rounded" onClick={() => router.push(`/${role}/dashboard/new`)}>
-      <AddIcon/>
-    </button>
-  )}
-  <button className="inline-flex items-center justify-center hover:bg-white/10 rounded"
-  onClick={()=> router.push(`/${role}/notification`)}
-  >
-    <Notification />
-    
-  </button>
-  <button
-    className="inline-flex items-center justify-center hover:bg-white/10 rounded"
-    onClick={() => router.push(`/${role}/chats`)}
-  >
-    <ChatAlertIcon />
-    
-  </button>
-  <button onClick={() => router.push(`/${role}/profile`)} className="w-10 h-10 rounded-lg overflow-hidden">
-    <img
-      src="/images/profile-avatar.png"
-      alt="User Profile"
-      className="w-full h-full object-cover"
-    />
-  </button>
-</div>
-
+            {/* Actions */}
+            <div className="flex items-center gap-3">
+              {shouldShowButton && (
+                <button
+                  className="p-2 hover:bg-white/10 rounded"
+                  onClick={() => router.push(`/${role}/jobs/new`)}
+                >
+                  <AddIcon />
+                </button>
+              )}
+              <button
+                className="p-2 hover:bg-white/10 rounded"
+                onClick={() => router.push(`/${role}/notification`)}
+              >
+                <Notification />
+              </button>
+              <button
+                className="p-2 hover:bg-white/10 rounded"
+                onClick={() => router.push(`/${role}/chats`)}
+              >
+                <ChatAlertIcon />
+              </button>
+              <button
+                className="w-10 h-10 rounded-lg overflow-hidden hover:ring-2 hover:ring-white/30"
+                onClick={() => router.push(`/${role}/profile`)}
+              >
+                <img
+                  src="/images/profile-avatar.png"
+                  alt="User Profile"
+                  className="w-full h-full object-cover"
+                />
+              </button>
+            </div>
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-6">{children}</main>
+        {/* Content */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="p-6">{children}</div>
+        </main>
       </div>
     </div>
   )
