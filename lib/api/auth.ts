@@ -19,7 +19,7 @@ export interface ApiResponse<T> {
 }
 
 export const authApi = {
-  updatePassword: async (data: { userId: string; newPassword: string; confirmPassword: string }) => {
+  updatePassword: async (data: {newPassword: string; confirmPassword: string }) => {
     const res = await api.patch("/user/change-password", data);
     return res.data;
   },

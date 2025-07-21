@@ -5,18 +5,26 @@ import { useRouter, useSearchParams } from "next/navigation"
 import AuthLayout from "@/components/auth-layout"
 import { OTPInput } from "@/components/otp-input"
 import { authApi } from "@/lib/api/auth"
+// Make sure to install react-hot-toast: npm i react-hot-toast
+import { toast } from "react-hot-toast"
 
 export default function AppraiserVerifyEmailPage() {
   const [otp, setOtp] = useState("")
   const [timeLeft, setTimeLeft] = useState(60)
   const [canResend, setCanResend] = useState(false)
-  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   const email = searchParams.get("email") || ""
   const type = searchParams.get("type") || "register" // default to register if missing
 
+  // Reset timer when component mounts
+  useEffect(() => {
+    setTimeLeft(60)
+  }, [email])
+
+  // Decrement timer
   useEffect(() => {
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
@@ -26,39 +34,50 @@ export default function AppraiserVerifyEmailPage() {
     }
   }, [timeLeft])
 
+  // Reset toast/error on OTP change
+  useEffect(() => {
+    toast.dismiss() // dismiss any previous toast
+  }, [otp])
+
+  // OTP Verification handler
   const handleVerify = async () => {
     if (otp.length !== 4) return
+    setLoading(true)
     try {
       if (type === "register") {
         await authApi.verifyRegisterOtp(email, otp)
+        toast.success("Email verified! You can now sign in.")
         router.push("/appraiser/auth/signin")
       } else if (type === "reset") {
         await authApi.verifyOtp(email, otp)
+        toast.success("OTP verified! Please set your new password.")
         router.push(`/appraiser/auth/set-new-password?email=${encodeURIComponent(email)}`)
       } else {
-        throw new Error("Invalid verification type.")
+        toast.error("Invalid verification type.")
       }
     } catch (err: any) {
-      console.error(err)
-      setError(err.response?.data?.message || "Invalid OTP.")
-      return false
+      // Show API error
+      toast.error(err.response?.data?.message || "Invalid OTP. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
+  // Resend OTP handler
   const handleResend = async () => {
     if (!canResend) return
     try {
       if (type === "register") {
         await authApi.resendRegisterOtp(email)
       } else if (type === "reset") {
-        await authApi.forgotPassword(email) // for reset, you trigger forgot again to resend OTP
+        await authApi.forgotPassword(email) // re-trigger forgot password for OTP
       }
+      setOtp("")
       setTimeLeft(60)
       setCanResend(false)
-      setOtp("")
+      toast.success("OTP resent to your email.")
     } catch (err: any) {
-      console.error(err)
-      setError(err.response?.data?.message || "Failed to resend OTP.")
+      toast.error(err.response?.data?.message || "Failed to resend OTP.")
     }
   }
 
@@ -66,10 +85,16 @@ export default function AppraiserVerifyEmailPage() {
     <AuthLayout>
       <div className="flex flex-col justify-center items-center min-h-screen w-full text-center px-4">
         <h1 className="text-4xl font-bold text-gray-800 mb-4">Verify Your Email</h1>
-        <p className="text-gray-600 mb-4">Code sent to <span className="text-orange-500">{email}</span></p>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        <p className="text-gray-600 mb-4">
+          Code sent to <span className="text-orange-500">{email}</span>
+        </p>
 
-        <OTPInput length={4} value={otp} onChange={setOtp} onComplete={handleVerify} />
+        <OTPInput
+          length={4}
+          value={otp}
+          onChange={setOtp}
+          onComplete={handleVerify}
+        />
 
         <div className="flex items-center justify-center gap-4 mb-8 mt-6">
           <div className="bg-gray-200 px-6 py-3 rounded-full">{timeLeft}s</div>
@@ -86,14 +111,18 @@ export default function AppraiserVerifyEmailPage() {
 
         <button
           onClick={handleVerify}
-          disabled={otp.length !== 4}
-          className={`w-full py-4 rounded-full font-medium ${
-            otp.length === 4
+          disabled={otp.length !== 4 || loading}
+          className={`w-full py-4 rounded-full font-medium flex items-center justify-center ${
+            otp.length === 4 && !loading
               ? "bg-[#1e5ba8] text-white"
               : "bg-gray-300 text-gray-500"
           }`}
         >
-          Verify
+          {loading ? (
+            <span className="loader mr-2"></span> // You can use a spinner or just write "Verifying..."
+          ) : (
+            "Verify"
+          )}
         </button>
       </div>
     </AuthLayout>
