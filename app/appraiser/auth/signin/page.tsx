@@ -90,7 +90,7 @@ export default function AppraiserSignInPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
             <AuthInput
-              ref={emailRef}
+             
               type="email"
               placeholder="Type your email here"
               value={email}
@@ -103,7 +103,6 @@ export default function AppraiserSignInPage() {
 
             <div className="relative">
               <AuthInput
-                ref={passwordRef}
                 type={showPassword ? "text" : "password"}
                 placeholder="Type your password here"
                 value={password}
@@ -125,12 +124,13 @@ export default function AppraiserSignInPage() {
             {error && <p className="text-red-600 text-sm">{error}</p>}
 
             <div className="text-right -mt-3 mb-5">
-              <Link
+              {/* <Link
                 href="/appraiser/auth/forgot-password"
                 className="text-gray-600 hover:text-[#1e5ba8] transition-colors text-sm"
-              >
-                Forgot Password?
-              </Link>
+              > */}
+                {/* Forgot Password?
+              </Link> */}
+              dummy fp
             </div>
 
             <button

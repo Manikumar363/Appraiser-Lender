@@ -44,17 +44,10 @@ export default function AppraiserVerifyEmailPage() {
     if (otp.length !== 4) return
     setLoading(true)
     try {
-      if (type === "register") {
+      
         await authApi.verifyRegisterOtp(email, otp)
         toast.success("Email verified! You can now sign in.")
         router.push("/appraiser/auth/signin")
-      } else if (type === "reset") {
-        await authApi.verifyOtp(email, otp)
-        toast.success("OTP verified! Please set your new password.")
-        router.push(`/appraiser/auth/set-new-password?email=${encodeURIComponent(email)}`)
-      } else {
-        toast.error("Invalid verification type.")
-      }
     } catch (err: any) {
       // Show API error
       toast.error(err.response?.data?.message || "Invalid OTP. Please try again.")
@@ -67,11 +60,9 @@ export default function AppraiserVerifyEmailPage() {
   const handleResend = async () => {
     if (!canResend) return
     try {
-      if (type === "register") {
+     
         await authApi.resendRegisterOtp(email)
-      } else if (type === "reset") {
-        await authApi.forgotPassword(email) // re-trigger forgot password for OTP
-      }
+      toast.success("OTP resent to your email.")
       setOtp("")
       setTimeLeft(60)
       setCanResend(false)

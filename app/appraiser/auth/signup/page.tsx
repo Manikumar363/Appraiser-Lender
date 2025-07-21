@@ -105,7 +105,7 @@ export default function AppraiserSignUpPage() {
       <div className="w-full max-w-[713px] mx-auto">
         <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
           <AuthInput
-            ref={usernameRef}
+            // ref={usernameRef}
             type="text"
             placeholder="Type your username here"
             value={username}
@@ -117,7 +117,7 @@ export default function AppraiserSignUpPage() {
           />
 
           <AuthInput
-            ref={emailRef}
+            // ref={emailRef}
             type="email"
             placeholder="Type your email here"
             value={email}
@@ -128,7 +128,7 @@ export default function AppraiserSignUpPage() {
           />
 
           <AuthInput
-            ref={passwordRef}
+            // ref={passwordRef}
             type="password"
             placeholder="Type your password here"
             value={password}
