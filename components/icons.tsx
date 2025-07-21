@@ -289,7 +289,7 @@ export const CalendarIcon=(props: React.SVGProps<SVGSVGElement>)=>(
   </svg>
 )
 export const RightArrow=(props: React.SVGProps<SVGSVGElement>)=>(
-  <svg {...props}  className={props.className} viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg {...props}  width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
    <path d="M5.12 16.5L4 15.38L13.28 6.1H8V4.5H16V12.5H14.4V7.22L5.12 16.5Z" fill="#014F9D"/>
   </svg>
 )
