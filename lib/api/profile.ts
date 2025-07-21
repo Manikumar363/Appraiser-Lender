@@ -35,12 +35,7 @@ export const profileApi = {
     email?: string;
     phone?: string;
     country_code?: string;
-    address?: string;
-    province?: string;
-    city?: string;
-    postal_code?: string;
     applicant?: string;
-    location?: string;
     image?: string;
   })=>{
     const res= await api.patch("/lender/profile", data);

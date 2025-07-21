@@ -1,0 +1,31 @@
+[33m039f26b[m[33m ([m[1;36mHEAD[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: rebase (start): checkout origin/master
+[33m84717ee[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{1}: rebase (abort): returning to refs/heads/master
+[33m84717ee[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{2}: rebase (abort): returning to refs/heads/master
+[33m4689c4a[m HEAD@{3}: commit: changes in jobs page and UI changes
+[33md1394e0[m HEAD@{4}: commit: added job pages and corrected the profile page and UI changes
+[33m82f5ab5[m HEAD@{5}: commit: fixed UI across all pages as per bug sheet
+[33m179fd4b[m HEAD@{6}: pull origin master: Merge made by the 'ort' strategy.
+[33mca9c919[m HEAD@{7}: commit: authentication and profile api integration completed
+[33m426bc79[m HEAD@{8}: pull origin master: Fast-forward
+[33mbb7a0ef[m HEAD@{9}: commit: added userAuth and api is working for auth pages
+[33m749eabe[m HEAD@{10}: commit: signup issue fixed
+[33m4f674d4[m HEAD@{11}: commit (merge): changes in profile page
+[33m167ac0d[m HEAD@{12}: commit: changes in Profile page
+[33m9e505fc[m HEAD@{13}: commit: UI changes in dashboard page
+[33m49d16c3[m HEAD@{14}: commit: UI changes for request page
+[33m549c5bb[m HEAD@{15}: commit: Added icon and UI changes in job section
+[33m62f3d78[m HEAD@{16}: pull origin master: Fast-forward
+[33mb83ddda[m HEAD@{17}: commit: UI changes to authentication pages
+[33m0331d81[m HEAD@{18}: commit: made UI changes in Authentication and added 2 new pages
+[33me88f35b[m HEAD@{19}: pull origin master: Fast-forward
+[33m15e3692[m HEAD@{20}: commit: deleted support
+[33me01d4a3[m HEAD@{21}: reset: moving to e01d4a3778e75ae1018a50bfea1e90318e57fa00
+[33m84717ee[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{22}: checkout: moving from lender to master
+[33m4ace330[m[33m ([m[1;32mlender[m[33m)[m HEAD@{23}: commit: fix some conflicts
+[33m2b38b9a[m HEAD@{24}: checkout: moving from 2b38b9a447ef468e0a6fcc9e3f3411e81c543c15 to lender
+[33m2b38b9a[m HEAD@{25}: pull origin master --rebase (start): checkout 2b38b9a447ef468e0a6fcc9e3f3411e81c543c15
+[33m84717ee[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{26}: commit: made some UI changes
+[33ma867de8[m HEAD@{27}: commit: moved component files
+[33mf6ab10d[m HEAD@{28}: commit: made progress
+[33m8dc2cd6[m HEAD@{29}: commit: added a new page for jobs
+[33m5d833c5[m HEAD@{30}: commit (initial): Made changes for dashboard

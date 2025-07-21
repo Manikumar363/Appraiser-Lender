@@ -6,7 +6,7 @@ import {MapIcon, MessageIcon, CalendarIcon, LoadIcon, PDFIcon, ImageIcon, CardIc
 import { Button } from "../../../../components/ui/button"
 import { Badge } from "../../../../components/ui/badge"
 import DashboardLayout from "@/components/dashboard-layout"
-import { getJob, getProgressSteps, JobDetail } from "../../../../lib/api/jobs"
+import { getSingleJob, getProgressSteps, JobDetail,getStatusColor } from "../../../../lib/api/jobs1"
 
 export default function JobDetailPage() {
   const params = useParams()!
@@ -23,7 +23,7 @@ export default function JobDetailPage() {
   useEffect(() => {
     async function loadJob() {
       try {
-        const data = await getJob(id);
+        const data = await getSingleJob(id);
         setJob(data)
       } catch (err: any) {
         setError(err.message || "Failed to load job")
@@ -44,8 +44,8 @@ export default function JobDetailPage() {
       <div className="p-6 min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" size="lg" onClick={() => router.push("/jobs")} className="p-2">
-            <RightArrowIcon className="w-6 h-6"/>
+          <Button variant="ghost" size="lg" onClick={() => router.push("/lender/jobs")} className="p-0">
+            <RightArrowIcon className="w-16 h-16"/>
           </Button>
           <h1 className="text-xl font-semibold text-gray-900">Job Details</h1>
         </div>
@@ -58,18 +58,41 @@ export default function JobDetailPage() {
                 <BuildingIcon className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-lg font-semibold">{job.title}</h2>
-                <p className="text-gray-600 text-sm mb-1">{job.location}</p>
-                <Badge className="bg-blue-700 text-white px-4 py-2 rounded-full text-xs">
+                <h2 className="text-lg font-semibold">{job.purpose}</h2>
+                <p className="text-gray-600 text-sm mb-1">{job.address}</p>
+                <Badge 
+                className="text-white px-4 py-2 rounded-full text-xs"
+                  style={{
+                    backgroundColor:
+                      job.status === "pending" ||
+                      job.status === "client-visit" ||
+                      job.status === "site-visit-scheduled" ||
+                      job.status === "post-visit-summary"
+                        ? "#FFC107"
+                        : job.status === "completed"
+                        ? "#22c55e"
+                        : job.status === "cancelled"
+                        ? "#ef4444"
+                        : "#FFC107"                
+                  }}>
                  <LoadIcon className="w-4 h-4 mr-2" />
-                 {job.statusText}
+                 {job.job_status}
                 </Badge>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm"><MapIcon className="w-6 h-6 mr-1" />{job.city}</Button>
-              <Button variant="outline" size="sm"><CalendarIcon className="w-4 h-4 mr-2" />{job.date}</Button>
-              <Button variant="outline" size="sm"><MessageIcon className="w-5 h-5 mr-1" />Message</Button>
+              <Button variant="outline" size="sm" className="bg-cyan-50 border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
+                <MapIcon className="w-6 h-6 mr-1 " />
+                {job.address}
+              </Button>
+              <Button variant="outline" size="sm" className="bg-cyan-50 border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
+                <CalendarIcon className="w-4 h-4 mr-2" />
+                {new Date(job.preferred_date).toLocaleDateString()}
+              </Button>
+              <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors">
+                <MessageIcon className="w-5 h-5 mr-1" />
+                Message
+              </Button>
               <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600 p-2">
                 <RightArrow className="w-5 h-5" />
               </Button>
@@ -95,37 +118,44 @@ export default function JobDetailPage() {
         </div>
 
         {/* Files */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
-          <div className="flex flex-wrap gap-4 mb-4">
-            {job.files.map((file, idx) => (
-              <div key={idx} className="bg-cyan-50 rounded-xl py-4 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
-                <div className="w-10 h-10 flex items-center justify-center mb-2">
-                  {file.type === "pdf" ? <PDFIcon className="w-6 h-6 text-gray-700" /> : <ImageIcon className="w-6 h-6 text-gray-700" />}
-                </div>
-                <p className="font-medium text-gray-900 text-sm mb-1 truncate">{file.name}</p>
-                <p className="text-sm text-gray-500">{file.uploadDate}</p>
-              </div>
-            ))}
-          </div>
-          <Button className="w-full bg-blue-800 hover:bg-blue-700 text-white py-3 rounded-lg">Download All</Button>
-        </div>
+<div className="mb-6">
+  <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
+  <div className="flex flex-wrap gap-4 mb-4">
+    {job.lender_doc && (
+      <div className="bg-cyan-50 rounded-xl py-4 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
+        <ImageIcon className="w-6 h-6 text-gray-700 mb-2" />
+        <a href={job.lender_doc} target="_blank" rel="noopener noreferrer" className="font-medium text-gray-700 text-sm mb-1 truncate">
+          Download Lender Doc
+        </a>
+      </div>
+    )}
+    {Array.isArray(job.appraiser_docs) && job.appraiser_docs.map((doc, idx) => (
+      <div key={idx} className="bg-cyan-50 rounded-xl py-4 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
+        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
+        <a href={doc} target="_blank" rel="noopener noreferrer" className="font-medium text-gray-700 text-sm mb-1 truncate">
+          Download Appraiser Doc
+        </a>
+      </div>
+    ))}
+  </div>
+  <Button className="w-full bg-blue-800 hover:bg-blue-700 text-white py-3 rounded-lg">Download All</Button>
+</div>
 
         {/* Transaction */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-          <div className="bg-cyan-50 rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center">
-                <CardIcon className="w-8 h-8 text-white" />
-              </div>
-              <span className="text-xl font-semibold text-gray-900">${job.amount}</span>
-            </div>
-            <Badge className={`${job.paymentStatus === "paid" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-sm`}>
-              {job.paymentStatus === "paid" ? "Paid" : "Pending"}
-            </Badge>
-          </div>
-        </div>
+<div className="mb-6">
+  <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
+  <div className="bg-cyan-50 rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center">
+        <CardIcon className="w-8 h-8 text-white" />
+      </div>
+      <span className="text-xl font-semibold text-gray-900">${job.price}</span>
+    </div>
+     <Badge className={`${job.status === "completed" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-sm`}>
+      {job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : "Pending"}
+    </Badge>
+  </div>
+</div>
 
         {/* Accept */}
         {job.status !== "completed" && (

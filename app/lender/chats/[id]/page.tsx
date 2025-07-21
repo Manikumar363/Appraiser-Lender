@@ -109,7 +109,7 @@ export default function ChatDetailPage() {
 
   return (
     <DashboardLayout role="lender">
-      <div className="flex flex-col h-screen bg-white"> 
+      <div className="flex flex-col h-screen bg-white overflow-hidden relative"> 
         {/* Chat Header Card */}
         <div className="flex justify-center pt-4 pb-4 w-full">
           <div className="bg-[#014F9D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-4xl">
@@ -136,8 +136,8 @@ export default function ChatDetailPage() {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto w-full flex flex-col items-center">
-          <div className="max-w-4xl w-full mx-auto flex flex-col gap-6 py-4 px-0">
+        <div className="flex-1 w-full flex flex-col items-center overflow-hidden">
+          <div className="max-w-4xl w-full mx-auto flex flex-col gap-6 px-0">
             {messages.map((message) => {
               const isCurrentUser = message.senderId === user?.id;
               return (
@@ -198,42 +198,42 @@ export default function ChatDetailPage() {
         </div>
 
         {/* Sticky Message Input Bar */}
-        <div className="w-full bg-[#014F9D] flex items-center" style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 10 }}>
-          <div className="max-w-4xl w-full mx-auto flex items-center px-0">
-            <form
-              onSubmit={handleSendMessage}
-              className="flex gap-3 w-full px-4 py-4"
-              style={{ boxShadow: "0 2px 8px 0 rgba(20, 74, 156, 0.08)" }}
-            >
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-white hover:text-blue-200 p-1"
-                tabIndex={-1}
-              >
-             <Paperclip className="w-5 h-5" />
-              </Button>
-              <input
-                type="text"
-                placeholder="Type your message..."
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                disabled={sending}
-                className="flex-1 bg-[#E6F9F3] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 px-5 py-3"
-                style={{ outline: "none" }}
-              />
-              <Button
-                type="submit"
-                disabled={!newMessage.trim() || sending}
-                className="bg-white hover:bg-blue-100 text-[#014F9D] p-3 rounded-full shadow-none"
-                style={{ minWidth: 48, minHeight: 48 }}
-              >
-                {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-              </Button>
-           </form>
-          </div>
-        </div>
+<div className="w-full flex items-center justify-center bg-[#014F9D]" style={{ position: "fixed", left: "256px", right: 0, bottom: 0, zIndex: 10,height:"72px"}}>
+  <div className="max-w-4xl w-full mx-auto flex items-center px-0">
+    <form
+      onSubmit={handleSendMessage}
+      className="flex gap-3 w-full px-4 py-4"
+      style={{ boxShadow: "0 2px 8px 0 rgba(20, 74, 156, 0.08)" }}
+    >
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="text-white hover:text-blue-200 p-1"
+        tabIndex={-1}
+      >
+        <Paperclip className="w-5 h-5" />
+      </Button>
+      <input
+        type="text"
+        placeholder="Type your message..."
+        value={newMessage}
+        onChange={(e) => setNewMessage(e.target.value)}
+        disabled={sending}
+        className="flex-1 bg-[#E6F9F3] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 py-3 px-3"
+        style={{ outline: "none" }}
+      />
+      <Button
+        type="submit"
+        disabled={!newMessage.trim() || sending}
+        className="bg-white hover:bg-blue-100 text-[#014F9D] p-3 rounded-full shadow-none"
+        style={{ minWidth: 48, minHeight: 48 }}
+      >
+        {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+      </Button>
+    </form>
+  </div>
+</div>
       </div>
     </DashboardLayout>
   );

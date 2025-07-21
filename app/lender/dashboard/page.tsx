@@ -47,16 +47,19 @@ export default function LenderDashboardPage() {
             {!loading && !error && jobs.length === 0 && (
               <div>No jobs found.</div>
             )}
-            {jobs.map((job) => {
-              return (
-                <JobCard
-                  key={job.id}
-                  title={job.purpose}
-                  location={job.address}
-                  status={job.status}
-                />
-              );
-            })}
+            {jobs.map((job) => (
+             <div
+               key={job.id}
+               className="cursor-pointer"
+               onClick={() => router.push(`/lender/jobs/${job.id}`)}
+             >
+             <JobCard
+               title={job.purpose}
+               location={job.address}
+               jobStatus={job.job_status}
+              />
+            </div>
+          ))}
         </div>
         </div>
 

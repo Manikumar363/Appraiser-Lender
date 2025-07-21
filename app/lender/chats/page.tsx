@@ -48,7 +48,7 @@ export default function ChatPage() {
       setLoading(true)
       setError(null)
       try {
-        const response = await chatApi.getMessages(1, 50)
+        const response = await chatApi.getMessages("someChatId",1, 50)
         // Map backend response to ChatConversation[]
         const mapped = (response.conversations || response).map((conv: any) => ({
           id: conv.id,

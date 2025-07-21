@@ -45,34 +45,33 @@ export default function NewJobRequestPage() {
   }
 
   const purposeOptions = [
-    "Purchase",
-    "Refinance",
-    "Home Equity Line of Credit",
-    "Property Tax Assessment",
-    "Insurance Claim",
-    "Estate Planning",
-    "Divorce Settlement",
-    "Other",
+    "Testing",
+    "Owner",
+    "Unknown",
+    "Vacant",
   ]
 
   const intendedUseOptions = [
-    "Mortgage Lending",
-    "Property Tax Assessment",
-    "Insurance Coverage",
-    "Investment Analysis",
-    "Legal Proceedings",
-    "Estate Settlement",
-    "Other",
+    "Testing",
+    "new 10",
+    "new 8",
+    "new 7",
+    "new 6",
+    "new 5",
+    "new 4",
+    "new 3",
+    "new 2",
+    "new intended use",
   ]
 
   const requestedByOptions = [
-    "Lender",
-    "Real Estate Agent",
-    "Property Owner",
-    "Attorney",
-    "Insurance Company",
-    "Government Agency",
-    "Other",
+    "new set type",
+    "new 45 trt",
+    "new service ty",
+    "Property Two Test",
+    "Testing New Property 1",
+    "new pro",
+    "new 2",
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -166,10 +165,16 @@ export default function NewJobRequestPage() {
                     buttonStyle={{
                       border: 'none',
                       backgroundColor: 'transparent',
+                      marginLeft: '0.5rem',
+                      marginRight: '0.5rem',
+                      height: '48px', // Ensures flag button matches input height
+                      display: 'flex',
+                      alignItems: 'center',
                     }}
                    inputProps={{
                      name: 'phone',
                      required: true,
+                     
                    }}
                  />
                </div>

@@ -25,7 +25,10 @@ export default function AppraiserProfilePage() {
     name: "",
     email: "",
     applicant: "",
-    location: "",
+    location: {
+      latitude: "",
+      longitude: "",
+    },
     phone: "",
     image: "",
     country_code: "",
@@ -76,13 +79,14 @@ export default function AppraiserProfilePage() {
       ...prev,
       [name]: value,
     }));
-  };
+  }
   
- const handlePhoneChange = (value: string) => {
+ const handlePhoneChange = (value: string, data: any) => {
     setFormData((prev) => ({
-      ...prev,
-      phone: value,
-    }));
+    ...prev,
+    phone: value.startsWith("+") ? value : `+${value}`,
+    country_code: data.dialCode || "", // still save this in case needed separately
+  }));
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -239,55 +243,30 @@ export default function AppraiserProfilePage() {
                   }`}
                 />
               </div>
+            
             </div>
-            {/*location*/}
-             <div className="relative">
-              <div className="flex items-center  rounded-full px-4 py-3 border border-gray-600">
-                <div className="mr-3">
-                  <LocationIcon />
-                </div>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="Location"
-                  readOnly={!isEditing}
-                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
-                    !isEditing ? "cursor-not-allowed" : ""
-                  }`}
-                />
-              </div>
-            </div>
-
-            {/* Phone Input */}
+           
 
            <div className="relative">
-           <label className="block text-gray-700 mb-2 text-sm font-medium">Phone Number</label>
-           <PhoneInput
-             country={"us"}
-             value={formData.phone}
-             onChange={(value: string, data: CountryData | {} | undefined) =>{
-               const country = data as CountryData;
-               const dialCode = country?.dialCode || '';
-               setFormData((prev) => ({
-                ...prev,
-                phone: value,
-                country_code: dialCode,
-              }));
-             }}
-             placeholder="Type your phone number here" // ✅ add this!
-             inputClass={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
-                    !isEditing ? "cursor-not-allowed" : ""
-             }`}
-             inputProps={{
-               readOnly: !isEditing,
-                disabled: !isEditing, // Optional: disables dropdown and input
-             }}
-             enableSearch
-            />
+  
 
-           </div> 
+  <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
+    <PhoneInput
+      country={"us"}
+      value={formData.phone}
+      onChange={handlePhoneChange}
+      containerClass="flex-1"
+      inputClass="!w-full !bg-transparent !border-none !outline-none !text-sm !text-gray-900 !placeholder-gray-500 h-5"
+      buttonClass={`!bg-transparent !border-none ${!isEditing ? "cursor-not-allowed" : ""}`}
+      inputProps={{
+        readOnly: !isEditing,
+        disabled: !isEditing,
+        style: { height: "25px" }
+      }}
+      enableSearch
+    />
+  </div>
+</div>
 
             {error && <p className="text-red-600">{error}</p>}
             {success && <p className="text-green-600">{success}</p>}

@@ -84,20 +84,27 @@ export interface JobDetail extends Job {
 }
 export type JobFilter = "All" | "in-progress" | "completed" | "cancel";
 
-export function getStatusColor(status: Job["status"]) {
-  switch (status) {
+export function getStatusColor(status: string) {
+  switch (status?.toLowerCase()) {
     case "client-visit":
       return "bg-[#FFC107] hover:bg-[#e6b306]";
     case "accepted":
-      return "bg-[#00F90A] hover:bg-[#00dd09]"; // or your preferred color
+    case "active":
+      return "bg-[#00F90A] hover:bg-[#00dd09]";
     case "site-visit-scheduled":
       return "bg-[#FFC107] hover:bg-[#e6b306]";
     case "post-visit-summary":
       return "bg-[#FFC107] hover:bg-[#e6b306]";
     case "cancelled":
       return "bg-red-500 hover:bg-red-600";
-    case "pending" :
+    case "pending":
       return "bg-[#FFC107] hover:bg-[#e6b306]";
+    case "in-progress": // <-- add this line
+      return "bg-[#FFC107] hover:bg-[#e6b306]";
+    case "completed":
+      return "bg-green-500 hover:bg-green-600";
+    default:
+      return "bg-gray-400 hover:bg-gray-500";
   }
 }
 export function getProgressSteps(status: Job["status"] | "in-progress") {
@@ -146,8 +153,7 @@ export async function getMyJobs(filter: JobFilter = "in-progress"): Promise<Job[
     case "in-progress":
       return allJobs.filter(
         (job) =>
-          job.status === "accepted" &&
-          ["Client Visit", "Active", "Site Visit Scheduled", "Post Visit Summary"].includes(job.job_status || "")
+          ["pending","Client Visit", "Active", "Site Visit Scheduled", "Post Visit Summary"].includes(job.status)
       );
     case "completed":
       return allJobs.filter((job) => job.status === "completed");
@@ -165,11 +171,12 @@ export async function postJob(payload: any): Promise<any>{
     });
     return res.data;
 }
-
 export async function getSingleJob(id: string): Promise<JobDetail> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const res = await api.get(`/lender/my-jobs/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
-  })
-  return res.data
+  });
+  const data = res.data;
+  if (!data.success || !data.job) throw new Error("Job not found");
+  return data.job;
 }

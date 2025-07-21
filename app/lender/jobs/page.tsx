@@ -87,25 +87,39 @@ export default function JobsPage() {
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.property_type}</h3>
                       <p className="text-gray-600 text-sm">{job.address}</p>
                     </div>
-                    <Badge className={`${getStatusColor(job.status)} text-white px-4 py-2 rounded-full text-sm font-medium ml-4`}>
-                      <LoadIcon className="w-4 h-4 mr-2" />
-                      {job.status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
-                    </Badge>
+                    {/* <Badge className={`${getStatusColor(job.status)} text-white px-4 py-2 rounded-full text-sm font-medium ml-4`}> */}
+                      {/* <LoadIcon className="w-4 h-4 mr-2" /> */}
+                      {/* {job.status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())} */}
+                    {/* </Badge> */}
+                    <Badge
+                     className="px-4 py-2 rounded-full text-sm font-medium ml-4 flex items-center text-white "
+                       style={{
+                         backgroundColor:
+                           job.status?.toLowerCase() === "pending" ? "#FFC107"
+                         : job.status?.toLowerCase() === "completed" ? "#22c55e"
+                         : job.status?.toLowerCase() === "cancelled" ? "#ef4444"
+                         : job.status?.toLowerCase() === "accepted" || job.status?.toLowerCase() === "active" ? "#00F90A"
+                         : "#FFC107"
+                       }}
+                   >
+                     <LoadIcon className="w-4 h-4 mr-2" />
+                     {job.status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                   </Badge>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Button variant="outline" size="sm" className="...">
+                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-white transition-colors">
                       <MapIcon className="w-6 h-6 mr-1" />
                       {getCityCountry(job.address)}
                     </Button>
-                    <Button variant="outline" size="sm" className="...">
+                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-white transition-colors">
                       <CalendarIcon className="w-4 h-4 mr-2" />
                       {new Date(job.preferred_date).toLocaleDateString()}
                     </Button>
-                    <Button variant="outline" size="sm" className="...">
+                    <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors">
                       <MessageIcon className="w-5 h-5 me-1" />
                       Message
                     </Button>
-                    <Button variant="ghost" size="lg" className="text-gray-400 hover:text-gray-100 p-4 rounded-full" onClick={() => router.push(`/jobs/${job.id}`)}>
+                    <Button variant="ghost" size="lg" className="text-gray-400 hover:text-white p-4 rounded-full" onClick={() => router.push(`/lender/jobs/${job.id}`)}>
                       <RightArrow className="w-12 h-12" />
                     </Button>
                   </div>

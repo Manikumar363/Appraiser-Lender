@@ -14,7 +14,7 @@ type JobStatus =
 interface JobCardProps {
   title: string
   location: string
-  status: Job["status"]
+  jobStatus?: string
 }
 
 const statusConfig: Record<JobStatus, { label: string; icon: any }> = {
@@ -28,10 +28,15 @@ const statusConfig: Record<JobStatus, { label: string; icon: any }> = {
   "post-visit-summary": { label: "Post Visit Summary", icon: TimerIcon },
 }
 
-export function JobCard({ title, location, status }: JobCardProps) {
-  const statusInfo = statusConfig[status] || statusConfig["in-progress"]
-  const StatusIconComponent = statusInfo.icon
-  const badgeColor = getStatusColor(status)
+export function JobCard({ title, location, jobStatus }: JobCardProps) {
+  const normalizedStatus =
+    typeof jobStatus === "string"
+      ? jobStatus.toLowerCase().replace(/\s+/g, "-")
+      : "pending";
+  const statusInfo = jobStatus ? statusConfig[normalizedStatus as JobStatus] : undefined;
+  const StatusIconComponent = statusInfo ? statusInfo.icon : TimerIcon;
+  const badgeColor = getStatusColor(normalizedStatus);
+
 
   return (
     <div className="bg-cyan-50 rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
@@ -45,11 +50,26 @@ export function JobCard({ title, location, status }: JobCardProps) {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <span
-          className={`px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 text-white ${badgeColor}`}
+         <span
+          className={`px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 text-white  ${badgeColor}`}
+          style={{
+           backgroundColor:
+            normalizedStatus === "pending" ||
+            normalizedStatus === "client-visit" ||
+            normalizedStatus === "site-visit-scheduled" ||
+            normalizedStatus === "post-visit-summary"
+              ? "#FFC107"
+              : normalizedStatus === "completed"
+              ? "#22c55e"
+              : normalizedStatus === "cancelled"
+              ? "#ef4444"
+              : normalizedStatus === "accepted" || normalizedStatus === "active"
+              ? "#00F90A"
+              : "#FFC107"
+            }}
         >
           <StatusIconComponent />
-          {statusInfo.label}
+          {statusInfo ? statusInfo.label : (jobStatus || "Unknown")}
         </span>
       </div>
     </div>
