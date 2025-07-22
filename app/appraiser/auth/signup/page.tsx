@@ -20,7 +20,6 @@ export default function AppraiserSignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Field refs for focus after error (optional)
   const usernameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -31,20 +30,19 @@ export default function AppraiserSignUpPage() {
     e.preventDefault();
     setError("");
 
-    // --- Field-level validation ---
     if (!username.trim()) {
       setError("Please enter your username.");
-      if (usernameRef.current) usernameRef.current.focus();
+      usernameRef.current?.focus();
       return;
     }
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError("Please enter a valid email address.");
-      if (emailRef.current) emailRef.current.focus();
+      emailRef.current?.focus();
       return;
     }
     if (!password || password.length < 6) {
       setError("Password must be at least 6 characters.");
-      if (passwordRef.current) passwordRef.current.focus();
+      passwordRef.current?.focus();
       return;
     }
     if (!fullPhone || fullPhone.replace(/\D/g, "").length < 10) {
@@ -56,7 +54,6 @@ export default function AppraiserSignUpPage() {
       return;
     }
 
-    // --- Phone parsing ---
     let countryCode = "";
     let phoneNumber = "";
     if (fullPhone.startsWith("+")) {
@@ -105,7 +102,6 @@ export default function AppraiserSignUpPage() {
       <div className="w-full max-w-[713px] mx-auto">
         <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
           <AuthInput
-            // ref={usernameRef}
             type="text"
             placeholder="Type your username here"
             value={username}
@@ -117,7 +113,7 @@ export default function AppraiserSignUpPage() {
           />
 
           <AuthInput
-            // ref={emailRef}
+            
             type="email"
             placeholder="Type your email here"
             value={email}
@@ -128,7 +124,7 @@ export default function AppraiserSignUpPage() {
           />
 
           <AuthInput
-            // ref={passwordRef}
+           
             type="password"
             placeholder="Type your password here"
             value={password}
@@ -138,9 +134,9 @@ export default function AppraiserSignUpPage() {
             autoComplete="new-password"
           />
 
-          {/* Phone Input - styled to match AuthInput */}
-          <div className="relative mb-6">
-            <label htmlFor="phone" className="block text-gray-900 mb-2 text-sm font-medium">
+          {/* Phone Input */}
+          <div className="relative">
+            <label htmlFor="phone" className="block text-gray-700 mb-2 text-sm font-medium">
               Phone Number
             </label>
             <PhoneInput

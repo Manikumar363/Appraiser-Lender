@@ -1,4 +1,3 @@
-// app/appraiser/auth/signin/page.tsx
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -9,19 +8,19 @@ import AuthLayout from "@/components/auth-layout";
 import { RoleSelector } from "@/components/role-selector";
 import { AuthInput } from "@/components/auth-input";
 import { authApi } from "@/lib/api/auth";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function AppraiserSignInPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("appraiser");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
-  // Focus refs for improved UX
   const emailRef = useRef<HTMLInputElement | null>(null);
   const passwordRef = useRef<HTMLInputElement | null>(null);
-
   const router = useRouter();
 
   useEffect(() => {
@@ -39,31 +38,32 @@ export default function AppraiserSignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setFieldErrors({});
 
     const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const errors: { [key: string]: string } = {};
 
-    if (!trimmedEmail || !password.trim()) {
-      setError("Email and password are required.");
-      toast.error("Email and password are required.");
-      // Focus first empty input
-      if (!trimmedEmail && emailRef.current) emailRef.current.focus();
-      else if (!password && passwordRef.current) passwordRef.current.focus();
+    if (!trimmedEmail) errors.email = "Email is required";
+    if (!trimmedPassword) errors.password = "Password is required";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
       return;
     }
 
     setLoading(true);
     try {
-      const res = await authApi.signIn(trimmedEmail, password);
+      const res = await authApi.signIn(trimmedEmail, trimmedPassword);
       localStorage.setItem("authToken", res.token);
       toast.success("Login successful");
       router.push("/appraiser/dashboard");
     } catch (err: any) {
       const message = err?.response?.data?.message || err?.message || "Login failed";
       setError(message);
-      toast.error(message);
-      setPassword(""); // Security: clear password field on error
-      // Optionally, focus password field if login failed
+      setPassword("");
       if (passwordRef.current) passwordRef.current.focus();
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -72,9 +72,9 @@ export default function AppraiserSignInPage() {
   return (
     <AuthLayout>
       <div className="flex flex-col justify-center min-h-screen w-full items-center">
-        <div className="w-full max-w-[713px] px-6">
+        <div className="w-full max-w-[765px] px-6">
           <div className="mb-4 mt-0">
-            <h1 className="text-[22px] font-medium text-gray-800">Sign In as</h1>
+            <h1 className="text-3xl font-semibold text-gray-800">Sign In as</h1>
           </div>
 
           <div className="mb-6">
@@ -90,7 +90,6 @@ export default function AppraiserSignInPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on">
             <AuthInput
-             
               type="email"
               placeholder="Type your email here"
               value={email}
@@ -100,6 +99,7 @@ export default function AppraiserSignInPage() {
               name="email"
               autoComplete="email"
             />
+            {fieldErrors.email && <p className="text-red-600 text-sm">{fieldErrors.email}</p>}
 
             <div className="relative">
               <AuthInput
@@ -111,40 +111,40 @@ export default function AppraiserSignInPage() {
                 name="password"
                 autoComplete="current-password"
               />
-              <button
+              {/* <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-4 top-3 text-sm text-blue-600 hover:underline"
+                className="absolute top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 tabIndex={-1}
               >
-                {showPassword ? "Hide" : "Show"}
-              </button>
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button> */}
             </div>
+            {fieldErrors.password && <p className="text-red-600 text-sm">{fieldErrors.password}</p>}
 
             {error && <p className="text-red-600 text-sm">{error}</p>}
 
-            <div className="text-right -mt-3 mb-5">
-              {/* <Link
+            <div className="w-[765px] mx-auto flex justify-end -mt-2">
+              <Link
                 href="/appraiser/auth/forgot-password"
-                className="text-gray-600 hover:text-[#1e5ba8] transition-colors text-sm"
-              > */}
-                {/* Forgot Password?
-              </Link> */}
-              dummy fp
+                className="text-[#333333] font-semibold text-medium"
+              >
+                Forgot Password?
+              </Link>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#154c8c] transition-colors text-base shadow-sm disabled:opacity-50"
+              className="w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#154c8c] transition-colors text-lg shadow-sm disabled:opacity-50"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
           </form>
 
-          <div className="text-center mt-8 text-sm">
+          <div className="w-[765px] mx-auto flex justify-center mt-8 text-medium">
             <span className="text-gray-600">{"Don't Have An Account ? "}</span>
-            <Link href="/appraiser/auth/signup" className="text-[#1e5ba8] font-semibold hover:underline">
+            <Link href="/appraiser/auth/signup" className="text-[#333333] font-semibold ml-1">
               Create One
             </Link>
           </div>
