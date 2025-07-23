@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Dialog } from "@headlessui/React";
+import { Dialog } from "@headlessui/react";
 import { uploadDocs } from "../lib/job";
 import { EnhancedPropertyMapPicker } from './EnhancedPropertyMapPicker';
 
