@@ -102,9 +102,9 @@ export default function NewJobRequestPage() {
   return (
     <DashboardLayout role="lender">
       <div className="h-full overflow-hidden">
-        <div className="bg-transparent h-full p-0">
+        <div className="bg-white h-full p-0">
           <form onSubmit={handleSubmit} className="h-full flex flex-col">
-            <div className="grid grid-cols-1 gap-4 flex-1">
+            <div className="flex-1 flex flex-col gap-y-4">
               {/* Intended User */}
               <div>
                 <div className="relative w-[90%] mx-auto">
@@ -135,28 +135,26 @@ export default function NewJobRequestPage() {
                   />
                 </div>
               </div>
-              {/*phone number */}
+              {/* Phone number */}
               <div>
-                <div className="w-[90%] mx-auto mb-4">
-                 <label className="block text-base font-medium text-gray-900 mb-2">
-                  Intended user Phone Number
-                 </label>
-                 <PhoneInput
-                   country={'us'}
-                   value={formData.phone}
-                   onChange={(value, data:any) => {
-                     console.log("Phone:", value);
-                     console.log("Country Code:", data?.dialCode);
-                     handleInputChange('phone', value)
-                     handleInputChange('country_code', data?.dialCode || '')
+                <div className="relative w-[90%] mx-auto">
+                  <label className="block text-base font-medium text-gray-900 mb-2">
+                    Intended user Phone Number
+                  </label>
+                  <PhoneInput
+                    country={'us'}
+                    value={formData.phone}
+                    onChange={(value, data:any) => {
+                      handleInputChange('phone', value)
+                      handleInputChange('country_code', data?.dialCode || '')
                     }}
                     inputStyle={{
-                      height: '48px',              // Equivalent to py-3
-                      paddingLeft: '3rem',         // pl-12
-                      paddingRight: '1rem',        // pr-4
-                      border: '1px solid #4B5563', // border-gray-600
-                      borderRadius: '9999px',      // rounded-full
-                      fontSize: '0.875rem',        // text-sm
+                      height: '48px',
+                      paddingLeft: '3rem',
+                      paddingRight: '1rem',
+                      border: '1px solid #4B5563',
+                      borderRadius: '9999px',
+                      fontSize: '0.875rem',
                       width: '100%',
                     }}
                     containerStyle={{
@@ -167,17 +165,16 @@ export default function NewJobRequestPage() {
                       backgroundColor: 'transparent',
                       marginLeft: '0.5rem',
                       marginRight: '0.5rem',
-                      height: '48px', // Ensures flag button matches input height
+                      height: '48px',
                       display: 'flex',
                       alignItems: 'center',
                     }}
-                   inputProps={{
-                     name: 'phone',
-                     required: true,
-                     
-                   }}
-                 />
-               </div>
+                    inputProps={{
+                      name: 'phone',
+                      required: true,
+                    }}
+                  />
+                </div>
               </div>
               {/* Purpose */}
               <div>
@@ -194,7 +191,6 @@ export default function NewJobRequestPage() {
                   />
                 </div>
               </div>
-              
               {/* Intended Use */}
               <div>
                 <div className="relative w-[90%] mx-auto">
@@ -219,9 +215,8 @@ export default function NewJobRequestPage() {
                   />
                 </div>
               </div>
-              
+              {/* Preferred Date */}
               <div>
-                {/*preferred date */ }
                 <div className="relative w-[90%] mx-auto">
                   <label className="block text-base font-medium text-gray-900 mb-2">Preferred Date</label>
                   <input
@@ -234,7 +229,6 @@ export default function NewJobRequestPage() {
                   <DateIcon className="absolute left-4 top-[50%] mt-4 -translate-y-1/2 w-5 h-5 text-gray-700 pointer-events-none" />
                 </div>
               </div>
-
               {/* Property Address */}
               <div>
                 <div className="relative w-[90%] mx-auto">
@@ -250,7 +244,7 @@ export default function NewJobRequestPage() {
                   />
                 </div>
               </div>
-               {/*Property Type */}
+              {/* Property Type */}
               <div>
                 <div className="relative w-[90%] mx-auto">
                   <label className="block text-base font-medium text-gray-900 mb-2">Property Type</label>
@@ -274,8 +268,6 @@ export default function NewJobRequestPage() {
                   />
                 </div>
               </div>
-            </div>
-
               {/* Cost Of The Property */}
               <div>
                 <div className="relative w-[90%] mx-auto">
@@ -291,8 +283,7 @@ export default function NewJobRequestPage() {
                   />
                 </div>
               </div>
-
-              {/* Property Type */}
+              {/* Description */}
               <div>
                 <div className="relative w-[90%] mx-auto">
                   <label className="block text-base font-medium text-gray-900 mb-2">Description</label>
@@ -331,43 +322,43 @@ export default function NewJobRequestPage() {
                   />
                 </div>
               </div>
-              <div className="w-[90%] mx-auto">
-                <label className="block text-base font-medium text-gray-900 mb-2">
-                  Upload Document
-                </label>
-  
-                <label
-                  htmlFor="pdf-upload"
-                  className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer  transition-all"
-                >
-                  <UploadIcon className="w-6 h-6 text-gray-500 mb-2" />
-                  <p className="text-sm text-gray-700 text-center">
-                    {uploadedDocName
-                      ? `Uploaded: ${uploadedDocName}`
-                      : <>Upload any additional PDF <br /> related to this job</>
-                    }
-                  </p>
-                  <input
-                    id="pdf-upload"
-                    type="file"
-                    accept="application/pdf"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const fileUrl = URL.createObjectURL(file); // for preview
-                        console.log("PDF File:", file.name);
-                        setUploadedDocName(file.name); 
-                        // You can replace this with actual upload logic and get URL back
-                        handleInputChange("lender_doc", fileUrl);
+              {/* Upload Document */}
+              <div>
+                <div className="w-[90%] mx-auto">
+                  <label className="block text-base font-medium text-gray-900 mb-2">
+                    Upload Document
+                  </label>
+                  <label
+                    htmlFor="pdf-upload"
+                    className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer  transition-all"
+                  >
+                    <UploadIcon className="w-6 h-6 text-gray-500 mb-2" />
+                    <p className="text-sm text-gray-700 text-center">
+                      {uploadedDocName
+                        ? `Uploaded: ${uploadedDocName}`
+                        : <>Upload any additional PDF <br /> related to this job</>
                       }
-                    }}
-                    className="hidden"
-                  />
-                </label>              
+                    </p>
+                    <input
+                      id="pdf-upload"
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const fileUrl = URL.createObjectURL(file); // for preview
+                          setUploadedDocName(file.name); 
+                          handleInputChange("lender_doc", fileUrl);
+                        }
+                      }}
+                      className="hidden"
+                    />
+                  </label>              
+                </div>
               </div>
-              
+            </div>
             {/* Submit Button */}
-            <div className="mt-6 w-[90%] max-w-xxl mx-auto">
+            <div className="mt-8 w-[90%] max-w-xxl mx-auto">
               <button
                 type="submit"
                 className="w-full bg-[#1e5ba8] text-white py-3 px-5 rounded-full font-medium hover:bg-[#1a4f96] transition-colors text-lg"

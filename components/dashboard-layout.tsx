@@ -14,7 +14,10 @@ import {
   PrivacyIcon,
   TermsIcon,
   LogoutIcon,
+  TransctionIcon
 } from "./icons" 
+import { icons } from "lucide-react"
+import { Label } from "recharts"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
@@ -25,6 +28,7 @@ interface DashboardLayoutProps {
 const lenderTopNav = [
   { icon: HomeIcon, label: "Home", href: "/lender/dashboard" },
   { icon: JobsIcon, label: "Jobs", href: "/lender/jobs" },
+  { icon: TransctionIcon, label: "Transaction", href: "/lender/transaction" },
   { icon: ProfileIcon, label: "Profile", href: "/lender/profile" },
 ]
 
@@ -76,7 +80,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="min-h-screen flex bg-[#FFFFFF]">
       {/* Sidebar */}
       <div className="w-64 bg-[#014F9D] text-white flex flex-col sticky top-0 h-screen">
         {/* Logo */}
@@ -159,20 +163,20 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             <div className="flex items-center gap-3">
               {shouldShowButton && (
                 <button
-                  className="p-2 hover:bg-white/10 rounded"
-                  onClick={() => router.push(`/${role}/jobs/new`)}
+                  className="p-0 hover:bg-white/10 rounded"
+                  onClick={() => router.push(`/${role}/dashboard/new`)}
                 >
                   <AddIcon />
                 </button>
               )}
               <button
-                className="p-2 hover:bg-white/10 rounded"
+                className="p-0 hover:bg-white/10 rounded"
                 onClick={() => router.push(`/${role}/notification`)}
               >
                 <Notification />
               </button>
               <button
-                className="p-2 hover:bg-white/10 rounded"
+                className="p-0 hover:bg-white/10 rounded"
                 onClick={() => router.push(`/${role}/chats`)}
               >
                 <ChatAlertIcon />

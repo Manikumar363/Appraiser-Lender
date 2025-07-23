@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import {MapIcon, MessageIcon, CalendarIcon, LoadIcon, PDFIcon, ImageIcon, CardIcon, RightArrow, BuildingIcon, RightArrowIcon} from "@/components/icons"
+import {MapIcon, MessageIcon, CalendarIcon, LoadIcon, PDFIcon, ImageIcon, CardIcon, RightArrow, BuildingIcon, LeftArrow} from "@/components/icons"
 import { Button } from "../../../../components/ui/button"
 import { Badge } from "../../../../components/ui/badge"
 import DashboardLayout from "@/components/dashboard-layout"
@@ -44,9 +44,13 @@ export default function JobDetailPage() {
       <div className="p-6 min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <Button variant="ghost" size="lg" onClick={() => router.push("/lender/jobs")} className="p-0">
-            <RightArrowIcon className="w-16 h-16"/>
-          </Button>
+          <button
+                    className="w-10 h-10 flex items-center justify-center rounded-full shadow mb-4"
+                    onClick={() => router.back()}
+                    aria-label="Back"
+                  >
+                    <LeftArrow className="w-8 h-8" />
+                  </button>
           <h1 className="text-xl font-semibold text-gray-900">Job Details</h1>
         </div>
 

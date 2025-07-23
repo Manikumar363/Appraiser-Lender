@@ -38,44 +38,41 @@ export default function LenderDashboardPage() {
 
   return (
     <DashboardLayout role="lender">
-      <div className="flex flex-col h-full">
-      <div className="space-y-6 flex-grow">
-        {/* Job Cards */}
-        <div className="space-y-4">
+      <div className="flex flex-col h-full min-h-[calc(90vh-14px)]"> {/* 64px = your topbar height, adjust if needed */}
+        <div className="flex-1">
+          {/* Job Cards */}
+          <div className="space-y-4 mb-8">
             {loading && <div>Loading...</div>}
             {error && <div className="text-red-500">{error}</div>}
             {!loading && !error && jobs.length === 0 && (
               <div>No jobs found.</div>
             )}
             {jobs.map((job) => (
-             <div
-               key={job.id}
-               className="cursor-pointer"
-               onClick={() => router.push(`/lender/jobs/${job.id}`)}
-             >
-             <JobCard
-               title={job.purpose}
-               location={job.address}
-               jobStatus={job.job_status}
-              />
-            </div>
-          ))}
+              <div
+                key={job.id}
+                className="cursor-pointer"
+                onClick={() => router.push(`/lender/jobs/${job.id}`)}
+              >
+                <JobCard
+                  title={job.purpose}
+                  location={job.address}
+                  jobStatus={job.job_status}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-        </div>
-
         {/* New Job Request Button */}
-        
-       
-        <div className="pb-5 ">
+        <div className="w-full pb-8">
           <button
             onClick={handleNewJobRequest}
-            className="w-full bg-[#014F9D] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
           >
             <Plus size={20} />
             New Job Request
           </button>
         </div>
-        </div>
+      </div>
     </DashboardLayout>
-  )
+  );
 }

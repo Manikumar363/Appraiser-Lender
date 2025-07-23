@@ -48,8 +48,8 @@ export default function JobsPage() {
 
   return (
     <DashboardLayout role="lender">
-      <div className="flex flex-col h-full">
-        <div className="p-5 flex-grow">
+      <div className="flex flex-col h-full min-h-[calc(90vh-14px)]">
+        <div className="flex-1">
           {/* Filter Tabs */}
           <div className="flex gap-4 mb-8">
             {(
@@ -92,18 +92,18 @@ export default function JobsPage() {
                       {/* {job.status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())} */}
                     {/* </Badge> */}
                     <Badge
-                     className="px-4 py-2 rounded-full text-sm font-medium ml-4 flex items-center text-white "
+                     className="px-4 py-2 rounded-full text-sm font-medium ml-4 flex items-center text-white transition-colors cursor-pointer hover:brightness-110"
                        style={{
                          backgroundColor:
-                           job.status?.toLowerCase() === "pending" ? "#FFC107"
-                         : job.status?.toLowerCase() === "completed" ? "#22c55e"
-                         : job.status?.toLowerCase() === "cancelled" ? "#ef4444"
-                         : job.status?.toLowerCase() === "accepted" || job.status?.toLowerCase() === "active" ? "#00F90A"
+                           job.job_status?.toLowerCase() === "pending" ? "#FFC107"
+                         : job.job_status?.toLowerCase() === "completed" ? "#22c55e"
+                         : job.job_status?.toLowerCase() === "cancelled" ? "#ef4444"
+                         : job.job_status?.toLowerCase() === "accepted" || job.job_status?.toLowerCase() === "active" ? "#00F90A"
                          : "#FFC107"
                        }}
                    >
                      <LoadIcon className="w-4 h-4 mr-2" />
-                     {job.status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                     {job.job_status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                    </Badge>
                   </div>
                   <div className="flex items-center gap-3">
@@ -115,7 +115,8 @@ export default function JobsPage() {
                       <CalendarIcon className="w-4 h-4 mr-2" />
                       {new Date(job.preferred_date).toLocaleDateString()}
                     </Button>
-                    <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors">
+                    <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors"
+                    onClick={() => router.push(`/lender/chats/${job.id}`)}>
                       <MessageIcon className="w-5 h-5 me-1" />
                       Message
                     </Button>
@@ -128,7 +129,7 @@ export default function JobsPage() {
             ))}
           </div>
         </div>
-        <div className="pb-2">
+        <div className="w-full pb-8">
           <button
             onClick={() => router.push("dashboard/new")}
             className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"

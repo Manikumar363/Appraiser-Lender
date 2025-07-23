@@ -40,15 +40,29 @@ export default function ChatDetailPage() {
             avatar: msg.sender_data?.image || "/placeholder.svg",
           }))
         );
-        const partRes = await chatApi.getChatParticipants(chatId);
-        setParticipants(
-          (partRes.participants || []).map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            avatar: p.image || p.avatar || "/placeholder.svg",
-            role: p.role,
-          }))
-        );
+        const imgRes = await chatApi.getChatImages(chatId);
+        const chat = imgRes.chat || {};
+        const participantsArr = [
+          {
+            id: "lender",
+            name: "Lender",
+            avatar: chat.lender?.image || "/placeholder.svg",
+            role: "Lender",
+          },
+          {
+            id: "appraiser",
+            name: "Appraiser",
+            avatar: chat.appraiser?.image || "/placeholder.svg",
+            role: "Appraiser",
+          },
+          {
+            id: "admin",
+            name: "Admin",
+            avatar: chat.admin?.image || "/placeholder.svg",
+            role: "Admin",
+          },
+        ];
+        setParticipants(participantsArr);
       } catch {
         setMessages([]);
         setParticipants([]);
@@ -71,18 +85,19 @@ export default function ChatDetailPage() {
     setSending(true);
     try {
       const response = await chatApi.sendMessage(chatId, {
+        jobId: chatId, // <-- required by your backend
+        senderId: user.id, // <-- required by your backend
         content: newMessage.trim(),
-        type: "text",
       });
       setMessages((prev) => [
         ...prev,
         {
-          id: response.id,
+          id: response.id || Math.random().toString(), // fallback if no id
           senderName: user.name,
-          senderRole: user.role,
+          senderRole: "lender",
           senderId: user.id,
-          content: response.message,
-          timestamp: new Date(response.created_at).toLocaleTimeString([], {
+          content: response.content || newMessage.trim(),
+          timestamp: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           }),
@@ -90,7 +105,7 @@ export default function ChatDetailPage() {
         },
       ]);
       setNewMessage("");
-    } catch {
+    } catch (err) {
       // handle error
     } finally {
       setSending(false);
@@ -109,7 +124,7 @@ export default function ChatDetailPage() {
 
   return (
     <DashboardLayout role="lender">
-      <div className="flex flex-col h-screen bg-white overflow-hidden relative"> 
+      <div className="flex flex-col h-screen bg-white overflow-hidden relative">
         {/* Chat Header Card */}
         <div className="flex justify-center pt-4 pb-4 w-full">
           <div className="bg-[#014F9D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-4xl">
@@ -118,8 +133,13 @@ export default function ChatDetailPage() {
                 <BuildingIcon />
               </div>
               <div>
-                <div className="text-white font-semibold text-base">Residential Appraisal</div>
-                <div className="text-white text-xs opacity-80">Brampton, Canada</div>
+                <div className="text-white font-semibold text-base">
+                  Residential Appraisal
+                </div>{" "}
+                {/* needs to be changed */}
+                <div className="text-white text-xs opacity-80">
+                  Brampton, Canada
+                </div>
               </div>
             </div>
             <div className="flex -space-x-3">
@@ -143,7 +163,9 @@ export default function ChatDetailPage() {
               return (
                 <div
                   key={message.id}
-                  className={`flex items-end ${isCurrentUser ? "justify-end" : "justify-start"}`}
+                  className={`flex items-end ${
+                    isCurrentUser ? "justify-end" : "justify-start"
+                  }`}
                 >
                   {!isCurrentUser && (
                     <img
@@ -198,42 +220,58 @@ export default function ChatDetailPage() {
         </div>
 
         {/* Sticky Message Input Bar */}
-<div className="w-full flex items-center justify-center bg-[#014F9D]" style={{ position: "fixed", left: "256px", right: 0, bottom: 0, zIndex: 10,height:"72px"}}>
-  <div className="max-w-4xl w-full mx-auto flex items-center px-0">
-    <form
-      onSubmit={handleSendMessage}
-      className="flex gap-3 w-full px-4 py-4"
-      style={{ boxShadow: "0 2px 8px 0 rgba(20, 74, 156, 0.08)" }}
-    >
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        className="text-white hover:text-blue-200 p-1"
-        tabIndex={-1}
-      >
-        <Paperclip className="w-5 h-5" />
-      </Button>
-      <input
-        type="text"
-        placeholder="Type your message..."
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        disabled={sending}
-        className="flex-1 bg-[#E6F9F3] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 py-3 px-3"
-        style={{ outline: "none" }}
-      />
-      <Button
-        type="submit"
-        disabled={!newMessage.trim() || sending}
-        className="bg-white hover:bg-blue-100 text-[#014F9D] p-3 rounded-full shadow-none"
-        style={{ minWidth: 48, minHeight: 48 }}
-      >
-        {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-      </Button>
-    </form>
-  </div>
-</div>
+        <div
+          className="w-full flex items-center justify-center bg-[#014F9D]"
+          style={{
+            position: "fixed",
+            left: "256px",
+            right: 0,
+            bottom: 0,
+            zIndex: 10,
+            height: "72px",
+          }}
+        >
+          <div className="max-w-4xl w-full mx-auto flex items-center px-0">
+            <form
+              onSubmit={handleSendMessage}
+              className="flex gap-3 w-full px-4 py-4"
+              style={{
+                boxShadow: "0 2px 8px 0 rgba(20, 74, 156, 0.08)",
+              }}
+            >
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="text-white hover:text-blue-200 p-1"
+                tabIndex={-1}
+              >
+                <Paperclip className="w-5 h-5" />
+              </Button>
+              <input
+                type="text"
+                placeholder="Type your message..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                disabled={sending}
+                className="flex-1 bg-[#E6F9F3] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 py-3 px-3"
+                style={{ outline: "none" }}
+              />
+              <Button
+                type="submit"
+                disabled={!newMessage.trim() || sending}
+                className="bg-white hover:bg-blue-100 text-[#014F9D] p-3 rounded-full shadow-none"
+                style={{ minWidth: 48, minHeight: 48 }}
+              >
+                {sending ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </Button>
+            </form>
+          </div>
+        </div>
       </div>
     </DashboardLayout>
   );

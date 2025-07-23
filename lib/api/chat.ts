@@ -9,17 +9,18 @@ export const getMessages = async (chatId: string, page = 1, limit = 50) => {
 // 2. Send a message in a chat
 export const sendMessage = async (
   chatId: string,
-  data: { content: string; type?: string }
+  data: { jobId: string; senderId: string; content: string }
 ) => {
-  // Adjust endpoint as needed for your backend
-  const res = await api.post(`/chats/send-message/${chatId}`, data);
+  const res = await api.post(`/chats/send-message/`, data);
   return res.data;
 };
 
-// 3. Get images (avatars) of users in a chat
-export const getChatParticipants = async (chatId: string) => {
-  // Adjust endpoint as needed for your backend
-  const res = await api.get(`/chats/get-participants/${chatId}`);
+
+
+// 4. Get images (avatars) of users in a chat (POST)
+export const getChatImages = async (jobId: string) => {
+  const res = await api.post(`/chats/get-images/${jobId}`);
+  
   return res.data;
 };
 
@@ -27,5 +28,5 @@ export const getChatParticipants = async (chatId: string) => {
 export const chatApi = {
   getMessages,
   sendMessage,
-  getChatParticipants,
+  getChatImages, // <-- add here
 };

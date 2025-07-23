@@ -51,7 +51,7 @@ export function JobCard({ title, location, jobStatus }: JobCardProps) {
       </div>
       <div className="flex items-center gap-2">
          <span
-          className={`px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 text-white  ${badgeColor}`}
+          className={`px-5 py-2.5 rounded-full text-sm font-medium flex items-center gap-2 text-white transition-colors cursor-pointer hover:brightness-110 ${badgeColor}`}
           style={{
            backgroundColor:
             normalizedStatus === "pending" ||
