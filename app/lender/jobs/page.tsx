@@ -62,7 +62,7 @@ export default function JobsPage() {
              ).map((f) => (
                <Button
                  key={f.key}
-                 className={`w-[325px]  py-2  rounded-full ${
+                 className={`w-full  py-2  rounded-full ${
                    activeFilter === f.key
                      ? "bg-[#014F9D] hover:bg-blue-800 text-white"
                      : "border-[#014F9D] text-[#014F9D] hover:bg-blue-50 bg-transparent border"
@@ -106,7 +106,7 @@ export default function JobsPage() {
                      {job.job_status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                    </Badge>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-nowrap">
                     <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-white transition-colors">
                       <MapIcon className="w-6 h-6 mr-1" />
                       {getCityCountry(job.address)}

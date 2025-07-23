@@ -54,7 +54,7 @@ export default function TransactionPage() {
             <Button
               key={status}
               onClick={() => setActiveStatus(status)}
-              className={`rounded-full w-[325px] py-2 font-semibold shadow-none ${
+              className={`rounded-full w-full py-2 font-semibold shadow-none ${
                 activeStatus === status
                   ? "bg-[#014F9D] hover:bg-blue-800 text-white"
                   : "border-[#014F9D] text-[#014F9D] hover:bg-blue-50 bg-transparent border"
@@ -90,7 +90,7 @@ export default function TransactionPage() {
                 </div>
 
                 {/* Right: All details and View Details button in a single row, no gap */}
-                <div className="flex-1 flex items-center justify-end space-x-4">
+                <div className="flex-1 flex items-center justify-end space-x-4 flex-wrap md:flex-nowrap">
                   <span
                     className="font-semibold px-6 py-2 rounded-full text-base text-white transition-colors cursor-pointer hover:brightness-110"
                     style={{
