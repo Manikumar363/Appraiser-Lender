@@ -72,7 +72,7 @@ export const authApi = {
   },
 
   verifyOtp: async (email: string, otp: string) => {
-    return await api.post("/user/verify-otp", { email, otp });
+    return await api.post("/user/verify-otp", { email, otp});
   },
 
   setNewPassword: async (userId: string, newPassword: string, confirmPassword: string) => {

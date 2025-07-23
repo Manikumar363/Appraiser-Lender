@@ -1,6 +1,5 @@
 import api from "@/lib/api/axios";
 
-
 export async function uploadDocs(files: File[]): Promise<string[]> {
   const formData = new FormData();
   files.forEach(file => formData.append("files", file));
@@ -10,7 +9,7 @@ export async function uploadDocs(files: File[]): Promise<string[]> {
   return res.data.urls || res.data.files || [];
 }
 
-// Types
+// Complete Types
 export interface Lender {
   id: string;
   name: string;
@@ -18,6 +17,57 @@ export interface Lender {
   image: string;
   phone: string;
   country_code: string;
+  applicant: any | null;
+  address: string | null;
+  province: string | null;
+  city: string | null;
+  postal_code: string | null;
+  is_verified: boolean;
+  is_active: boolean;
+  location: any | null;
+  role: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Job {
+  id: string;
+  intended_user: "Self" | "Others" | "others";
+  intended_username: string;
+  cost_of_property: string;
+  phone: string;
+  country_code: string;
+  purpose: string | null;
+  use: string;
+  preferred_date: string;
+  address: string;
+  property_type: string;
+  is_rush_req: boolean;
+  price: string;
+  description: string;
+  lender_doc: string;
+  appraiser_docs: string[] | null;
+  status: string;
+  job_status: string;
+  property_rights?: string;
+  occupant?: string;
+  comments?: string;
+  notes?: string | null;
+  estimate_market_value?: string | null;
+  effective_date?: string | null;
+  property_occupied?: string;
+  resident_address?: string | null;
+  resident_country_code?: string;
+  resident_phone?: string | null;
+  payment_status: "Completed" | "Pending" | "Failed";
+  location?: {
+    type: "Point";
+    coordinates: [number, number];
+  } | null;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+  lender: Lender;
 }
 
 export interface AppraiserJob {
@@ -25,26 +75,7 @@ export interface AppraiserJob {
   status: string;
   created_at: string;
   updated_at: string;
-  job: {
-    id: string;
-    intended_user: string;
-    intended_username: string;
-    phone: string;
-    country_code: string;
-    purpose: string;
-    use: string;
-    preferred_date: string;
-    address: string;
-    property_type: string;
-    is_rush_req: boolean;
-    price: string;
-    description: string;
-    lender_doc: string;
-    status: string;
-    job_status: string;
-    expires_at: string;
-    lender: Lender;
-  };
+  job: Job;
 }
 
 export interface TimerData {
@@ -67,6 +98,10 @@ export interface TimerData {
 
 export interface JobsApiResponse {
   success: boolean;
+  admin: {
+    phone: string;
+    country_code: string;
+  };
   jobs: AppraiserJob[];
   total_jobs: number;
   page: number;
@@ -123,11 +158,10 @@ export const appraiserJobsApi = {
   },
 
   // Fetch accepted jobs (with flexible params)
-   async fetchAcceptedJobs({ page = 1, limit = 10 }: { page?: number; limit?: number } = {}): Promise<JobsApiResponse> {
+  async fetchAcceptedJobs({ page = 1, limit = 20 }: { page?: number; limit?: number } = {}): Promise<JobsApiResponse> {
     const res = await api.get<JobsApiResponse>("/user/accepted-jobs", {
       params: { page, limit }
     });
-    // DEBUG!
     console.log("JOBS API RAW RESPONSE:", res.data);
     return res.data;
   },
@@ -136,5 +170,4 @@ export const appraiserJobsApi = {
     const res = await api.post(`/user/update-job-status/${jobId}`, body);
     return res.data;
   },
-
 };

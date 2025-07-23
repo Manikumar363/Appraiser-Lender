@@ -1,20 +1,22 @@
 "use client";
 import React, { useState } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog } from "@headlessui/React";
 import { uploadDocs } from "../lib/job";
 import { EnhancedPropertyMapPicker } from './EnhancedPropertyMapPicker';
 
 interface ComplexJobStatusModalProps {
   open: boolean;
   onClose: () => void;
-  jobId: string; // This should be the 6-digit job ID (job.job.id)
+  jobId: string; // 6-digit job ID
+  jobData: any; // Pass the entire job data
   onSubmit: (payload: any) => Promise<void>;
 }
 
 export function ComplexJobStatusModal({
   open,
   onClose,
-  jobId, // Using the 6-digit job ID
+  jobId,
+  jobData, // New prop for job data
   onSubmit,
 }: ComplexJobStatusModalProps) {
   const [estimateMarketValue, setEstimateMarketValue] = useState("");
@@ -78,8 +80,8 @@ export function ComplexJobStatusModal({
               <span className="text-blue-600">🏢</span>
             </div>
             <div>
-              <h3 className="text-lg font-semibold">Commercial Property Inspection</h3>
-              <p className="text-sm text-gray-600">Toronto, Canada</p>
+              <h3 className="text-lg font-semibold">{jobData?.property_type || "Property Inspection"}</h3>
+              <p className="text-sm text-gray-600">{jobData?.address || "Location not specified"}</p>
             </div>
           </div>
           
@@ -91,8 +93,8 @@ export function ComplexJobStatusModal({
           
           <div className="flex gap-3 text-sm">
             <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">📄 #{jobId}</span>
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">👤 Jake Fill</span>
-            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full">🏢 Commercial</span>
+            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">👤 {jobData?.intended_username || "Unknown"}</span>
+            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full">🏢 {jobData?.property_type || "Property"}</span>
           </div>
         </div>
 
