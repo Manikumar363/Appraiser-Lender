@@ -241,7 +241,6 @@ export function AppraiserVerifyEmailContent() {
             value={otp}
             onChange={setOtp}
             onComplete={handleVerify}
-            disabled={loading || isBlocked}
           />
           
           {/* Error state indicator */}
