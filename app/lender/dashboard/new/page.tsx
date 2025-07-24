@@ -10,6 +10,8 @@ import { postJob } from "@/lib/api/jobs1"
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { CountryData } from "react-phone-input-2";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { useCallback } from "react";
 
 
 export default function NewJobRequestPage() {
@@ -35,7 +37,12 @@ export default function NewJobRequestPage() {
   })
   const [loading, setLoading] = useState(false)
   const [uploadedDocName, setUploadedDocName] = useState("");
+  const [mapCenter, setMapCenter] = useState({ lat: 43.715, lng: -79.399 }); // Default center
+  const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(null);
 
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+  });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -242,6 +249,27 @@ export default function NewJobRequestPage() {
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
                   />
+                </div>
+                {/* Map below the address input */}
+                <div
+                  className="relative w-[90%] mx-auto mt-4 rounded-2xl border border-gray-500 overflow-hidden"
+                  style={{ height: 130 }} // Adjust height as needed (e.g., 90px)
+                >
+                  {isLoaded && (
+                    <GoogleMap
+                      mapContainerStyle={{ width: "100%", height: "100%" }}
+                      center={marker || mapCenter}
+                      zoom={15}
+                      onClick={(e) => {
+                        setMarker({ lat: e.latLng!.lat(), lng: e.latLng!.lng() });
+                      }}
+                      options={{
+                        disableDefaultUI: true, // Optional: hides controls for a cleaner look
+                      }}
+                    >
+                      {marker && <Marker position={marker} />}
+                    </GoogleMap>
+                  )}
                 </div>
               </div>
               {/* Property Type */}
