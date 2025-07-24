@@ -28,9 +28,13 @@ api.interceptors.response.use(
     if (typeof window !== "undefined") {
       if (error.response?.status === 401) {
         localStorage.removeItem("authToken");
-        if (window.location.pathname !== "/appraiser/auth/signin") {
-          window.location.href = "/appraiser/auth/signin";
-        }
+        const currentPath = window.location.pathname;
+        const isLender = currentPath.includes("/lender");
+         window.location.href = isLender
+           ? "/lender/auth/signin"
+           : "/appraiser/auth/signin";
+        // Redirect to login
+        console.error("Unauthorized - redirecting to login");
       } else if (error.response?.status === 403) {
         console.error("Access forbidden");
       } else if (error.response?.status >= 500) {

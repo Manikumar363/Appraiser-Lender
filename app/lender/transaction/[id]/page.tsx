@@ -59,7 +59,7 @@ export default function TransactionDetailPage() {
               onClick={() => router.back()}
               aria-label="Back"
             >
-              <LeftArrow className="w-8 h-8" />
+              <LeftArrow className="w-10 h-10" />
             </button>
             <h1 className="text-xl justify-between font-semibold text-gray-900">Job Details</h1>
           </div>
@@ -181,13 +181,13 @@ export default function TransactionDetailPage() {
               rel="noopener noreferrer"
               className="block w-full"
             >
-              <Button className="w-full bg-[#014F9D] text-white py-6 px-8 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2">
+              <Button className="w-full bg-[#014F9D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2">
                 Download Receipt
               </Button>
             </a>
           ) : (
             <Button
-              className="w-full bg-[#1e5ba8] text-white py-6 px-8 rounded-lg font-medium hover:bg-[#1a4f96]  transition-colors flex items-center justify-center gap-2 cursor-not-allowed"
+              className="w-full bg-[#1e5ba8] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96]  transition-colors flex items-center justify-center gap-2 cursor-not-allowed"
               
             >
               Download Receipt

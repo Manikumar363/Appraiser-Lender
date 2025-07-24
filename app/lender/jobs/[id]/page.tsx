@@ -7,6 +7,7 @@ import { Button } from "../../../../components/ui/button"
 import { Badge } from "../../../../components/ui/badge"
 import DashboardLayout from "@/components/dashboard-layout"
 import { getSingleJob, getProgressSteps, JobDetail,getStatusColor } from "../../../../lib/api/jobs1"
+import { formatDistanceToNow } from "date-fns";
 
 export default function JobDetailPage() {
   const params = useParams()!
@@ -49,7 +50,7 @@ export default function JobDetailPage() {
                     onClick={() => router.back()}
                     aria-label="Back"
                   >
-                    <LeftArrow className="w-8 h-8" />
+                    <LeftArrow className="w-10 h-10" />
                   </button>
           <h1 className="text-xl font-semibold text-gray-900">Job Details</h1>
         </div>
@@ -58,7 +59,7 @@ export default function JobDetailPage() {
         <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-[#014F9D] rounded-full flex items-center justify-center">
                 <BuildingIcon className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
@@ -72,7 +73,7 @@ export default function JobDetailPage() {
                       job.status === "client-visit" ||
                       job.status === "site-visit-scheduled" ||
                       job.status === "post-visit-summary"
-                        ? "#FFC107"
+                        ? "#014F9D"
                         : job.status === "completed"
                         ? "#22c55e"
                         : job.status === "cancelled"
@@ -126,23 +127,21 @@ export default function JobDetailPage() {
   <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
   <div className="flex flex-wrap gap-4 mb-4">
     {job.lender_doc && (
-      <div className="bg-cyan-50 rounded-xl py-4 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
-        <ImageIcon className="w-6 h-6 text-gray-700 mb-2" />
+      <div className="bg-cyan-50 rounded-xl py-7 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
+        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
         <a href={job.lender_doc} target="_blank" rel="noopener noreferrer" className="font-medium text-gray-700 text-sm mb-1 truncate">
-          Download Lender Doc
+          Floor Plan.pdf
         </a>
+        <span className="text-gray-500 text-sm">
+          {formatDistanceToNow(new Date(job.created_at), { addSuffix: true }).replace("about ", "")
+          .replace("day", "d")
+          .replace("days"   , "d")
+          }
+        </span>
       </div>
     )}
-    {Array.isArray(job.appraiser_docs) && job.appraiser_docs.map((doc, idx) => (
-      <div key={idx} className="bg-cyan-50 rounded-xl py-4 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
-        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
-        <a href={doc} target="_blank" rel="noopener noreferrer" className="font-medium text-gray-700 text-sm mb-1 truncate">
-          Download Appraiser Doc
-        </a>
-      </div>
-    ))}
   </div>
-  <Button className="w-full bg-blue-800 hover:bg-blue-700 text-white py-3 rounded-lg">Download All</Button>
+  <Button className="w-full bg-[#014F9D] hover:bg-[#013B6D] text-white py-7 rounded-lg">Download All</Button>
 </div>
 
         {/* Transaction */}
@@ -150,12 +149,12 @@ export default function JobDetailPage() {
   <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
   <div className="bg-cyan-50 rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
     <div className="flex items-center gap-3">
-      <div className="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center">
+      <div className="w-10 h-10 bg-[#014F9D] rounded-full flex items-center justify-center">
         <CardIcon className="w-8 h-8 text-white" />
       </div>
       <span className="text-xl font-semibold text-gray-900">${job.price}</span>
     </div>
-     <Badge className={`${job.status === "completed" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-sm`}>
+     <Badge className={`${job.status === "completed" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-lg`}>
       {job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : "Pending"}
     </Badge>
   </div>
@@ -163,7 +162,7 @@ export default function JobDetailPage() {
 
         {/* Accept */}
         {job.status !== "completed" && (
-          <Button className="w-full bg-blue-800 hover:bg-blue-700 text-white py-4 rounded-lg text-lg">
+          <Button className="w-full bg-[#014F9D] hover:bg-[#013B6D] text-white py-7 rounded-lg text-lg">
             Accept
           </Button>
         )}

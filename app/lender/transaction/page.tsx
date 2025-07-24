@@ -134,7 +134,7 @@ export default function TransactionPage() {
         <div className="w-full pb-8">
           <Button
             onClick={() => router.push(`/lender/dashboard/new`)}
-            className="w-full bg-[#1e5ba8] text-white py-6 px-8 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-[#1e5ba8] text-white py-7 px-8 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
           >
             <Plus size={20} /> New Job Request
           </Button>

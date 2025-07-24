@@ -12,6 +12,8 @@ import "react-phone-input-2/lib/style.css";
 import { CountryData } from "react-phone-input-2";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import { useCallback } from "react";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
 
 export default function NewJobRequestPage() {
@@ -39,6 +41,7 @@ export default function NewJobRequestPage() {
   const [uploadedDocName, setUploadedDocName] = useState("");
   const [mapCenter, setMapCenter] = useState({ lat: 43.715, lng: -79.399 }); // Default center
   const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(null);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
@@ -48,7 +51,10 @@ export default function NewJobRequestPage() {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }))
+    }));
+    if (field === "address" && value.trim().length > 5) {
+      geocodeAddress(value);
+    }
   }
 
   const purposeOptions = [
@@ -82,32 +88,92 @@ export default function NewJobRequestPage() {
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    console.log("Payload going to API:", formData);
+    e.preventDefault();
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
+    setLoading(true);
     try {
-      // Add any additional static/default fields required by API here
       const payload = {
         ...formData,
-       // add input if needed
-         // add input if needed
- // add input if needed
-        is_rush_req: false, // add input if needed
+        is_rush_req: false,
         resident_country_code: "",
         resident_phone: "",
         resident_address: "",
-      }
-      await postJob(payload)
-      router.push("/lender/dashboard")
+      };
+      await postJob(payload);
+      toast.success("Job submitted successfully!", {
+        duration: 5000,
+        style: {
+          background: "#014F9D",
+          color: "#fff",
+          fontWeight: "bold",
+          fontSize: "1.1rem",
+          borderRadius: "8px",
+          boxShadow: "0 2px 12px rgba(1,79,157,0.15)",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#014F9D",
+        },
+      });
+      setTimeout(() => {
+        router.push("/lender/dashboard");
+      }, 1200);
     } catch (err) {
-      alert("Failed to submit job.")
+      toast.error("Failed to submit job."); // <-- Toast for error
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
+  // Geocode address to lat/lng
+  const geocodeAddress = async (address: string) => {
+    if (!address) return;
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json`,
+        {
+          params: {
+            address,
+            key: apiKey,
+          },
+        }
+      );
+      console.log(response.data);
+      const location = response.data.results[0]?.geometry.location;
+      if (location) {
+        setMapCenter({ lat: location.lat, lng: location.lng });
+        setMarker({ lat: location.lat, lng: location.lng });
+      }
+    } catch (error) {
+      // Optionally handle error
+      console.error("Geocoding failed:", error);
+    }
+  };
+
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.intended_user.trim()) newErrors.intended_user = "Intended user is required";
+    if (!formData.intended_username.trim()) newErrors.intended_username = "Applicant's name is required";
+    if (!formData.phone.trim()) newErrors.phone = "Phone number is required";
+    if (!formData.purpose.trim()) newErrors.purpose = "Purpose is required";
+    if (!formData.use.trim()) newErrors.use = "Intended use is required";
+    if (!formData.preferred_date.trim()) newErrors.preferred_date = "Preferred date is required";
+    if (!formData.address.trim()) newErrors.address = "Property address is required";
+    if (!formData.property_type.trim()) newErrors.property_type = "Property type is required";
+    if (!formData.price.trim()) newErrors.price = "Cost of the property is required";
+    if (!formData.description.trim()) newErrors.description = "Description is required";
+    if (!formData.property_occupied.trim()) newErrors.property_occupied = "Property occupied is required";
+    // Add more as needed
+    return newErrors;
+  };
+
   return (
     <DashboardLayout role="lender">
+      <Toaster position="top-right" />
       <div className="h-full overflow-hidden">
         <div className="bg-white h-full p-0">
           <form onSubmit={handleSubmit} className="h-full flex flex-col">
@@ -389,7 +455,7 @@ export default function NewJobRequestPage() {
             <div className="mt-8 w-[90%] max-w-xxl mx-auto">
               <button
                 type="submit"
-                className="w-full bg-[#1e5ba8] text-white py-3 px-5 rounded-full font-medium hover:bg-[#1a4f96] transition-colors text-lg"
+                className="w-full bg-[#1e5ba8] rounded-lg text-white py-4 px-6 font-medium hover:bg-[#1a4f96] transition-colors text-lg"
                 disabled={loading}
               >
                 {loading ? "Submitting..." : "Submit Job"}

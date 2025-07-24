@@ -12,7 +12,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
       {/* Left side - Logo (40% width) */}
       <div className="hidden lg:flex lg:w-[40%] bg-[#014F9D] items-center justify-center p-8">
         <div className="flex items-center justify-center">
-          <img src="/images/emadi-logo.png" alt="EMADI Appraisers" className="w-80 h-auto filter brightness-0 invert" />
+          <img src="/images/emadi-logo.png" alt="EMADI Appraisers" className="w-85 h-auto filter brightness-0 invert" />
         </div>
       </div>
 

@@ -7,6 +7,7 @@ import { RoleSelector } from "../../../../components/role-selector"
 import { AuthInput } from "../../../../components/auth-input"
 import { useRouter } from "next/navigation"
 import { userAuth } from "@/lib/api/userAuth"
+import toast, { Toaster } from "react-hot-toast";
 
 export default function LenderSignInPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("lender")
@@ -37,11 +38,23 @@ export default function LenderSignInPage() {
     try {
       const res = await userAuth.signIn(email, password);
       localStorage.setItem("authToken", res.token);
-      console.log("JWT token:",res.token)
-      router.push("/lender/dashboard");
+      toast.success("Login successful", {
+        duration: 5000,
+        style: {
+          minWidth: "350px",
+          maxWidth: "500px",
+          fontSize: "1.1rem",
+          padding: "18px 24px",
+          textAlign: "center",
+          fontWeight: "medium",
+        },
+      });
+      setTimeout(() => {
+        router.push("/lender/dashboard");
+      }, 1200);
     } catch (err: any) {
       setError(err.response?.data?.message || "Invalid credentials");
-      return false
+      return false;
     } finally {
       setLoading(false);
     }
@@ -56,7 +69,8 @@ export default function LenderSignInPage() {
 
   return (
     <AuthLayout>
-      <div className="flex flex-col justify-center min-h-screen w-full items-center">
+      <Toaster position="top-center" />
+      <div className="flex flex-col justify-center py-24 w-full items-center">
         <div className="w-full max-w-[765px]  px-6">
           <div className="mb-4 mt-0">
             <h1 className="text-3xl font-semibold text-gray-800">Sign In as</h1>

@@ -41,6 +41,7 @@ export default function LenderVerifyEmailPage() {
         router.push("/lender/dashboard")
       } else if (type === "reset") {
         await userAuth.verifyOtp(email, otp)
+        console.log("Redirecting to set-new-password page...");
         router.push(`/lender/auth/set-new-password?email=${encodeURIComponent(email)}`)
       } else {
         throw new Error("Invalid verification type.")
@@ -71,8 +72,8 @@ export default function LenderVerifyEmailPage() {
 
   return (
     <AuthLayout>
-      <div className="flex flex-col justify-center items-center min-h-screen w-full text-center px-4">
-        
+      <div className="py-44 flex flex-col justify-center items-center w-full text-center px-4">
+
         <h1 className="text-4xl font-bold text-gray-800 mb-4 self-start text-left">Email Verification</h1>
 
         <p className="text-gray-600 mb-8 text-base self-start text-left">

@@ -7,6 +7,7 @@ import { userAuth } from "@/lib/api/userAuth"
 import { profileApi } from "../../../../lib/api/profile";
 import { LockIcon } from "@/components/icons";
 import { AuthInput } from "@/components/auth-input";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function AppraiserSetNewPasswordPage() {
   const router = useRouter();
@@ -56,7 +57,20 @@ export default function AppraiserSetNewPasswordPage() {
     try {
       setLoading(true);
       await userAuth.setNewPassword(userId, newPassword, confirmPassword);
-      router.push("/lender/auth/signin");
+      toast.success("Password updated successfully!", {
+      duration: 5000,
+      style: {
+        minWidth: "350px",
+        maxWidth: "500px",
+        fontSize: "1.1rem",
+        padding: "18px 24px",
+        textAlign: "center",
+        fontWeight: "bold",
+      },
+    });
+      setTimeout(() => {
+        router.push("/lender/auth/signin");
+      }, 1200); // Wait so user can see the toast
     } catch (err: any) {
       console.error(err);
       setError(err.response?.data?.message || "Failed to reset password.");
@@ -66,6 +80,7 @@ export default function AppraiserSetNewPasswordPage() {
 
   return (
     <AuthLayout>
+      <Toaster position="top-center" />
       <div className="flex items-center justify-center min-h-screen px-6">
         <div className="w-full max-w-[765px]">
           <h1 className="text-4xl font-bold text-gray-900 mb-5">Set New Password</h1>

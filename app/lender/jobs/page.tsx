@@ -62,7 +62,7 @@ export default function JobsPage() {
              ).map((f) => (
                <Button
                  key={f.key}
-                 className={`w-full  py-2  rounded-full ${
+                 className={`w-full  py-6  rounded-full ${
                    activeFilter === f.key
                      ? "bg-[#014F9D] hover:bg-blue-800 text-white"
                      : "border-[#014F9D] text-[#014F9D] hover:bg-blue-50 bg-transparent border"
@@ -107,21 +107,28 @@ export default function JobsPage() {
                    </Badge>
                   </div>
                   <div className="flex items-center gap-3 flex-nowrap">
-                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-white transition-colors">
+                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
                       <MapIcon className="w-6 h-6 mr-1" />
                       {getCityCountry(job.address)}
                     </Button>
-                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-white transition-colors">
+                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
                       <CalendarIcon className="w-4 h-4 mr-2" />
                       {new Date(job.preferred_date).toLocaleDateString()}
                     </Button>
-                    <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors"
+                    <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-blue-50 transition-colors"
                     onClick={() => router.push(`/lender/chats/${job.id}`)}>
                       <MessageIcon className="w-5 h-5 me-1" />
                       Message
                     </Button>
-                    <Button variant="ghost" size="lg" className="text-gray-400 hover:text-white p-4 rounded-full" onClick={() => router.push(`/lender/jobs/${job.id}`)}>
-                      <RightArrow className="w-12 h-12" />
+                    <Button
+                      variant="ghost"
+                      size="lg"
+                      className="bg-white   text-[#014F9D] hover:bg-blue-50 p-0 rounded-full flex items-center justify-center transition-colors w-[40px] h-[40px] shadow"
+                      onClick={() => router.push(`/lender/jobs/${job.id}`)}
+                    >
+                      <span className="flex items-center justify-center w-[44px] h-[44px] rounded-full">
+                        <RightArrow className="w-7 h-7" />
+                      </span>
                     </Button>
                   </div>
                 </div>

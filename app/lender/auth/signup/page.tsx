@@ -12,6 +12,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { userAuth } from "@/lib/api/userAuth";
 import { set } from "date-fns"
+import { toast, Toaster } from "react-hot-toast"
 
 
 export default function LenderSignUpPage() {
@@ -81,9 +82,22 @@ export default function LenderSignUpPage() {
 
     // ✅ Store for OTP page
     localStorage.setItem("signupEmail", email);
+    toast.success("Signup successful",{
+      duration: 5000,
+      style: {
+        minWidth: "350px",
+        maxWidth: "500px",
+        fontSize: "1.1rem",
+        padding: "18px 24px",
+        textAlign: "center",
+        fontWeight: "medium",
+      },
+    });
+    setTimeout(() => {
+      // ✅ Redirect to OTP verification screen
+      router.push(`/lender/auth/verify-email?email=${email}`);
+    }, 1200); // 1.2 seconds delay
 
-    // ✅ Redirect to OTP verification screen
-    router.push(`/lender/auth/verify-email?email=${email}`);
   } catch (err: any) {
     console.error("Signup error:", err);
     setError(err.response?.data?.message || "Sign up failed. Try again.");
@@ -102,6 +116,7 @@ export default function LenderSignUpPage() {
 
   return (
     <AuthLayout>
+      <Toaster position="top-right" />
       
       <div className="mt-10 mb-6 space-y-4">
        <h1 className="text-3xl font-semibold text-gray-800">Sign Up as</h1>
@@ -154,7 +169,7 @@ export default function LenderSignUpPage() {
         value={phone}
         onChange={setPhone}
         placeholder="Type your phone number here" // ✅ add this!
-        inputClass="!w-[765px] !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md transition-all"
+        inputClass="!w-[765px] !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md"
         containerClass="!w-full"
         buttonClass="!border-r !border-black !rounded-l-full"
         enableSearch
