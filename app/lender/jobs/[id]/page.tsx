@@ -73,7 +73,7 @@ export default function JobDetailPage() {
                       job.status === "client-visit" ||
                       job.status === "site-visit-scheduled" ||
                       job.status === "post-visit-summary"
-                        ? "#014F9D"
+                        ? "#FFC107"
                         : job.status === "completed"
                         ? "#22c55e"
                         : job.status === "cancelled"
@@ -135,8 +135,7 @@ export default function JobDetailPage() {
         <span className="text-gray-500 text-sm">
           {formatDistanceToNow(new Date(job.created_at), { addSuffix: true }).replace("about ", "")
           .replace("day", "d")
-          .replace("days"   , "d")
-          }
+          .replace("days"   , "d")}
         </span>
       </div>
     )}
