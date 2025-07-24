@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { forwardRef } from "react";
 import { Mail, Lock, User, Phone, Building } from "lucide-react";
 import { LockIcon, ThirdPrimaryIcon, EmailIcon } from "./icons";
 
@@ -15,33 +15,23 @@ export interface AuthInputProps {
   autoComplete?: string;
 }
 
-export function AuthInput({
-  type,
-  placeholder,
-  value,
-  onChange,
-  icon,
-  name,
-  autoFocus,
-  autoComplete,
-}: AuthInputProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const IconComponent = {
-    email: EmailIcon,
-    password: LockIcon,
-    user: ThirdPrimaryIcon,
-    phone: Phone,
-    company: Building,
-  }[icon || "email"];
+export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
+  ({ type, placeholder, value, onChange, icon, name, autoFocus, autoComplete }, ref) => {
+    const IconComponent = {
+      email: EmailIcon,
+      password: LockIcon,
+      user: ThirdPrimaryIcon,
+      phone: Phone,
+      company: Building,
+    }[icon || "email"];
 
     return (
       <div className="relative mb-6">
-        <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-800">
+        <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-800 z-10">
           <IconComponent size={20} />
         </div>
         <input
-          ref={inputRef}
+          ref={ref}
           type={type}
           name={name}
           autoFocus={autoFocus}
@@ -54,7 +44,6 @@ export function AuthInput({
       </div>
     );
   }
+);
 
-
-// For display name in DevTools
 AuthInput.displayName = "AuthInput";
