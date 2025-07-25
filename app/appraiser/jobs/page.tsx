@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 // import { } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import DashboardLayout from "@/components/dashboard-layout";
 import { appraiserJobsApi, AppraiserJob, JobsApiResponse } from "../lib/job";
 import { SimpleJobStatusModal } from "./SimpleJobStatusModal";
@@ -53,6 +55,8 @@ export default function AppraiserJobsPage() {
   const [modalType, setModalType] = useState<"simple" | "complex" | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterKey>("all");
 
+  const router = useRouter();
+
   useEffect(() => {
     setLoading(true);
     appraiserJobsApi
@@ -95,6 +99,11 @@ export default function AppraiserJobsPage() {
       setModalType("complex");
     }
   };
+
+  const handleChatClick = (jobId: string) => {
+  router.push(`/appraiser/chats/${jobId}`);
+};
+
 
   const closeModal = () => {
     setModalJob(null);
@@ -223,9 +232,14 @@ export default function AppraiserJobsPage() {
                       {/* Action Icons */}
                       <div className="flex gap-2 items-center">
                         {/* CHAT - Always present */}
-                        <button title="Chat">
-                          <Msg />
-                        </button>
+<button 
+  title="Chat" 
+  onClick={() => handleChatClick(details.id)}
+  className="hover:text-blue-700 transition-colors"
+>    
+  <Msg />
+</button>
+
 
                         {/* CALL - Only for "accepted" status */}
                         {job_status === "accepted" && !!details.phone && (
