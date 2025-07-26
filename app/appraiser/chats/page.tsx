@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import DashboardLayout from "../../../components/dashboard-layout";
 import { appraiserJobsApi } from "../lib/job";
-import { useAuth } from "../../../hooks/use-auth";
+
 import { BuildingIcon } from "../../../components/icons";
 
 export default function AppraiserChatPage() {
