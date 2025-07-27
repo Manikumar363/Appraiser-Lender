@@ -3,7 +3,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  timeout: 10000,
+  timeout: 20000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -27,14 +27,26 @@ api.interceptors.response.use(
   (error) => {
     if (typeof window !== "undefined") {
       if (error.response?.status === 401) {
-        localStorage.removeItem("authToken");
+        // ✅ FIX: Only redirect if NOT on auth pages
         const currentPath = window.location.pathname;
-        const isLender = currentPath.includes("/lender");
-         window.location.href = isLender
-           ? "/lender/auth/signin"
-           : "/appraiser/auth/signin";
-        // Redirect to login
-        console.error("Unauthorized - redirecting to login");
+        const isAuthPage = currentPath.includes('/signin') || 
+                          currentPath.includes('/signup') || 
+                          currentPath.includes('/forgot-password') ||
+                          currentPath.includes('/verify-email') ||
+                          currentPath.includes('/set-new-password');
+        
+        if (!isAuthPage) {
+          localStorage.removeItem("authToken");
+          const isLender = currentPath.includes("/lender");
+          window.location.href = isLender
+            ? "/lender/auth/signin"
+            : "/appraiser/auth/signin";
+          console.error("Unauthorized - redirecting to login");
+        }
+        
+        else {
+          console.error("Authentication failed on auth page");
+        }
       } else if (error.response?.status === 403) {
         console.error("Access forbidden");
       } else if (error.response?.status >= 500) {

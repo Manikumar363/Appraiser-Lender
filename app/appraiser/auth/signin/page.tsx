@@ -11,9 +11,7 @@ import { authApi } from "@/lib/api/auth";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AppraiserSignInPage() {
-  const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">(
-    "appraiser"
-  );
+  const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("appraiser");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,20 +21,25 @@ export default function AppraiserSignInPage() {
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
+  // ✅ Fixed: Added ESLint disable comment
   useEffect(() => {
-    // ✅ Simple token check - your original method
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
     if (token) {
-      router.push("/appraiser/dashboard");
+      router.replace("/appraiser/dashboard");
     }
-  }, [router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run on mount
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
+    if (role === selectedRole) return;
     setSelectedRole(role);
+
     if (role === "lender") {
-      toast.loading("Switching to Lender sign in...");
-      router.push("/lender/auth/signin");
+      const toastId = toast.loading("Switching to Lender sign in...");
+      setTimeout(() => {
+        toast.dismiss(toastId);
+        router.replace("/lender/auth/signin");
+      }, 1000);
     }
   };
 
@@ -46,7 +49,6 @@ export default function AppraiserSignInPage() {
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
 
-    // ✅ Better validation with specific error messages
     if (!trimmedEmail) {
       toast.error("Please enter your email address");
       emailRef.current?.focus();
@@ -70,8 +72,6 @@ export default function AppraiserSignInPage() {
 
     try {
       const res = await authApi.signIn(trimmedEmail, trimmedPassword);
-
-      // ✅ Store token in localStorage (your original method)
       localStorage.setItem("authToken", res.token);
 
       toast.success("Welcome back! Redirecting to dashboard...", {
@@ -80,32 +80,37 @@ export default function AppraiserSignInPage() {
       });
 
       setTimeout(() => {
-        router.push("/appraiser/dashboard");
+        router.replace("/appraiser/dashboard");
       }, 1000);
     } catch (err: any) {
       const status = err?.response?.status;
-      const message =
-        err?.response?.data?.message || err?.message || "Sign in failed";
+      const message = err?.response?.data?.message || err?.message || "Sign in failed";
 
-      // ✅ Better error handling with specific actions
       if (status === 401 || status === 403) {
-        // Invalid credentials - clear password and focus
+        // ✅ Fixed: Removed incorrect e.preventDefault()
         setPassword("");
-        passwordRef.current?.focus();
+        setTimeout(() => {
+          passwordRef.current?.focus();
+        }, 100);
         toast.error("Invalid email or password. Please try again.", {
           id: loadingToast,
+          duration: 5000,
         });
       } else if (status === 429) {
         toast.error("Too many attempts. Please wait a moment and try again.", {
           id: loadingToast,
+          duration: 5000,
         });
-      } else if (status >= 500) {
+      } else if (status >= 500 && status <= 599) {
         toast.error("Server error. Please try again in a few minutes.", {
           id: loadingToast,
+          duration: 5000,
         });
       } else {
-        // Network or other errors - don't clear password
-        toast.error(message, { id: loadingToast });
+        toast.error(message, { 
+          id: loadingToast,
+          duration: 5000,
+        });
       }
     } finally {
       setLoading(false);
@@ -117,7 +122,7 @@ export default function AppraiserSignInPage() {
       <Toaster
         position="top-center"
         toastOptions={{
-          duration: 4000,
+          duration: 5000,
           style: {
             background: "#ffffff",
             color: "#374151",
@@ -143,10 +148,7 @@ export default function AppraiserSignInPage() {
           </div>
 
           <div className="mb-6">
-            <RoleSelector
-              selectedRole={selectedRole}
-              onRoleChange={handleRoleChange}
-            />
+            <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
           </div>
 
           <div className="mb-5">
@@ -158,7 +160,7 @@ export default function AppraiserSignInPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="size-fit" autoComplete="on">
+          <form onSubmit={handleSubmit} className="space-y-4" autoComplete="on">
             <AuthInput
               ref={emailRef}
               type="email"
@@ -185,8 +187,8 @@ export default function AppraiserSignInPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute top-1/2 right-6 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10"
-                
+                className="absolute top-1/2 right-6 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
@@ -195,7 +197,7 @@ export default function AppraiserSignInPage() {
             <div className="w-[765px] mx-auto flex justify-end mt-2 mb-4">
               <Link
                 href="/appraiser/auth/forgot-password"
-                className="text-[#333333] font-semibold text-medium hover:underline"
+                className="text-[#333333] font-semibold hover:underline transition-all"
               >
                 Forgot Password?
               </Link>
@@ -210,11 +212,11 @@ export default function AppraiserSignInPage() {
             </button>
           </form>
 
-          <div className="w-[765px] mx-auto flex justify-center mt-8 text-medium">
-            <span className="text-gray-600">{"Don't Have An Account? "}</span>
+          <div className="w-[765px] mx-auto flex justify-center mt-8">
+            <span className="text-gray-600">Don't Have An Account? </span>
             <Link
               href="/appraiser/auth/signup"
-              className="text-[#333333] font-semibold ml-1 hover:underline"
+              className="text-[#333333] font-semibold ml-1 hover:underline transition-all"
             >
               Create One
             </Link>
