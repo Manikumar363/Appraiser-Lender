@@ -8,6 +8,7 @@ import { profileApi } from "@/lib/api/profile";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
+  Tick,
   ProfileIcon2,
   EmailIcon,
   CompanyIcon,
@@ -136,19 +137,26 @@ export default function ProfileForm({
           {formData.name || "Your Name"}
         </h1>
         
-        <div className="flex items-center gap-2 mb-4">
-          <span className="text-gray-600">
-            {formData.email || "Your Email"}
-          </span>
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <div className="flex items-center gap-1 text-gray-700">
+            
+            <span>{formData.phone || "Your Phone"}</span>
+            <Tick />
+          </div>
+          <div className="flex items-center gap-1 text-gray-600">
+            
+            <span>{formData.email || "Your Email"}</span>
+            <Tick />
+          </div>
         </div>
 
         {!isEditing ? (
-          <button
+            <button
             onClick={onEdit}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-medium transition"
-          >
+            className="bg-[#014F9D] hover:bg-[#014f9df5] text-white px-6 py-2 rounded-full font-medium transition"
+            >
             Edit Profile
-          </button>
+            </button>
         ) : (
           <button
             onClick={onCancel}
@@ -162,7 +170,7 @@ export default function ProfileForm({
       {/* Profile Form */}
       <form
         onSubmit={handleUpdateProfile}
-        className="flex-1 space-y-4 max-w-4xl mx-auto w-full"
+        className="flex-1 space-y-4 max-w-6xl mx-auto w-full"
       >
         {/* Regular Text Fields */}
         {regularFields.map((field) => (
@@ -212,7 +220,7 @@ export default function ProfileForm({
               className={`w-full py-3 rounded-full font-medium transition ${
                 submitLoading || !hasChanges
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                  : "bg-[#014F9D] hover:bg-[#014f9df5] text-white"
               }`}
             >
               {submitLoading ? "Updating..." : "Save Changes"}
