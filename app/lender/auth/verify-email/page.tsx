@@ -43,7 +43,7 @@ export default function LenderVerifyEmailPage() {
       } else if (type === "reset") {
         const response = await userAuth.verifyOtp(email, otp); // returns .data
         console.log("OTP verify response:", response);
-        const userId = response?.user?.id;
+        const userId = response?.userId; // <-- FIXED HERE
         if (!userId) {
           setError("Could not verify user. Please try again.");
           return;
