@@ -122,7 +122,7 @@ export default function AppraiserJobsPage() {
 
   return (
     <DashboardLayout role="appraiser">
-      <Toaster />
+      {/* <Toaster /> */}
       <div className="p-2">
         {/* Full-Width Filter Buttons */}
         <div className="flex gap-4 mb-6">
