@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { userAuth } from "@/lib/api/userAuth";
 import { LockIcon } from "@/components/icons";
 import { toast } from "react-hot-toast";
+import AuthLayout from "@/components/auth-layout";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LenderSetNewPasswordContent() {
   const router = useRouter();
@@ -135,6 +137,7 @@ export default function LenderSetNewPasswordContent() {
   );
 
   return (
+    <AuthLayout>
     <div className="flex items-center justify-center min-h-screen px-6">
       <div className="w-full max-w-[765px]">
         <div className="mb-8">
@@ -155,7 +158,7 @@ export default function LenderSetNewPasswordContent() {
               placeholder="Type your new password here"
               value={newPassword}
               onChange={(e) => handlePasswordChange(e.target.value)}
-              className="w-full border border-gray-300 rounded-full px-16 py-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 pr-20"
+              className="w-full border border-gray-600 rounded-full px-16 py-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 pr-20"
               autoComplete="new-password"
             />
             <button
@@ -163,7 +166,6 @@ export default function LenderSetNewPasswordContent() {
               className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
               onClick={() => setShowNewPassword(!showNewPassword)}
             >
-              {showNewPassword ? "Hide" : "Show"}
             </button>
           </div>
 
@@ -189,15 +191,15 @@ export default function LenderSetNewPasswordContent() {
               placeholder="Retype your password here"
               value={confirmPassword}
               onChange={(e) => handleConfirmChange(e.target.value)}
-              className="w-full border border-gray-300 rounded-full px-16 py-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 pr-20"
+              className="w-full border border-gray-600 rounded-full px-16 py-4 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 pr-20"
               autoComplete="new-password"
             />
             <button
               type="button"
               className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              tabIndex={-1}
             >
-              {showConfirmPassword ? "Hide" : "Show"}
             </button>
           </div>
 
@@ -258,5 +260,6 @@ export default function LenderSetNewPasswordContent() {
         </div>
       </div>
     </div>
+    </AuthLayout>
   );
 }

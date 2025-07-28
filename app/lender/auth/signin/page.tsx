@@ -69,8 +69,8 @@ export default function LenderSignInPage() {
 
   return (
     <AuthLayout>
-      <Toaster position="top-center" />
-      <div className="flex flex-col justify-center py-24 w-full items-center">
+      <Toaster position="top-center" /> {/* if needed add py-24 than adding min-h-screen*/}
+      <div className="flex flex-col justify-center min-h-screen w-full items-center">
         <div className="w-full max-w-[765px]  px-6">
           <div className="mb-4 mt-0">
             <h1 className="text-3xl font-semibold text-gray-800">Sign In as</h1>
@@ -79,7 +79,17 @@ export default function LenderSignInPage() {
             <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
           </div>
           <div className="mb-5">
-            <h2 className="text-[32px] font-bold text-gray-800 leading-snug mb-1">Welcome Back Lenders</h2>
+           <h2
+              className="text-[42px] font-semibold text-gray-800 leading-[100%] mb-1"
+              style={{
+              fontFamily: "Urbanist",
+              fontWeight: 600,
+              fontStyle: "normal",
+              letterSpacing: "0%",
+              }}
+            >
+              Welcome Back Lenders
+            </h2>
             <p className="text-gray-500 text-sm">Log in to manage your jobs and updates.</p>
           </div>
 
