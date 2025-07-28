@@ -1,13 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
-// import { } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import DashboardLayout from "@/components/dashboard-layout";
 import { appraiserJobsApi, AppraiserJob, JobsApiResponse } from "../lib/job";
 import { SimpleJobStatusModal } from "./SimpleJobStatusModal";
 import { ComplexJobStatusModal } from "./ComplexJobStatusModal";
-import { Msg, Map, Update, Call, Next, Building } from "@/components/icons";
+import { Msg,LoadIcon, Map, Update, Call, Next, Building } from "@/components/icons";
+import { toast, Toaster } from "sonner";
 
 type FilterKey = "all" | "active" | "in-progress" | "completed";
 
@@ -21,9 +21,9 @@ const FILTERS: { name: string; key: FilterKey }[] = [
 function filterJobs(job: AppraiserJob, filter: FilterKey) {
   const status = job.job.job_status;
   if (filter === "all") return true;
-  if (filter === "active") return status === "accepted";
+  if (filter === "active") return status === "active" || status === "accepted";
   if (filter === "in-progress")
-    return status === "site_visit_scheduled" || status === "post_visit_summary";
+    return status === "site_visit_scheduled" || status === "post_visit_summary" || status === "client_visit";
   if (filter === "completed") return status === "completed";
   return false;
 }
@@ -31,15 +31,19 @@ function filterJobs(job: AppraiserJob, filter: FilterKey) {
 function getStatusColor(status: string) {
   switch (status) {
     case "accepted":
-      return "bg-blue-500";
+      return "bg-[#014F9D]";
+    case "active":
+      return "bg-[#014F9D]";
     case "site_visit_scheduled":
-      return "bg-yellow-500";
+      return "bg-[#FFC107]";
+    case "client_visit":
+      return "bg-[#FFC107]";
     case "post_visit_summary":
-      return "bg-yellow-600";
+      return "bg-[#FFC107]";
     case "completed":
-      return "bg-green-500";
+      return "bg-[#019D23]";
     default:
-      return "bg-gray-400";
+      return "bg-[#FFC107]";
   }
 }
 
@@ -59,51 +63,57 @@ export default function AppraiserJobsPage() {
 
   useEffect(() => {
     setLoading(true);
+    toast.loading("Loading jobs...", { id: "loading-jobs" });
+    
     appraiserJobsApi
       .fetchAcceptedJobs({ page: 1, limit: 20 })
       .then((res: JobsApiResponse) => {
-        console.log("JOBS API RAW RESPONSE:", res);
         setJobs(Array.isArray(res.jobs) ? res.jobs : []);
         setAdmin(res.admin || null);
+        toast.success("Jobs loaded successfully", { id: "loading-jobs" });
       })
-      .catch(() => setError("Failed to load jobs."))
+      .catch(() => {
+        setError("Failed to load jobs.");
+        toast.error("Failed to load jobs", { id: "loading-jobs" });
+      })
       .finally(() => setLoading(false));
   }, []);
 
   const handleModalSubmit = async (jobId: string, payload: any) => {
-    // Use the 6-digit job ID for the API call
-    await appraiserJobsApi.updateJobStatus(jobId, payload);
-    setModalJob(null);
-    setModalType(null);
-    setLoading(true);
-    appraiserJobsApi
-      .fetchAcceptedJobs({ page: 1, limit: 10 })
-      .then((res: JobsApiResponse) => {
-        setJobs(Array.isArray(res.jobs) ? res.jobs : []);
-        console.log("shubham job res", res);
-        setAdmin(res.admin || null);
-      })
-      .finally(() => setLoading(false));
+    try {
+      toast.loading("Updating job status...", { id: "update-job" });
+      
+      await appraiserJobsApi.updateJobStatus(jobId, payload);
+      setModalJob(null);
+      setModalType(null);
+      setLoading(true);
+      
+      const res = await appraiserJobsApi.fetchAcceptedJobs({ page: 1, limit: 10 });
+      setJobs(Array.isArray(res.jobs) ? res.jobs : []);
+      setAdmin(res.admin || null);
+      
+      toast.success("Job status updated successfully", { id: "update-job" });
+    } catch (error) {
+      toast.error("Failed to update job status", { id: "update-job" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const openModal = (job: AppraiserJob) => {
     setModalJob(job);
     const jobStatus = job.job.job_status;
 
-    // Simple modal for: accepted → site_visit_scheduled AND site_visit_scheduled → post_visit_summary
-    if (jobStatus === "accepted" || jobStatus === "site_visit_scheduled") {
+    if (jobStatus === "accepted" || jobStatus === "site_visit_scheduled" || jobStatus === "client_visit" || jobStatus === "active") {
       setModalType("simple");
-    }
-    // Complex modal for: post_visit_summary → completed
-    else if (jobStatus === "post_visit_summary") {
+    } else if (jobStatus === "post_visit_summary") {
       setModalType("complex");
     }
   };
 
   const handleChatClick = (jobId: string) => {
-  router.push(`/appraiser/chats/${jobId}`);
-};
-
+    router.push(`/appraiser/chats/${jobId}`);
+  };
 
   const closeModal = () => {
     setModalJob(null);
@@ -112,25 +122,17 @@ export default function AppraiserJobsPage() {
 
   return (
     <DashboardLayout role="appraiser">
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-2">Jobs</h1>
-        {admin && (
-          <div className="mb-4 p-2 bg-sky-50 rounded text-xs text-gray-700">
-            For help, contact admin:{" "}
-            <span className="font-semibold">
-              {admin.country_code} {admin.phone}
-            </span>
-          </div>
-        )}
-
+      {/* <Toaster /> */}
+      <div className="p-2">
+        {/* Full-Width Filter Buttons */}
         <div className="flex gap-4 mb-6">
           {FILTERS.map((f) => (
             <button
               key={f.key}
-              className={`px-6 py-2 rounded-full transition ${
+              className={`w-full py-2 rounded-full transition ${
                 activeFilter === f.key
-                  ? "bg-blue-800 text-white"
-                  : "border bg-white border-gray-300 text-gray-600"
+                  ? "bg-[#014F9D] hover:bg-blue-800 text-white"
+                  : "border-[#014F9D] text-[#014F9D] hover:bg-blue-50 bg-transparent border"
               }`}
               onClick={() => setActiveFilter(f.key)}
             >
@@ -139,12 +141,11 @@ export default function AppraiserJobsPage() {
           ))}
         </div>
 
-        {loading && <div>Loading...</div>}
+        {loading && <div className="text-center py-4">Loading...</div>}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !error && (
           <div className="space-y-4">
-            {jobs.filter((job) => filterJobs(job, activeFilter)).length ===
-              0 && (
+            {jobs.filter((job) => filterJobs(job, activeFilter)).length === 0 && (
               <div className="text-gray-500">
                 No jobs found for this filter.
               </div>
@@ -155,7 +156,6 @@ export default function AppraiserJobsPage() {
                 const details = job.job;
                 const job_status = details.job_status;
 
-                // Calculate timer from expires_at
                 const calculateTimeLeft = (expiresAt: string) => {
                   const now = new Date().getTime();
                   const expiry = new Date(expiresAt).getTime();
@@ -184,12 +184,10 @@ export default function AppraiserJobsPage() {
                   >
                     {/* LEFT SIDE - Icon and Job Info */}
                     <div className="flex items-start gap-4">
-                      {/* Building Icon */}
                       <div>
                         <Building />
                       </div>
 
-                      {/* Job Details */}
                       <div>
                         <h3 className="font-semibold text-base">
                           {details.property_type || "Appraisal"}
@@ -198,13 +196,26 @@ export default function AppraiserJobsPage() {
                           {details.address ?? "—"}
                         </p>
 
-                        {/* Status Badge - ORIGINAL NAMES KEPT */}
                         <span
-                          className={`inline-block mt-2 px-3 py-1 rounded-full text-white text-xs font-medium ${getStatusColor(
+                          className={`inline-block mt-2 text-white text-xs font-medium ${getStatusColor(
                             job_status
                           )}`}
+                          style={{
+                            height: 32,
+                            borderRadius: 100,
+                            padding: "8px 16px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            opacity: 1,
+                            gap: 10,
+                            whiteSpace: "nowrap",
+                            width: "auto", 
+                            minWidth: 60, 
+                            maxWidth: 200, 
+                          }}
                         >
-                          {(job_status || "-").replace(/_/g, " ").toUpperCase()}
+                          <LoadIcon/> {(job_status || "-").replace(/_/g, " ").toUpperCase()}
                         </span>
                       </div>
                     </div>
@@ -231,17 +242,14 @@ export default function AppraiserJobsPage() {
 
                       {/* Action Icons */}
                       <div className="flex gap-2 items-center">
-                        {/* CHAT - Always present */}
-<button 
-  title="Chat" 
-  onClick={() => handleChatClick(details.id)}
-  className="hover:text-blue-700 transition-colors"
->    
-  <Msg />
-</button>
+                        <button 
+                          title="Chat" 
+                          onClick={() => handleChatClick(details.id)}
+                          className="hover:text-blue-700 transition-colors"
+                        >    
+                          <Msg />
+                        </button>
 
-
-                        {/* CALL - Only for "accepted" status */}
                         {job_status === "accepted" && !!details.phone && (
                           <a
                             href={`tel:+${details.country_code}${details.phone}`}
@@ -252,7 +260,6 @@ export default function AppraiserJobsPage() {
                           </a>
                         )}
 
-                        {/* MAP - Only for "site_visit_scheduled" status */}
                         {job_status === "site_visit_scheduled" && (
                           <button
                             title="View Property Location"
@@ -285,7 +292,6 @@ export default function AppraiserJobsPage() {
                           </button>
                         )}
 
-                        {/* UPDATE STATUS - For all except "completed" */}
                         {job_status !== "completed" && (
                           <button
                             title="Update status"
@@ -303,29 +309,26 @@ export default function AppraiserJobsPage() {
           </div>
         )}
 
-        {/* Simple Modal for accepted → site_visit_scheduled AND site_visit_scheduled → post_visit_summary */}
         {modalJob && modalType === "simple" && (
           <SimpleJobStatusModal
             open={true}
             onClose={closeModal}
             jobId={modalJob.job.id}
             currentStatus={modalJob.job.job_status}
-            jobData={modalJob.job} // Pass the job data
+            jobData={modalJob.job}
             onSubmit={(payload) => handleModalSubmit(modalJob.job.id, payload)}
           />
         )}
 
-       {/* Complex Modal for post_visit_summary → completed */}
-{modalJob && modalType === "complex" && (
-  <ComplexJobStatusModal
-    open={true}
-    onClose={closeModal}
-    jobId={modalJob.job.id}
-    jobData={modalJob.job} // Pass the job data
-    onSubmit={payload => handleModalSubmit(modalJob.job.id, payload)}
-  />
-)}
-
+        {modalJob && modalType === "complex" && (
+          <ComplexJobStatusModal
+            open={true}
+            onClose={closeModal}
+            jobId={modalJob.job.id}
+            jobData={modalJob.job}
+            onSubmit={payload => handleModalSubmit(modalJob.job.id, payload)}
+          />
+        )}
       </div>
     </DashboardLayout>
   );
