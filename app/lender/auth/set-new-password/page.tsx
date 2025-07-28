@@ -1,5 +1,5 @@
 import AuthLayout from "@/components/auth-layout";
-import LenderSetNewPasswordContent from "./setNewPassword";
+import LenderSetNewPasswordContent from "./SetNewPasswordContent";
 
 export default function LenderSetNewPasswordPage() {
   return (
