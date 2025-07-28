@@ -70,7 +70,8 @@ export const userAuth = {
   const res = await api.post("/lender/forgot-password", { email })
  },
  verifyOtp: async (email: string, otp: string)=>{
-  return await api.post("/lender/verify-otp", {email, otp})
+  const res= await api.post("/lender/verify-otp", {email, otp})
+  return res.data;
  },
 
  setNewPassword: async(userId: string, newPassword: string, confirmPassword: string)=>{

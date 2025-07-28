@@ -17,6 +17,7 @@ export default function LenderVerifyEmailPage() {
   const searchParams = useSearchParams()
   const email = searchParams.get("email") || "abc@gmail.com"
   const type = searchParams.get("type") || "register" // default to register if missing
+  const userId = searchParams.get("userId") // Get userId from search params
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -40,9 +41,14 @@ export default function LenderVerifyEmailPage() {
         await userAuth.verifyRegisterOtp(email, otp)
         router.push("/lender/dashboard")
       } else if (type === "reset") {
-        await userAuth.verifyOtp(email, otp)
-        console.log("Redirecting to set-new-password page...");
-        router.push(`/lender/auth/set-new-password?email=${encodeURIComponent(email)}`)
+        const response = await userAuth.verifyOtp(email, otp); // returns .data
+        console.log("OTP verify response:", response);
+        const userId = response?.user?.id;
+        if (!userId) {
+          setError("Could not verify user. Please try again.");
+          return;
+        }
+        router.push(`/lender/auth/set-new-password?userId=${userId}`);
       } else {
         throw new Error("Invalid verification type.")
       }

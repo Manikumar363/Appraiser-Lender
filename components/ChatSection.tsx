@@ -98,11 +98,11 @@ export default function ChatSection({ chatId, user }: ChatSectionProps) {
       setMessages((prev) => [
         ...prev,
         {
-          id: response.id || Math.random().toString(),
+          id: Math.random().toString(),
           senderName: user.name,
           senderRole: user.role,
           senderId: user.id,
-          content: response.content || newMessage.trim(),
+          content: newMessage.trim(),
           timestamp: new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
