@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import DashboardLayout from "../../../../components/dashboard-layout";
 import { LockIcon } from "../../../../components/icons";
 import { authApi } from "@/lib/api/auth";
@@ -11,7 +12,6 @@ export default function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -19,26 +19,41 @@ export default function ResetPasswordForm() {
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
 
     if (newPassword !== confirmPassword) {
       setError("New password and retype password do not match!");
       return;
     }
 
+    if (loading) return; // Prevent double submission
+
     setLoading(true);
+    const loadingToast = toast.loading("Updating your password...");
+
     try {
       const res = await authApi.resetPassword(oldPassword, newPassword);
+      
       if (res.data && res.data.success) {
-        setSuccess("Password updated successfully!");
-        alert("Password updated successfully!");
-        router.push("/appraiser/settings");
+        toast.dismiss(loadingToast);
+        toast.success("Password updated successfully!");
+        
+        // Small delay for better UX
+        setTimeout(() => {
+          router.push("/appraiser/settings");
+        }, 1500);
       } else {
-        setError(res.data?.message || "Something went wrong.");
+        toast.dismiss(loadingToast);
+        const errorMsg = res.data?.message || "Something went wrong.";
+        setError(errorMsg);
+        toast.error(errorMsg);
       }
     } catch (err: any) {
       console.error("❌ Error:", err);
-      setError(err.response?.data?.message || "Failed to update password.");
+      toast.dismiss(loadingToast);
+      
+      const errorMessage = err.response?.data?.message || "Failed to update password.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -60,6 +75,7 @@ export default function ResetPasswordForm() {
               className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
               placeholder="Type your old password"
               required
+              disabled={loading}
             />
           </div>
         </div>
@@ -77,6 +93,7 @@ export default function ResetPasswordForm() {
               className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
               placeholder="Type your new password"
               required
+              disabled={loading}
             />
           </div>
         </div>
@@ -94,17 +111,17 @@ export default function ResetPasswordForm() {
               className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
               placeholder="Retype your new password"
               required
+              disabled={loading}
             />
           </div>
         </div>
 
-        {error && <p className="text-red-600">{error}</p>}
-        {success && <p className="text-green-600">{success}</p>}
+        {error && <p className="text-red-600">{error} </p>}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-full font-medium transition-colors"
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-full font-medium transition-colors"
         >
           {loading ? "Updating..." : "Update Password"}
         </button>

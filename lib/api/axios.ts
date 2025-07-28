@@ -33,7 +33,8 @@ api.interceptors.response.use(
                           currentPath.includes('/signup') || 
                           currentPath.includes('/forgot-password') ||
                           currentPath.includes('/verify-email') ||
-                          currentPath.includes('/set-new-password');
+                          currentPath.includes('/set-new-password')||
+                          currentPath.includes('/settings/reset');
         
         if (!isAuthPage) {
           localStorage.removeItem("authToken");
