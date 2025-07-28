@@ -152,7 +152,15 @@ export default function AppraiserSignInPage() {
           </div>
 
           <div className="mb-5">
-            <h2 className="text-[32px] font-bold text-gray-800 leading-snug mb-1">
+            <h2
+              className="text-[42px] font-semibold text-gray-800 leading-[100%] mb-1"
+              style={{
+              fontFamily: "Urbanist",
+              fontWeight: 600,
+              fontStyle: "normal",
+              letterSpacing: "0%",
+              }}
+            >
               Welcome Back Appraisers
             </h2>
             <p className="text-gray-500 text-sm">
