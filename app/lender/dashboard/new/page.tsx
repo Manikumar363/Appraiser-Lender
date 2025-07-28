@@ -57,6 +57,11 @@ export default function NewJobRequestPage() {
     }
   }
 
+  const Intendeduser = [
+    "Self",
+    "Other",
+  ]
+
   const purposeOptions = [
     "Testing",
     "Owner",
@@ -142,14 +147,17 @@ export default function NewJobRequestPage() {
           },
         }
       );
-      console.log(response.data);
+      console.log("Geocode response:", response.data);
       const location = response.data.results[0]?.geometry.location;
       if (location) {
         setMapCenter({ lat: location.lat, lng: location.lng });
         setMarker({ lat: location.lat, lng: location.lng });
+      } else {
+        toast.error("Please enter a more specific property address.");
+        console.error("No location found for address:", address);
       }
     } catch (error) {
-      // Optionally handle error
+      toast.error("Geocoding failed. Please check the address.");
       console.error("Geocoding failed:", error);
     }
   };
@@ -191,6 +199,7 @@ export default function NewJobRequestPage() {
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
                   />
+                  
                 </div>
               </div>
               {/* Applicant's Name */}

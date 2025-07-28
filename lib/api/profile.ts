@@ -37,6 +37,10 @@ export const profileApi = {
     country_code?: string;
     applicant?: string;
     image?: string;
+    location?: {
+      type: "Point";
+      coordinates: [number, number];  // [longitude, latitude]
+    };
   })=>{
     const res= await api.patch("/lender/profile", data);
     return res.data;

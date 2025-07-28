@@ -16,8 +16,15 @@ import {
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import type { CountryData } from 'react-phone-input-2';
+import axios from "axios";
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
 
-export default function AppraiserProfilePage() {
+const mapContainerStyle = {
+  width: '100%',
+  height: '136px', // h-64
+};
+
+export default function LenderProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -26,8 +33,8 @@ export default function AppraiserProfilePage() {
     email: "",
     applicant: "",
     location: {
-      latitude: "",
-      longitude: "",
+      type: "Point",
+      coordinates: [0, 0], // [lng, lat]
     },
     phone: "",
     image: "",
@@ -41,6 +48,15 @@ export default function AppraiserProfilePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Add state for address, map center, and marker
+  const [address, setAddress] = useState(formData.address || "");
+  const [mapCenter, setMapCenter] = useState({ lat: 43.6532, lng: -79.3832 });
+  const [marker, setMarker] = useState({ lat: 43.6532, lng: -79.3832 });
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+  });
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -51,7 +67,7 @@ export default function AppraiserProfilePage() {
             name: res.user.name || "",
             email: res.user.email || "",
             applicant: res.user.applicant || "",
-            location: res.user.location || "",
+            location: res.user.location || { type: "Point", coordinates: [0, 0] },
             phone: res.user.phone || "",
             image: res.user.image || "",
             country_code: res.user.country_code || "",
@@ -60,6 +76,18 @@ export default function AppraiserProfilePage() {
             city: res.user.city || "",
             postal_code: res.user.postal_code || "",
           });
+          // Sync address and map states
+          setAddress(res.user.address || "");
+          if (res.user.location && res.user.location.coordinates) {
+            setMapCenter({
+              lat: res.user.location.coordinates[1],
+              lng: res.user.location.coordinates[0],
+            });
+            setMarker({
+              lat: res.user.location.coordinates[1],
+              lng: res.user.location.coordinates[0],
+            });
+          }
         } else {
           console.error("❌ Failed to load profile");
         }
@@ -87,6 +115,45 @@ export default function AppraiserProfilePage() {
     phone: value.startsWith("+") ? value : `+${value}`,
     country_code: data.dialCode || "", // still save this in case needed separately
   }));
+  };
+
+  // Geocode function
+  const geocodeAddress = async (addr: string) => {
+    if (!addr) return;
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json`,
+        {
+          params: {
+            address: addr,
+            key: apiKey,
+          },
+        }
+      );
+      const location = response.data.results[0]?.geometry.location;
+      if (location) {
+        setMapCenter({ lat: location.lat, lng: location.lng });
+        setMarker({ lat: location.lat, lng: location.lng });
+        setFormData((prev) => ({
+          ...prev,
+          address: addr,
+          location: {
+            type: "Point",
+            coordinates: [location.lng, location.lat],
+          },
+        }));
+      }
+    } catch (error) {
+      // Optionally show error
+    }
+  };
+
+  // Address input change handler
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setAddress(value);
+    geocodeAddress(value);
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -248,25 +315,74 @@ export default function AppraiserProfilePage() {
            
 
            <div className="relative">
-  
 
-  <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
-    <PhoneInput
-      country={"us"}
-      value={formData.phone}
-      onChange={handlePhoneChange}
-      containerClass="flex-1"
-      inputClass="!w-full !bg-transparent !border-none !outline-none !text-sm !text-gray-900 !placeholder-gray-500 h-5"
-      buttonClass={`!bg-transparent !border-none ${!isEditing ? "cursor-not-allowed" : ""}`}
-      inputProps={{
-        readOnly: !isEditing,
-        disabled: !isEditing,
-        style: { height: "25px" }
-      }}
-      enableSearch
-    />
-  </div>
-</div>
+              <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
+                <PhoneInput
+                  country={"us"}
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
+                  containerClass="flex-1"
+                  inputClass="!w-full !bg-transparent !border-none !outline-none !text-sm !text-gray-900 !placeholder-gray-500 h-5"
+                  buttonClass={`!bg-transparent !border-none ${!isEditing ? "cursor-not-allowed" : ""}`}
+                  inputProps={{
+                    readOnly: !isEditing,
+                    disabled: !isEditing,
+                    style: { height: "25px" }
+                  }}
+                  enableSearch
+                />
+              </div>
+            </div>
+
+            {/* Location Address Field */}
+            <div className="relative">
+              <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
+                <LocationIcon />
+                <input
+                  type="text"
+                  name="address"
+                  value={address}
+                  onChange={handleAddressChange}
+                  placeholder="Enter Location Address"
+                  readOnly={!isEditing}
+                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
+                    !isEditing ? "cursor-not-allowed" : ""
+                  }`}
+                />
+              </div>
+            </div>
+
+            {/* Map */}
+            <div className="w-full h-[136px] rounded-lg overflow-hidden border border-gray-600 mt-2">
+              {isLoaded && (
+                <GoogleMap
+                  mapContainerStyle={mapContainerStyle}
+                  center={mapCenter}
+                  zoom={15}
+                  onClick={isEditing ? (e) => {
+                    const lat = e.latLng?.lat();
+                    const lng = e.latLng?.lng();
+                    if (lat && lng) {
+                      setMarker({ lat, lng });
+                      setMapCenter({ lat, lng });
+                      setFormData((prev) => ({
+                        ...prev,
+                        location: {
+                          type: "Point",
+                          coordinates: [lng, lat],
+                        },
+                      }));
+                    }
+                  } : undefined}
+                  options={{
+                    disableDefaultUI: true,
+                    clickableIcons: false,
+                  }}
+                >
+                  <Marker position={marker} />
+                </GoogleMap>
+              )}
+            </div>
 
             {error && <p className="text-red-600">{error}</p>}
             {success && <p className="text-green-600">{success}</p>}

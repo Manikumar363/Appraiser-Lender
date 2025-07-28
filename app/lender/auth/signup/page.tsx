@@ -123,7 +123,15 @@ export default function LenderSignUpPage() {
        <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
       </div>
     
-     <h2 className="text-3xl font-bold text-gray-800 mb-3 w-full max-w-[713px] mx-auto">Create Your Lender Account</h2>
+      <h2
+            className="text-[42px] font-semibold text-gray-800 leading-[100%] mb-1"
+              style={{
+              fontFamily: "Urbanist",
+              fontWeight: 600,
+              fontStyle: "normal",
+              letterSpacing: "0%",
+              }}
+            >Create Your Lender Account</h2>
 
       <div className="w-full max-w-[765px] mx-auto">
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -163,7 +171,6 @@ export default function LenderSignUpPage() {
       {/* Phone Input */}
 
       <div className="relative">
-        <label className="block text-gray-700 mb-2 text-sm font-medium">Phone Number</label>
         <PhoneInput
         country={"us"}
         value={phone}
