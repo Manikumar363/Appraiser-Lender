@@ -38,7 +38,7 @@ export default function PrivacyPolicyPage() {
   }, []);
 
   return (
-    <DashboardLayout role='lender'>
+    <DashboardLayout role='appraiser'>
     <div className="px-2 py-4 text-gray-800 max-w-4xl ml-8 space-y-4">
       {/* Header */}
       <div>

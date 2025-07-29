@@ -9,7 +9,7 @@ interface Section {
   content: string;
   list?: string[];
 }
-export default function LenderTermsPage() {
+export default function AppraiserTermsPage() {
   const [contentHtml, setContentHtml] = useState<string>("");
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function LenderTermsPage() {
     fetchData();
   }, []);
   return (
-    <DashboardLayout role="lender">
+    <DashboardLayout role="appraiser">
 
        <div className="px-6 py-10 text-gray-800 max-w-4xl ml-8 space-y-8">
       <div>
