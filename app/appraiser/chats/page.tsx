@@ -6,22 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import DashboardLayout from "../../../components/dashboard-layout";
 import { appraiserJobsApi } from "../lib/job";
-import { chatApi } from "@/lib/api/chat"; // Add this import
-import { BuildingIcon } from "../../../components/icons";
-
-interface ChatJob {
-  id: string;
-  jobId: string;
-  title: string;
-  location: string;
-  status: string;
-  lastActivity: string;
-  participants?: {
-    lender?: { image?: string };
-    appraiser?: { image?: string };
-    admin?: { image?: string };
-  };
-}
+import { chatApi } from "@/lib/api/chat";
+import ChatListItem from "./components/ChatListItem";
+import { ChatJob } from "./components/types";
 
 export default function AppraiserChatPage() {
   const [chatJobs, setChatJobs] = useState<ChatJob[]>([]);
@@ -38,7 +25,6 @@ export default function AppraiserChatPage() {
       
       const response = await appraiserJobsApi.fetchAcceptedJobs({ page: 1, limit: 50 });
       
-      // Map jobs and fetch participant images for each
       const jobsWithParticipants = await Promise.all(
         (response.jobs || []).map(async (job: any) => {
           const mappedJob: ChatJob = {
@@ -50,13 +36,11 @@ export default function AppraiserChatPage() {
             lastActivity: job.updated_at,
           };
 
-          // Fetch participant images for this job
           try {
             const chatImages = await chatApi.getChatImages(job.job.id);
             mappedJob.participants = chatImages.chat || {};
           } catch (err) {
             console.warn(`Failed to fetch participants for job ${job.job.id}:`, err);
-            // Set default participants if fetch fails
             mappedJob.participants = {};
           }
 
@@ -83,46 +67,6 @@ export default function AppraiserChatPage() {
 
   const handleChatClick = (jobId: string) => {
     router.push(`/appraiser/chats/${jobId}`);
-  };
-
-  // Helper function to get participant avatars
-  const getParticipantAvatars = (participants: ChatJob['participants']) => {
-    const avatars = [];
-    
-    if (participants?.lender?.image) {
-      avatars.push({
-        id: 'lender',
-        image: participants.lender.image,
-        name: 'Lender'
-      });
-    }
-    
-    if (participants?.appraiser?.image) {
-      avatars.push({
-        id: 'appraiser',
-        image: participants.appraiser.image,
-        name: 'Appraiser'
-      });
-    }
-    
-    if (participants?.admin?.image) {
-      avatars.push({
-        id: 'admin',
-        image: participants.admin.image,
-        name: 'Admin'
-      });
-    }
-    
-    // If no participants found, return default placeholders
-    if (avatars.length === 0) {
-      return [
-        { id: 'lender', image: '/placeholder.svg', name: 'Lender' },
-        { id: 'appraiser', image: '/placeholder.svg', name: 'Appraiser' },
-        { id: 'admin', image: '/placeholder.svg', name: 'Admin' },
-      ];
-    }
-    
-    return avatars;
   };
 
   if (loading) {
@@ -155,7 +99,7 @@ export default function AppraiserChatPage() {
 
   return (
     <DashboardLayout role="appraiser">
-      <div className="">
+      <div className="p-6">
         <div className="space-y-4 max-w-6xl flex flex-col mx-auto">
           {chatJobs.length === 0 ? (
             <div className="text-center py-8">
@@ -165,49 +109,13 @@ export default function AppraiserChatPage() {
               </p>
             </div>
           ) : (
-            chatJobs.map((chat) => {
-              const participantAvatars = getParticipantAvatars(chat.participants);
-              
-              return (
-                <div
-                  key={chat.jobId}
-                  className="bg-[#014F9D] rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:bg-[#0159A8]"
-                  onClick={() => handleChatClick(chat.jobId)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                        <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-white mb-1">
-                          {chat.title} 
-                        </h3>
-                        <p className="text-blue-100 text-sm">{chat.location}</p>
-                        {/* <p className="text-blue-200 text-xs">Status: {chat.status}</p> */}
-                      </div>
-                    </div>
-                    
-                    {/* Participant Avatars - Same as in chat/id/page.tsx */}
-                    <div className="flex -space-x-3">
-                      {participantAvatars.map((participant) => (
-                        <img
-                          key={participant.id}
-                          src={participant.image}
-                          alt={participant.name}
-                          className="min-w-9 h-10 rounded-full border-2 border-white object-cover"
-                          onError={(e) => {
-                            // Fallback to placeholder if image fails to load
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/placeholder.svg';
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })
+            chatJobs.map((chat) => (
+              <ChatListItem
+                key={chat.jobId}
+                chat={chat}
+                onClick={handleChatClick}
+              />
+            ))
           )}
         </div>
       </div>
