@@ -4,6 +4,7 @@ import DashboardLayout from "../../../../components/dashboard-layout";
 import { Button } from "@/components/ui/button";
 import { Paperclip, Send, Loader2, CheckCircle } from "lucide-react";
 import { chatApi } from "@/lib/api/chat";
+import { appraiserJobsApi } from "@/app/appraiser/lib/job"; // Add this import
 import { useParams } from "next/navigation";
 import { BuildingIcon } from "@/components/icons";
 import { useToast } from "@/components/ui/use-toast";
@@ -33,6 +34,12 @@ interface User {
   email?: string;
 }
 
+interface JobDetails {
+  title: string;
+  location: string;
+  status: string;
+}
+
 // Improved function to get user from token
 const getUserFromToken = (): User | null => {
   try {
@@ -47,7 +54,6 @@ const getUserFromToken = (): User | null => {
     }
 
     const decoded: any = jwtDecode(token);
-    console.log('🔍 Decoded token:', decoded);
     
     const user: User = {
       id: decoded.userId || decoded.id || decoded.sub || decoded.user_id,
@@ -56,7 +62,6 @@ const getUserFromToken = (): User | null => {
       email: decoded.email
     };
 
-    console.log('👤 Extracted user:', user);
     return user;
   } catch (error) {
     console.error('❌ Error decoding token:', error);
@@ -71,6 +76,11 @@ export default function ChatDetailPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [jobDetails, setJobDetails] = useState<JobDetails>({
+    title: "Property Appraisal",
+    location: "Loading...",
+    status: "active"
+  });
 
   const { toast } = useToast();
   const params = useParams();
@@ -94,14 +104,55 @@ export default function ChatDetailPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
+  // New function to fetch job details
+  const fetchJobDetails = useCallback(async () => {
+    if (!jobId) return;
+
+    try {
+      // Try to get job details from accepted jobs first
+      const acceptedJobs = await appraiserJobsApi.fetchAcceptedJobs({ page: 1, limit: 100 });
+      const currentJob = acceptedJobs.jobs?.find((job: any) => job.job.id === jobId);
+      
+      if (currentJob) {
+        setJobDetails({
+          title: currentJob.job.property_type || "Property Appraisal",
+          location: currentJob.job.address || "Location not specified",
+          status: currentJob.job.job_status || currentJob.job.status || "active"
+        });
+      } else {
+        // Fallback: try to get from pending jobs
+        const pendingJobs = await appraiserJobsApi.getPendingJobs();
+        const pendingJob = pendingJobs?.find((job: any) => job.job.id === jobId);
+        
+        if (pendingJob) {
+          setJobDetails({
+            title: pendingJob.job.property_type || "Property Appraisal",
+            location: pendingJob.job.address || "Location not specified",
+            status: pendingJob.job.job_status || pendingJob.job.status || "active"
+          });
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to fetch job details:', error);
+      // Keep default values if fetch fails
+      setJobDetails({
+        title: "Property Appraisal",
+        location: "Location not available",
+        status: "active"
+      });
+    }
+  }, [jobId]);
+
   const fetchChatData = useCallback(async () => {
     if (!jobId) return;
 
     setLoading(true);
     try {
+      // Fetch job details, messages, and images in parallel
       const [msgRes, imgRes] = await Promise.all([
         chatApi.getMessages(jobId, 1, 50),
-        chatApi.getChatImages(jobId)
+        chatApi.getChatImages(jobId),
+        fetchJobDetails() // Add job details fetching
       ]);
 
       const mappedMessages: UIMessage[] = (msgRes.messages || []).map((msg: any) => ({
@@ -153,7 +204,7 @@ export default function ChatDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [jobId, toast]);
+  }, [jobId, toast, fetchJobDetails]);
 
   useEffect(() => {
     fetchChatData();
@@ -167,11 +218,6 @@ export default function ChatDetailPage() {
     e.preventDefault();
     
     if (!newMessage.trim() || !user || sending) {
-      console.warn('Cannot send message:', { 
-        hasMessage: !!newMessage.trim(), 
-        hasUser: !!user, 
-        sending 
-      });
       return;
     }
 
@@ -184,12 +230,6 @@ export default function ChatDetailPage() {
         senderId: user.id, 
         content: messageContent,
       };
-
-      console.log("📤 SENDING MESSAGE:", {
-        jobId: messagePayload.jobId,
-        senderId: messagePayload.senderId,
-        content: messagePayload.content
-      });
 
       const response = await chatApi.sendMessage(jobId, messagePayload);
       const messageData = response.data;
@@ -211,7 +251,6 @@ export default function ChatDetailPage() {
       setNewMessage("");
       
     } catch (err) {
-      console.error('❌ Failed to send message:', err);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -232,8 +271,11 @@ export default function ChatDetailPage() {
   if (loading) {
     return (
       <DashboardLayout role="appraiser">
-        <div className="flex items-center justify-center h-screen">
-          <Loader2 className="w-6 h-6 animate-spin" />
+        <div className="flex items-center justify-center h-screen ">
+          <div className="flex items-center gap-3 text-gray-500">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <span>Loading conversation...</span>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -241,14 +283,8 @@ export default function ChatDetailPage() {
 
   return (
     <DashboardLayout role="appraiser">
-      {process.env.NODE_ENV === 'development' && (
-        <div className="bg-yellow-100 p-2 text-xs">
-          Debug: User ID = {user?.id || 'null'}, User Role = {user?.role || 'null'}
-        </div>
-      )}
-      
-      <div className="flex flex-col h-screen bg-white overflow-hidden relative">
-        {/* Chat Header */}
+      <div className="flex flex-col h-screen overflow-hidden relative">
+        {/* Chat Header - Now Dynamic */}
         <div className="flex justify-center pt-4 pb-4 w-full">
           <div className="bg-[#014F9D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-4xl">
             <div className="flex items-center gap-4">
@@ -257,10 +293,10 @@ export default function ChatDetailPage() {
               </div>
               <div>
                 <div className="text-white font-semibold text-base">
-                  Residential Appraisal - #{jobId}
+                  {jobDetails.title} 
                 </div>
                 <div className="text-white text-xs opacity-80">
-                  Brampton, Canada
+                  {jobDetails.location}
                 </div>
               </div>
             </div>
@@ -271,6 +307,10 @@ export default function ChatDetailPage() {
                   src={participant.avatar}
                   alt={participant.name}
                   className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder.svg';
+                  }}
                 />
               ))}
             </div>
@@ -286,7 +326,6 @@ export default function ChatDetailPage() {
               </div>
             ) : (
               messages.map((message) => {
-                // Simple logic: Appraiser on RIGHT, everyone else on LEFT
                 const isAppraiser = message.senderRole === 'appraiser';
                 const isCurrentUserAppraiser = user?.role === 'appraiser' && isAppraiser;
 
@@ -297,22 +336,24 @@ export default function ChatDetailPage() {
                       isAppraiser ? "justify-end" : "justify-start"
                     }`}
                   >
-                    {/* Avatar on left for non-appraiser messages */}
                     {!isAppraiser && (
                       <img
                         src={message.avatar}
                         alt={message.senderName}
                         className="w-10 h-10 rounded-full object-cover mr-3"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder.svg';
+                        }}
                       />
                     )}
                     
                     <div>
-                      {/* Message bubble with similar styling but slight differences */}
                       <div
                         className={`rounded-2xl px-5 py-3 flex flex-col shadow-sm ${
                           isAppraiser 
-                            ? "bg-[#014F9D] text-white" // Appraiser: Blue
-                            : "bg-[#E6F9F3] text-gray-900" // Lender/Others: Light green
+                            ? "bg-[#014F9D] text-white"
+                            : "bg-[#E6F9F3] text-gray-900"
                         }`}
                         style={{ minWidth: 220, maxWidth: 400 }}
                       >
@@ -329,7 +370,7 @@ export default function ChatDetailPage() {
                                 : message.senderRole === "admin"
                                 ? "text-blue-600"
                                 : message.senderRole === "lender"
-                                ? "text-green-600"
+                                ? "text-[#E9FFFD]"
                                 : "text-[#14B8A6]"
                             }`}
                           >
@@ -344,7 +385,6 @@ export default function ChatDetailPage() {
                         </span>
                       </div>
                       
-                      {/* Timestamp */}
                       <div
                         className={`flex items-center gap-2 mt-1 ${
                           isAppraiser ? "justify-end" : "justify-start"
@@ -355,12 +395,15 @@ export default function ChatDetailPage() {
                       </div>
                     </div>
                     
-                    {/* Avatar on right for appraiser messages */}
                     {isAppraiser && (
                       <img
                         src={message.avatar}
                         alt={message.senderName}
                         className="w-10 h-10 rounded-full object-cover ml-3"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder.svg';
+                        }}
                       />
                     )}
                   </div>
