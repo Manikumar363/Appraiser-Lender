@@ -179,6 +179,29 @@ export default function NewJobRequestPage() {
     return newErrors;
   };
 
+  const handleFileUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const res = await axios.post(`${apiBaseUrl}/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      // Use 'image' or 'url' depending on your backend response
+      const fileUrl = res.data.image || res.data.url;
+      if (fileUrl) {
+        handleInputChange("lender_doc", fileUrl); // Save public URL, not blob
+        setUploadedDocName(file.name);
+        toast.success("File uploaded successfully!");
+      } else {
+        toast.error("Upload failed: No file URL returned.");
+      }
+    } catch (err) {
+      toast.error("Failed to upload document.");
+    }
+  };
+
   return (
     <DashboardLayout role="lender">
       <Toaster position="top-right" />
@@ -446,12 +469,11 @@ export default function NewJobRequestPage() {
                       id="pdf-upload"
                       type="file"
                       accept="application/pdf"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const fileUrl = URL.createObjectURL(file); // for preview
-                          setUploadedDocName(file.name); 
-                          handleInputChange("lender_doc", fileUrl);
+                          await handleFileUpload(file);
+                          setUploadedDocName(file.name);
                         }
                       }}
                       className="hidden"

@@ -39,7 +39,7 @@ export default function LenderVerifyEmailPage() {
     try {
       if (type === "register") {
         await userAuth.verifyRegisterOtp(email, otp)
-        router.push("/lender/dashboard")
+        router.push("/lender/auth/signin")
       } else if (type === "reset") {
         const response = await userAuth.verifyOtp(email, otp); // returns .data
         console.log("OTP verify response:", response);

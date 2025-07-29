@@ -66,7 +66,7 @@ export default function JobDetailPage() {
                 <h2 className="text-lg font-semibold">{job.purpose}</h2>
                 <p className="text-gray-600 text-sm mb-1">{job.address}</p>
                 <Badge 
-                className="text-white px-4 py-2 rounded-full text-xs"
+                  className="text-white inline-flex items-center px-4 py-2 rounded-full text-xs"
                   style={{
                     backgroundColor:
                       job.status === "pending" ||
@@ -80,8 +80,8 @@ export default function JobDetailPage() {
                         ? "#ef4444"
                         : "#FFC107"                
                   }}>
-                 <LoadIcon className="w-4 h-4 mr-2" />
-                 {job.job_status}
+                  <LoadIcon className="w-4 h-4 mr-2" />
+                  {job.job_status}
                 </Badge>
               </div>
             </div>
@@ -94,7 +94,8 @@ export default function JobDetailPage() {
                 <CalendarIcon className="w-4 h-4 mr-2" />
                 {new Date(job.preferred_date).toLocaleDateString()}
               </Button>
-              <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors">
+              <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors"
+              onClick={() => router.push(`/lender/chats/${job.id}`)}>
                 <MessageIcon className="w-5 h-5 mr-1" />
                 Message
               </Button>
@@ -129,7 +130,7 @@ export default function JobDetailPage() {
     {job.lender_doc && (
       <div className="bg-cyan-50 rounded-xl py-7 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
         <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
-        <a href={job.lender_doc} target="_blank" rel="noopener noreferrer" className="font-medium text-gray-700 text-sm mb-1 truncate">
+        <a href={job.lender_doc} download target="_blank" rel="noopener noreferrer" className="font-medium text-gray-700 text-sm mb-1 truncate">
           Floor Plan.pdf
         </a>
         <span className="text-gray-500 text-sm">
@@ -140,7 +141,22 @@ export default function JobDetailPage() {
       </div>
     )}
   </div>
-  <Button className="w-full bg-[#014F9D] hover:bg-[#013B6D] text-white py-7 rounded-lg">Download All</Button>
+  <Button
+  className="w-full bg-[#014F9D] hover:bg-[#013B6D] text-white py-7 rounded-lg"
+  onClick={() => {
+    if (job.lender_doc) {
+      const link = document.createElement("a");
+      link.href = job.lender_doc;
+       link.setAttribute("download", "Floor Plan.pdf");
+       link.setAttribute("target", "_blank"); // Optional: open in new tab if not downloaded
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }}
+>
+  Download All
+</Button>
 </div>
 
         {/* Transaction */}

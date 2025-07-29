@@ -48,7 +48,7 @@ export default function JobsPage() {
 
   return (
     <DashboardLayout role="lender">
-      <div className="flex flex-col h-full min-h-[calc(90vh-14px)]">
+      <div className="flex flex-col h-full min-h-[calc(80vh-14px)] p-6">
         <div className="flex-1">
           {/* Filter Tabs */}
           <div className="flex gap-4 mb-8">
@@ -75,9 +75,21 @@ export default function JobsPage() {
           </div>
 
           {/* Jobs List */}
-          <div className="space-y-4 mb-8">
-            {jobs.map((job) => (
-              <div key={job.id} className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+          {jobs.length === 0 && (
+             <div className="flex items-center justify-center py-24">
+               <span className="text-gray-500 text-xl font-medium">
+                 {activeFilter === "completed"
+                   ? "No completed jobs."
+                   : activeFilter === "cancel"
+                   ? "No cancelled jobs."
+                   : activeFilter === "in-progress"
+                   ? "No in-progress jobs."
+                   : "There are no jobs."}
+               </span>
+             </div>
+           )}
+           {jobs.map((job) => (
+              <div key={job.id} className="bg-cyan-50 rounded-2xl p-6 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center">
@@ -113,7 +125,7 @@ export default function JobsPage() {
                     </Button>
                     <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
                       <CalendarIcon className="w-4 h-4 mr-2" />
-                      {new Date(job.preferred_date).toLocaleDateString()}
+                      {job.preferred_date ? new Date(job.preferred_date).toLocaleDateString() : "N/A"}
                     </Button>
                     <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-blue-50 transition-colors"
                     onClick={() => router.push(`/lender/chats/${job.id}`)}>
@@ -138,14 +150,13 @@ export default function JobsPage() {
         </div>
         <div className="w-full pb-8">
           <button
-            onClick={() => router.push("dashboard/new")}
+            onClick={() => router.push("/lender/dashboard/new")}
             className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
           >
             <Plus size={20} />
             New Job Request
           </button>
         </div>
-      </div>
     </DashboardLayout>
   )
 }

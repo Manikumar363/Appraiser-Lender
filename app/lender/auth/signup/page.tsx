@@ -40,7 +40,17 @@ export default function LenderSignUpPage() {
   if(!password.trim()) errors.password= "Password is required";
   if(!phone.trim()) errors.phone= "Phone number is required";
   if (!acceptTerms) {
-    alert("Please accept the Terms of Use and Privacy Policy");
+    toast.error("Please accept the Terms of Use and Privacy Policy", {
+      duration: 4000,
+      style: {
+        minWidth: "250px",
+        maxWidth: "500px",
+        fontSize: "1rem",
+        padding: "18px 24px",
+        textAlign: "center",
+        fontWeight: "medium", 
+      },
+    });
     return;
   }
 
