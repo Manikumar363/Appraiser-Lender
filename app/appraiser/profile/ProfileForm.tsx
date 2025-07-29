@@ -134,18 +134,18 @@ export default function ProfileForm({
         </div>
         
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          {formData.name || "Your Name"}
+          {formData.name}
         </h1>
         
         <div className="flex flex-col items-center gap-2 mb-4">
           <div className="flex items-center gap-1 text-gray-700">
             
-            <span>{formData.phone || "Your Phone"}</span>
+            <span>{"+"+formData.phone}</span>
             <Tick />
           </div>
           <div className="flex items-center gap-1 text-gray-600">
             
-            <span>{formData.email || "Your Email"}</span>
+            <span>{formData.email }</span>
             <Tick />
           </div>
         </div>

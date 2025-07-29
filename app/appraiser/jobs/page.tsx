@@ -6,7 +6,17 @@ import DashboardLayout from "@/components/dashboard-layout";
 import { appraiserJobsApi, AppraiserJob, JobsApiResponse } from "../lib/job";
 import { SimpleJobStatusModal } from "./SimpleJobStatusModal";
 import { ComplexJobStatusModal } from "./ComplexJobStatusModal";
-import { Msg,LoadIcon, Map, Update, Call, Next, Building } from "@/components/icons";
+import {
+  Msg,
+  LoadIcon,
+  Map,
+  Update,
+  Call,
+  Next,
+  Building,
+  TimerIcon2,
+  ProfileIcon3,
+} from "@/components/icons";
 import { toast, Toaster } from "sonner";
 
 type FilterKey = "all" | "active" | "in-progress" | "completed";
@@ -23,7 +33,11 @@ function filterJobs(job: AppraiserJob, filter: FilterKey) {
   if (filter === "all") return true;
   if (filter === "active") return status === "active" || status === "accepted";
   if (filter === "in-progress")
-    return status === "site_visit_scheduled" || status === "post_visit_summary" || status === "client_visit";
+    return (
+      status === "site_visit_scheduled" ||
+      status === "post_visit_summary" ||
+      status === "client_visit"
+    );
   if (filter === "completed") return status === "completed";
   return false;
 }
@@ -64,7 +78,7 @@ export default function AppraiserJobsPage() {
   useEffect(() => {
     setLoading(true);
     toast.loading("Loading jobs...", { id: "loading-jobs" });
-    
+
     appraiserJobsApi
       .fetchAcceptedJobs({ page: 1, limit: 20 })
       .then((res: JobsApiResponse) => {
@@ -82,16 +96,19 @@ export default function AppraiserJobsPage() {
   const handleModalSubmit = async (jobId: string, payload: any) => {
     try {
       toast.loading("Updating job status...", { id: "update-job" });
-      
+
       await appraiserJobsApi.updateJobStatus(jobId, payload);
       setModalJob(null);
       setModalType(null);
       setLoading(true);
-      
-      const res = await appraiserJobsApi.fetchAcceptedJobs({ page: 1, limit: 10 });
+
+      const res = await appraiserJobsApi.fetchAcceptedJobs({
+        page: 1,
+        limit: 10,
+      });
       setJobs(Array.isArray(res.jobs) ? res.jobs : []);
       setAdmin(res.admin || null);
-      
+
       toast.success("Job status updated successfully", { id: "update-job" });
     } catch (error) {
       toast.error("Failed to update job status", { id: "update-job" });
@@ -104,7 +121,12 @@ export default function AppraiserJobsPage() {
     setModalJob(job);
     const jobStatus = job.job.job_status;
 
-    if (jobStatus === "accepted" || jobStatus === "site_visit_scheduled" || jobStatus === "client_visit" || jobStatus === "active") {
+    if (
+      jobStatus === "accepted" ||
+      jobStatus === "site_visit_scheduled" ||
+      jobStatus === "client_visit" ||
+      jobStatus === "active"
+    ) {
       setModalType("simple");
     } else if (jobStatus === "post_visit_summary") {
       setModalType("complex");
@@ -141,11 +163,16 @@ export default function AppraiserJobsPage() {
           ))}
         </div>
 
-        {loading && <div className="text-center py-4">Loading...</div>}
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <LoadIcon className="animate-spin w-8 h-8 text-[#014F9D]" />
+          </div>
+        )}
         {error && <div className="text-red-500">{error}</div>}
         {!loading && !error && (
           <div className="space-y-4">
-            {jobs.filter((job) => filterJobs(job, activeFilter)).length === 0 && (
+            {jobs.filter((job) => filterJobs(job, activeFilter)).length ===
+              0 && (
               <div className="text-gray-500">
                 No jobs found for this filter.
               </div>
@@ -157,30 +184,51 @@ export default function AppraiserJobsPage() {
                 const job_status = details.job_status;
 
                 const calculateTimeLeft = (expiresAt: string) => {
+                  if (job_status === "completed") return null;
+
                   const now = new Date().getTime();
                   const expiry = new Date(expiresAt).getTime();
                   const diff = expiry - now;
 
-                  if (diff <= 0) return "Expired";
+                  const baseClass =
+                  "w-[108px] h-[36px] px-[10px] py-[8px] rounded-full border text-xs font-medium flex items-center justify-center";
+
+                  if (diff <= 0) {
+                  return (
+                    <span
+                    className={`${baseClass} text-[#014F9D] border border-[#014F9D] flex items-center justify-center gap-1`}
+                    >
+                    <TimerIcon2 />
+                    <span>Expired</span>
+                    </span>
+                  );
+                  }
 
                   const hours = Math.floor(diff / (1000 * 60 * 60));
                   const minutes = Math.floor(
-                    (diff % (1000 * 60 * 60)) / (1000 * 60)
+                  (diff % (1000 * 60 * 60)) / (1000 * 60)
                   );
 
-                  if (hours > 0) return `${hours}h ${minutes}m Left`;
-                  return `${minutes} Min Left`;
+                  return (
+                  <span
+                    className={`${baseClass} text-[#014F9D] border border-[#014F9D] bg-white`}
+                  >
+                    <TimerIcon2 />
+                    {hours > 0
+                    ? `${hours}h ${minutes}m Left`
+                    : `${minutes}m Left`}
+                  </span>
+                  );
                 };
 
-                const timeLeft = details.expires_at
+                const timeLeftBadge = details.expires_at
                   ? calculateTimeLeft(details.expires_at)
-                  : "";
-                const isExpired = timeLeft === "Expired";
+                  : null;
 
                 return (
                   <div
                     key={job.id}
-                    className="flex justify-between items-center bg-[#e8fafa] p-4 rounded-lg shadow"
+                    className="flex justify-between items-center bg-[#E9FFFD] p-4 rounded-lg shadow"
                   >
                     {/* LEFT SIDE - Icon and Job Info */}
                     <div className="flex items-start gap-4">
@@ -210,12 +258,13 @@ export default function AppraiserJobsPage() {
                             opacity: 1,
                             gap: 10,
                             whiteSpace: "nowrap",
-                            width: "auto", 
-                            minWidth: 60, 
-                            maxWidth: 200, 
+                            width: "auto",
+                            minWidth: 60,
+                            maxWidth: 200,
                           }}
                         >
-                          <LoadIcon/> {(job_status || "-").replace(/_/g, " ").toUpperCase()}
+                          <LoadIcon />{" "}
+                          {(job_status || "-").replace(/_/g, " ").toUpperCase()}
                         </span>
                       </div>
                     </div>
@@ -223,34 +272,28 @@ export default function AppraiserJobsPage() {
                     {/* RIGHT SIDE - Timer, User Badge, Action Icons */}
                     <div className="flex items-center gap-2">
                       {/* Timer Badge */}
-                      {timeLeft && (
-                        <div
-                          className={`px-2 py-1 rounded text-xs font-medium ${
-                            isExpired
-                              ? "bg-red-100 text-red-700"
-                              : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {timeLeft}
-                        </div>
-                      )}
+                      {timeLeftBadge}
 
                       {/* User Badge */}
-                      <div className="px-2 py-1 rounded bg-gray-100 text-gray-800 text-xs font-medium border">
-                        {details.intended_username || "Joe Done"}
-                      </div>
+                      <span className="w-[108px] h-[36px] px-[10px] py-[8px] rounded-full border border-[#014F9D] text-[#014F9D] text-sm font-medium flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                        <ProfileIcon3 className="flex-shrink-0" />
+                        <span className="truncate max-w-[60px] md:max-w-[120px]">{details.intended_username}</span>
+                      </span>
+
+
+
 
                       {/* Action Icons */}
                       <div className="flex gap-2 items-center">
-                        <button 
-                          title="Chat" 
+                        <button
+                          title="Chat"
                           onClick={() => handleChatClick(details.id)}
                           className="hover:text-blue-700 transition-colors"
-                        >    
+                        >
                           <Msg />
                         </button>
 
-                        {job_status === "accepted" && !!details.phone && (
+                        {job_status === "accepted"||job_status==="active" && !!details.phone && (
                           <a
                             href={`tel:+${details.country_code}${details.phone}`}
                             title="Call"
@@ -326,7 +369,7 @@ export default function AppraiserJobsPage() {
             onClose={closeModal}
             jobId={modalJob.job.id}
             jobData={modalJob.job}
-            onSubmit={payload => handleModalSubmit(modalJob.job.id, payload)}
+            onSubmit={(payload) => handleModalSubmit(modalJob.job.id, payload)}
           />
         )}
       </div>

@@ -69,11 +69,13 @@ const icons = [
     { name: 'JobsIcon', Component: JobsIcon },
     { name: 'SettingsIcon', Component: SettingsIcon },
     { name: 'PrivacyIcon', Component: PrivacyIcon },
+    { name: 'TimerIcon', Component: TimerIcon },
+
 ]
 
 export default function TestIconsPage() {
     return (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 ,background:"blue"} }>
             {icons.map(({ name, Component }) => (
                 <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 100 }}>
                     <Component />
