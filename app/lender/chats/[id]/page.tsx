@@ -76,6 +76,7 @@ export default function ChatDetailPage() {
   const params = useParams();
   const jobId = params?.id as string;
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const currentUser = getUserFromToken();
@@ -229,6 +230,25 @@ export default function ChatDetailPage() {
     }
   };
 
+  const handlePaperclipClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // TODO: Upload file to backend and send as a chat message
+      // Example:
+      // const formData = new FormData();
+      // formData.append("file", file);
+      // await chatApi.sendFileMessage(jobId, formData);
+      toast({
+        title: "File selected",
+        description: file.name,
+      });
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout role="appraiser">
@@ -247,7 +267,7 @@ export default function ChatDetailPage() {
         </div>
       )}
       
-      <div className="flex flex-col h-screen bg-white overflow-hidden relative">
+      <div className="flex flex-col h-full bg-white overflow-hidden relative">
         {/* Chat Header */}
         <div className="flex justify-center pt-4 pb-4 w-full">
           <div className="bg-[#014F9D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-4xl">
@@ -376,7 +396,7 @@ export default function ChatDetailPage() {
           className="w-full flex items-center justify-center bg-[#014F9D]"
           style={{
             position: "fixed",
-            left: "256px",
+            left: "106px",
             right: 0,
             bottom: 0,
             zIndex: 10,
@@ -386,7 +406,7 @@ export default function ChatDetailPage() {
           <div className="max-w-4xl w-full mx-auto flex items-center px-0">
             <form
               onSubmit={handleSendMessage}
-              className="flex gap-3 w-full px-4 py-4"
+              className="flex gap-3 w-full py-4"
             >
               <Button
                 type="button"
@@ -394,6 +414,7 @@ export default function ChatDetailPage() {
                 size="sm"
                 className="text-white hover:text-blue-200 p-1"
                 tabIndex={-1}
+                onClick={handlePaperclipClick}
               >
                 <Paperclip className="w-5 h-5" />
               </Button>
@@ -404,7 +425,7 @@ export default function ChatDetailPage() {
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 disabled={sending}
-                className="flex-1 bg-[#E6F9F3] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 py-3 px-3"
+                className="flex-1 min-w-[900px] bg-[#E6F9F3] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 py-3 px-3"
                 style={{ outline: "none" }}
                 maxLength={1000}
               />
@@ -417,9 +438,15 @@ export default function ChatDetailPage() {
                 {sending ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Send className="w-5 h-5" />
+                  <Send className="w-6 h-6" />
                 )}
               </Button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+              />
             </form>
           </div>
         </div>
