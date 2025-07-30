@@ -293,7 +293,7 @@ export default function AppraiserJobsPage() {
                           <Msg />
                         </button>
 
-                        {job_status === "accepted"||job_status==="active" && !!details.phone && (
+                        {(job_status === "accepted"||job_status==="active") && !!details.phone && (
                           <a
                             href={`tel:+${details.country_code}${details.phone}`}
                             title="Call"

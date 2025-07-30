@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { uploadDocs } from "../lib/job";
+import { ProfileIcon3, BuildingIcon, UploadIcon, LoadIcon } from "@/components/icons";
 
 interface SimpleJobStatusModalProps {
   open: boolean;
@@ -30,7 +31,7 @@ export function SimpleJobStatusModal({
 
   // Get available next status options based on current status
   const getStatusOptions = () => {
-    if (currentStatus === "accepted") {
+    if (currentStatus === "accepted"|| currentStatus === "active") {
       return [
         { value: "", label: "Enter Status" },
         { value: "site_visit_scheduled", label: "Site Visit Scheduled" }
@@ -74,7 +75,6 @@ export function SimpleJobStatusModal({
         appraiser_docs: uploadedDocs.length ? uploadedDocs : undefined,
       };
 
-      console.log("Submitting payload for job:", jobId, "Current status:", currentStatus, "New status:", selectedStatus, payload);
       await onSubmit(payload);
       onClose();
     } catch (err: any) {
@@ -87,10 +87,10 @@ export function SimpleJobStatusModal({
   return (
     <Dialog open={open} onClose={onClose} className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="fixed inset-0 bg-black/50" aria-hidden="true"/>
-      <Dialog.Panel className="bg-white max-w-2xl w-full rounded-2xl shadow-lg px-8 py-6 relative max-h-[85vh] overflow-y-auto">
+      <Dialog.Panel className="bg-white max-w-3xl w-full rounded-2xl shadow-lg px-8 py-6 relative max-h-[85vh] overflow-y-auto">
         <button 
           onClick={onClose} 
-          className="absolute right-6 top-6 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700"
+          className="absolute right-6 top-6 w-8 h-8 bg-[#014F9D] text-white rounded-full flex items-center justify-center hover:bg-blue-700"
         >
           ×
         </button>
@@ -98,7 +98,7 @@ export function SimpleJobStatusModal({
         <div className="mb-6">
           <div className="flex items-center mb-4">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-              <span className="text-blue-600">🏢</span>
+              <BuildingIcon className="w-5 h-5 text-[#014F9D]" />
             </div>
             <div>
               <h3 className="text-lg font-semibold">{jobData?.property_type || "Property Inspection"}</h3>
@@ -107,15 +107,30 @@ export function SimpleJobStatusModal({
           </div>
           
           <div className="flex gap-3 mb-4">
-            <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-sm font-medium">
-              📊 {currentStatus === "accepted" ? "Active" : "Site Visit Scheduled"}
-            </span>
-          </div>
+  <span
+    className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 
+      ${currentStatus === "accepted" || currentStatus === "active"
+        ? "bg-[#014F9D] text-white"
+        : "bg-yellow-400 text-black"}`}
+  >
+    <LoadIcon className="w-3 h-3" />
+    {(currentStatus === "accepted" || currentStatus === "active")
+      ? "Active"
+      : "Site Visit Scheduled"}
+  </span>
+</div>
+
           
           <div className="flex gap-3 text-sm">
-            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">📄 #{jobId}</span>
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full">👤 {jobData?.intended_username || "Unknown"}</span>
-            <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full">🏢 {jobData?.property_type || "Property"}</span>
+            <span className="w-[108px] h-[36px] px-[10px] py-[8px] rounded-full border border-[#014F9D] text-[#014F9D] text-sm font-medium flex items-center gap-2 overflow-hidden whitespace-nowrap">
+              <span className="text-xs">#</span> {jobId}
+            </span>
+            <span className="w-[108px] h-[36px] px-[10px] py-[8px] rounded-full border border-[#014F9D] text-[#014F9D] text-sm font-medium flex items-center gap-2 overflow-hidden whitespace-nowrap">
+              <ProfileIcon3 className="flex-shrink-0" /> {jobData?.intended_username || "Unknown"}
+            </span>
+            <span className="w-[108px] h-[36px] px-[10px] py-[8px] rounded-full border border-[#014F9D] text-[#014F9D] text-sm font-medium flex items-center gap-2 overflow-hidden whitespace-nowrap">
+              <BuildingIcon className="flex-shrink-0" /> {jobData?.property_type || "Property"}
+            </span>
           </div>
         </div>
 
@@ -171,9 +186,10 @@ export function SimpleJobStatusModal({
             />
           </div>
 
+          {/* FIXED: Upload section to match Figma - centered icon */}
           <div>
             <label className="block mb-2 text-gray-700 font-medium">Upload Document</label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50">
               <input 
                 type="file" 
                 multiple 
@@ -183,11 +199,24 @@ export function SimpleJobStatusModal({
                 id="file-upload"
               />
               <label htmlFor="file-upload" className="cursor-pointer">
-                <div className="text-3xl mb-2">📤</div>
-                <p className="text-gray-600">Upload any additional PDF related to this job</p>
+                {/* CENTERED: Upload section to match your Figma design */}
+                <div className="text-center">
+                  <div className="flex justify-center mb-3">
+                    <UploadIcon className="w-12 h-12 text-gray-400" />
+                  </div>
+                  <p className="text-gray-600 font-medium mb-1">Upload any additional PDF related to this job</p>
+                  <p className="text-sm text-gray-500">Click here to browse files</p>
+                </div>
               </label>
               {files.length > 0 && (
-                <div className="mt-2 text-sm text-green-600">{files.length} file(s) selected</div>
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {files.length} file(s) selected
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -206,7 +235,7 @@ export function SimpleJobStatusModal({
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-4 rounded-full font-semibold hover:bg-blue-700 transition text-lg"
+            className="w-full bg-[#014F9D] text-white py-4 rounded-full font-semibold hover:bg-[#015F9D] transition text-lg"
             disabled={loading}
           >
             {loading ? "Requesting..." : "Request Info"}
