@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import DashboardLayout from "@/components/dashboard-layout";
 import { appraiserJobsApi, AppraiserJob } from "@/app/appraiser/lib/job";
-import {  } from "lucide-react";
-import { HomeTimerIcon,BuildingIcon,LoadIcon,Select,Reject } from "../../../components/icons";
+import { HomeTimerIcon, BuildingIcon, LoadIcon, Select, Reject, TimerIcon } from "../../../components/icons";
 import { useAppraiserTimer } from "./Timer";
 
 function formatTimeLeft(expiry: string): string {
@@ -31,26 +30,16 @@ export default function AppraiserDashboardPage() {
     detectActualTimerState 
   } = useAppraiserTimer();
 
-  // Job handlers with improved feedback
   const handleAcceptJob = async (jobId: string) => {
     if (jobActionLoading) return;
     
     try {
       setJobActionLoading(jobId);
-      const loadingToast = toast.loading("Accepting job...");
-      
       await appraiserJobsApi.acceptJob(jobId);
       setJobs(prev => prev.filter(job => job.job.id !== jobId));
-      
-      toast.success("Job accepted successfully!", {
-        id: loadingToast,
-        description: "You can now start working on this job"
-      });
-      
+      toast.success("Job accepted successfully!");
     } catch (err) {
-      toast.error("Failed to accept job", {
-        description: "Please try again or contact support"
-      });
+      toast.error("Failed to accept job");
     } finally {
       setJobActionLoading(null);
     }
@@ -61,20 +50,11 @@ export default function AppraiserDashboardPage() {
     
     try {
       setJobActionLoading(jobId);
-      const loadingToast = toast.loading("Declining job...");
-      
       await appraiserJobsApi.declineJob(jobId);
       setJobs(prev => prev.filter(job => job.job.id !== jobId));
-      
-      toast.success("Job declined", {
-        id: loadingToast,
-        description: "The job has been removed from your list"
-      });
-      
+      toast.success("Job declined");
     } catch (err) {
-      toast.error("Failed to decline job", {
-        description: "Please try again or contact support"
-      });
+      toast.error("Failed to decline job");
     } finally {
       setJobActionLoading(null);
     }
@@ -86,28 +66,16 @@ export default function AppraiserDashboardPage() {
       try {
         setLoading(true);
         
-        // Load jobs first
-        const jobsResult = await appraiserJobsApi.getPendingJobs().catch((err) => {
-          toast.error("Failed to load jobs", {
-            description: "Please refresh the page to try again"
-          });
+        const jobsResult = await appraiserJobsApi.getPendingJobs().catch(() => {
+          toast.error("Failed to load jobs");
           return [];
         });
-        setJobs(jobsResult);
         
-        // Detect actual timer state
+        setJobs(jobsResult);
         await detectActualTimerState();
         
-        if (jobsResult.length > 0) {
-          toast.info(`${jobsResult.length} pending job${jobsResult.length > 1 ? 's' : ''} found`, {
-            
-          });
-        }
-        
       } catch (err) {
-        toast.error("Failed to initialize dashboard", {
-          description: "Please refresh the page"
-        });
+        toast.error("Failed to initialize dashboard");
       } finally {
         setLoading(false);
       }
@@ -175,7 +143,7 @@ export default function AppraiserDashboardPage() {
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <div className="flex items-center gap-3 text-gray-500">
-              <LoadIcon/>
+              <LoadIcon className="w-4 h-4 text-[#014F9D] animate-spin"/>
               <span className="text-sm">Loading jobs...</span>
             </div>
           </div>
@@ -190,20 +158,33 @@ export default function AppraiserDashboardPage() {
                 key={job.id}
                 className="flex items-center justify-between bg-[#e8fafa] p-4 rounded-xl shadow-sm"
               >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <BuildingIcon className="text-[#054c99]"  />
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {job.job.property_type || "Appraisal Job"}
-                    </h3>
+                {/* LEFT SIDE - Fixed Layout Structure */}
+                <div className="flex items-center gap-4">
+                  {/* Building Icon in Blue Circle */}
+                  <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0">
+                    <BuildingIcon className="w-6 h-6 text-white" />
                   </div>
-                  <p className="text-sm text-gray-600">{job.job.address}</p>
-                  <span className="inline-flex items-center gap-1 text-xs text-white bg-orange-500 px-2 py-1 rounded-full mt-2">
-                    ⏰ {formatTimeLeft(job.job.expires_at)}
-                  </span>
+
+                  {/* Job Details - Properly Stacked */}
+                  <div className="flex flex-col">
+                    {/* Job Title */}
+                    <h3 className="text-lg font-semibold text-gray-800 mb-1">
+                      {job.job.property_type || "Residential Appraisal"}
+                    </h3>
+                    
+                    {/* Address */}
+                    <p className="text-sm text-gray-600 mb-2">
+                      {job.job.address}
+                    </p>
+                    
+                    {/* Timer Badge */}
+                    <span className="inline-flex items-center gap-1 text-xs text-white bg-[#FD5D2D] px-2 py-0.5 rounded-full w-fit">
+                      <TimerIcon/> {formatTimeLeft(job.job.expires_at)}
+                    </span>
+                  </div>
                 </div>
                 
-                {/* Enhanced Action Buttons */}
+                {/* RIGHT SIDE - Action Buttons */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleAcceptJob(job.job.id)}

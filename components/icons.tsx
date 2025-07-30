@@ -271,7 +271,7 @@ export const TimerIcon2=()=>(
 )
 export const BuildingIcon=(props: React.SVGProps<SVGSVGElement>)=>(
 
-  <svg  {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg  {...props} width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g clipPath="url(#clip0_27_2788)">
       <path
         d="M2.15625 4.875V22.5938H0.75C0.575952 22.5938 0.409032 22.6629 0.285961 22.786C0.16289 22.909 0.09375 23.076 0.09375 23.25C0.09375 23.424 0.16289 23.591 0.285961 23.714C0.409032 23.8371 0.575952 23.9062 0.75 23.9062H3.79688V21C3.79688 20.826 3.86602 20.659 3.98909 20.536C4.11216 20.4129 4.27908 20.3438 4.45312 20.3438C4.62717 20.3438 4.79409 20.4129 4.91716 20.536C5.04023 20.659 5.10938 20.826 5.10938 21V23.9062H6.75V4.21875H2.8125C2.63848 4.21885 2.47162 4.28802 2.34857 4.41107C2.22552 4.53412 2.15635 4.70098 2.15625 4.875ZM3.79688 7.5C3.79688 7.32595 3.86602 7.15903 3.98909 7.03596C4.11216 6.91289 4.27908 6.84375 4.45312 6.84375C4.62717 6.84375 4.79409 6.91289 4.91716 7.03596C5.04023 7.15903 5.10938 7.32595 5.10938 7.5V8.25C5.10938 8.42405 5.04023 8.59097 4.91716 8.71404C4.79409 8.83711 4.62717 8.90625 4.45312 8.90625C4.27908 8.90625 4.11216 8.83711 3.98909 8.71404C3.86602 8.59097 3.79688 8.42405 3.79688 8.25V7.5ZM3.79688 10.875C3.79688 10.701 3.86602 10.534 3.98909 10.411C4.11216 10.2879 4.27908 10.2188 4.45312 10.2188C4.62717 10.2188 4.79409 10.2879 4.91716 10.411C5.04023 10.534 5.10938 10.701 5.10938 10.875V11.625C5.10938 11.799 5.04023 11.966 4.91716 12.089C4.79409 12.2121 4.62717 12.2812 4.45312 12.2812C4.27908 12.2812 4.11216 12.2121 3.98909 12.089C3.86602 11.966 3.79688 11.799 3.79688 11.625V10.875ZM3.79688 14.25C3.79688 14.076 3.86602 13.909 3.98909 13.786C4.11216 13.6629 4.27908 13.5938 4.45312 13.5938C4.62717 13.5938 4.79409 13.6629 4.91716 13.786C5.04023 13.909 5.10938 14.076 5.10938 14.25V15C5.10938 15.174 5.04023 15.341 4.91716 15.464C4.79409 15.5871 4.62717 15.6562 4.45312 15.6562C4.27908 15.6562 4.11216 15.5871 3.98909 15.464C3.86602 15.341 3.79688 15.174 3.79688 15V14.25ZM3.79688 17.625C3.79688 17.451 3.86602 17.284 3.98909 17.161C4.11216 17.0379 4.27908 16.9688 4.45312 16.9688C4.62717 16.9688 4.79409 17.0379 4.91716 17.161C5.04023 17.284 5.10938 17.451 5.10938 17.625V18.375C5.10938 18.549 5.04023 18.716 4.91716 18.839C4.79409 18.9621 4.62717 19.0312 4.45312 19.0312C4.27908 19.0312 4.11216 18.9621 3.98909 18.839C3.86602 18.716 3.79688 18.549 3.79688 18.375V17.625Z"
@@ -289,7 +289,7 @@ export const BuildingIcon=(props: React.SVGProps<SVGSVGElement>)=>(
     </g>
     <defs>
       <clipPath id="clip0_27_2788">
-        <rect width="24" height="24" fill="white" />
+        <rect width="52" height="52" fill="white" />
       </clipPath>
     </defs>
   </svg>
@@ -410,27 +410,17 @@ export const CardIcon=(props: React.SVGProps<SVGSVGElement>)=>(
   </svg>
 )
 export const Select=()=>(
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-<foreignObject x="-22" y="-22" width="92" height="92"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(11px);clip-path:url(#bgblur_0_212_4255_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="22">
-<rect width="48" height="48" rx="24" fill="#014F9D"/>
-<path d="M32.5742 15.9141L33.7559 17.0859L20.6699 30.1816L14.2441 23.7559L15.4258 22.5742L20.6699 27.8184L32.5742 15.9141Z" fill="white"/>
-</g>
-<defs>
-<clipPath id="bgblur_0_212_4255_clip_path" transform="translate(22 22)"><rect width="48" height="48" rx="24"/>
-</clipPath></defs>
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18.5742 1.91406L19.7559 3.08594L6.66992 16.1816L0.244141 9.75586L1.42578 8.57422L6.66992 13.8184L18.5742 1.91406Z" fill="white"/>
 </svg>
+
 )
 
 export const Reject=()=>(
-  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-<foreignObject x="-22" y="-22" width="92" height="92"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(11px);clip-path:url(#bgblur_0_212_4258_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="22">
-<rect x="0.5" y="0.5" width="47" height="47" rx="23.5" stroke="#014F9D"/>
-<path d="M19.6316 28.3692L24.0008 24L28.3699 28.3692M28.3699 19.6309L23.9999 24L19.6316 19.6309" stroke="#014F9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="bgblur_0_212_4258_clip_path" transform="translate(22 22)"><rect x="0.5" y="0.5" width="47" height="47" rx="23.5"/>
-</clipPath></defs>
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.63159 14.3692L10.0008 10L14.3699 14.3692M14.3699 5.63086L9.99993 10L5.63159 5.63086" stroke="#014F9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
+
 )
 
 export const HomeIcon = () => (
