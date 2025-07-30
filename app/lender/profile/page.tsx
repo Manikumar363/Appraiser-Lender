@@ -17,13 +17,16 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import type { CountryData } from 'react-phone-input-2';
 import axios from "axios";
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import toast, { Toaster } from "react-hot-toast";
+import type { Libraries } from "@react-google-maps/api";
 
 const mapContainerStyle = {
   width: '100%',
   height: '136px', // h-64
 };
+
+const GOOGLE_MAP_LIBRARIES: Libraries = ["places"];
 
 export default function LenderProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -53,9 +56,11 @@ export default function LenderProfilePage() {
   const [address, setAddress] = useState(formData.address || "");
   const [mapCenter, setMapCenter] = useState({ lat: 43.6532, lng: -79.3832 });
   const [marker, setMarker] = useState({ lat: 43.6532, lng: -79.3832 });
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    libraries: GOOGLE_MAP_LIBRARIES,
   });
 
   useEffect(() => {
@@ -68,7 +73,7 @@ export default function LenderProfilePage() {
             name: res.user.name || "",
             email: res.user.email || "",
             applicant: res.user.applicant || "",
-            location: res.user.location || { type: "Point", coordinates: [0, 0] },
+            location: res.user.location || { latitude: 0, longitude: 0 },
             phone: res.user.phone || "",
             image: res.user.image || "",
             country_code: res.user.country_code || "",
@@ -77,18 +82,21 @@ export default function LenderProfilePage() {
             city: res.user.city || "",
             postal_code: res.user.postal_code || "",
           });
-          // Sync address and map states
           setAddress(res.user.address || "");
-          if (res.user.location && res.user.location.coordinates) {
-            setMapCenter({
-              lat: res.user.location.coordinates[1],
-              lng: res.user.location.coordinates[0],
-            });
-            setMarker({
-              lat: res.user.location.coordinates[1],
-              lng: res.user.location.coordinates[0],
-            });
+
+          // Handle both formats for location
+          let lat = 43.6532, lng = -79.3832;
+          if (res.user.location) {
+            if ("latitude" in res.user.location && "longitude" in res.user.location) {
+              lat = res.user.location.latitude;
+              lng = res.user.location.longitude;
+            } else if ("coordinates" in res.user.location && Array.isArray(res.user.location.coordinates)) {
+              lng = res.user.location.coordinates[0];
+              lat = res.user.location.coordinates[1];
+            }
           }
+          setMapCenter({ lat, lng });
+          setMarker({ lat, lng });
         } else {
           console.error("❌ Failed to load profile");
         }
@@ -157,6 +165,27 @@ export default function LenderProfilePage() {
     geocodeAddress(value);
   };
 
+  const handlePlaceChanged = () => {
+    if (autocomplete) {
+      const place = autocomplete.getPlace();
+      if (place.geometry?.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        setMapCenter({ lat, lng });
+        setMarker({ lat, lng });
+        setAddress(place.formatted_address || "");
+        setFormData((prev) => ({
+          ...prev,
+          address: place.formatted_address || "",
+          location: {
+            type: "Point",
+            coordinates: [lng, lat],
+          },
+        }));
+      }
+    }
+  };
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitLoading(true);
@@ -170,7 +199,10 @@ export default function LenderProfilePage() {
           name: formData.name,
           email: formData.email,
           applicant: formData.applicant,
-          location: formData.location,
+          location: {
+            latitude: marker.lat,
+            longitude: marker.lng,
+          },
           phone: formData.phone,
         },
         {
@@ -373,17 +405,34 @@ export default function LenderProfilePage() {
             <div className="relative">
               <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
                 <LocationIcon />
-                <input
-                  type="text"
-                  name="address"
-                  value={address}
-                  onChange={handleAddressChange}
-                  placeholder="Enter Location Address"
-                  readOnly={!isEditing}
-                  className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
-                    !isEditing ? "cursor-not-allowed" : ""
-                  }`}
-                />
+                {isLoaded ? (
+                  <Autocomplete
+                    onLoad={setAutocomplete}
+                    onPlaceChanged={handlePlaceChanged}
+                  >
+                    <input
+                      type="text"
+                      name="address"
+                      value={address}
+                      onChange={handleAddressChange}
+                      placeholder="Enter Location Address"
+                      readOnly={!isEditing}
+                      className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
+                        !isEditing ? "cursor-not-allowed" : ""
+                      }`}
+                    />
+                  </Autocomplete>
+                ) : (
+                  <input
+                    type="text"
+                    name="address"
+                    value={address}
+                    onChange={handleAddressChange}
+                    placeholder="Loading Google Maps..."
+                    readOnly
+                    className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none cursor-not-allowed"
+                  />
+                )}
               </div>
             </div>
 

@@ -4,17 +4,22 @@ import type React from "react"
 import { useState} from "react"
 import { useRouter } from "next/navigation"
 import DashboardLayout from "../../../../components/dashboard-layout"
-import { MapPin, ChevronDown, Phone } from "lucide-react"
-import { UserIcon, TargettIcon, DollerIcon, SecondaryProfileIcon, CalendarIcon, DateIcon, UploadIcon } from "../../../../components/icons"
+import { MapPin, ChevronDown, Phone, LocateIcon } from "lucide-react"
+import { UserIcon, TargettIcon, DollerIcon, SecondaryProfileIcon, CalendarIcon, DateIcon, UploadIcon, LocationIcon } from "../../../../components/icons"
 import { postJob } from "@/lib/api/jobs1"
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import { CountryData } from "react-phone-input-2";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from "@react-google-maps/api";
 import { useCallback } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import type { Libraries } from "@react-google-maps/api";
 
+
+// Import Library type from @react-google-maps/api and use Library[] type for libraries
+
+const GOOGLE_MAP_LIBRARIES: Libraries = ["places"]; // <-- define outside component
 
 export default function NewJobRequestPage() {
   const router = useRouter()
@@ -42,9 +47,13 @@ export default function NewJobRequestPage() {
   const [mapCenter, setMapCenter] = useState({ lat: 43.715, lng: -79.399 }); // Default center
   const [marker, setMarker] = useState<{ lat: number; lng: number } | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [propertyLocation, setPropertyLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    libraries: GOOGLE_MAP_LIBRARIES, // <-- use the constant here
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -153,11 +162,9 @@ export default function NewJobRequestPage() {
         setMapCenter({ lat: location.lat, lng: location.lng });
         setMarker({ lat: location.lat, lng: location.lng });
       } else {
-        toast.error("Please enter a more specific property address.");
         console.error("No location found for address:", address);
       }
     } catch (error) {
-      toast.error("Geocoding failed. Please check the address.");
       console.error("Geocoding failed:", error);
     }
   };
@@ -199,6 +206,52 @@ export default function NewJobRequestPage() {
       }
     } catch (err) {
       toast.error("Failed to upload document.");
+    }
+  };
+
+  const handleMultipleFileUpload = async (files: FileList) => {
+    const formData = new FormData();
+    Array.from(files).forEach(file => {
+      formData.append("files", file); // 'files' matches backend expectation
+    });
+
+    try {
+      const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const res = await axios.post(`${apiBaseUrl}/upload/multiple`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("Upload response:", res.data);
+      const fileUrls =
+        res.data.imageLinks || // <-- add this line
+        res.data.urls ||
+        res.data.images ||
+        res.data.files ||
+        (Array.isArray(res.data) ? res.data : []);
+
+      if (fileUrls && fileUrls.length > 0) {
+        handleInputChange("lender_doc", fileUrls.join(","));
+        toast.success("Files uploaded successfully!");
+      } else {
+        toast.error("Upload failed: No file URLs returned.");
+      }
+    } catch (err) {
+      toast.error("Failed to upload documents.");
+    }
+  };
+
+  const handlePlaceChanged = () => {
+    if (autocomplete) {
+      const place = autocomplete.getPlace();
+      if (place.geometry?.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+        setMapCenter({ lat, lng });
+        setMarker({ lat, lng });
+        setFormData((prev) => ({
+          ...prev,
+          address: place.formatted_address || "",
+        }));
+      }
     }
   };
 
@@ -338,18 +391,39 @@ export default function NewJobRequestPage() {
               </div>
               {/* Property Address */}
               <div>
-                <div className="relative w-[90%] mx-auto">
-                  <label className="block text-base font-medium text-gray-900 mb-2">Property Address</label>
-                  <MapPin className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700" />
-                  <input
-                    type="text"
-                    value={formData.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
-                    placeholder="Enter Property Address"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
-                    required
-                  />
-                </div>
+                {isLoaded ? (
+                  <div className="relative w-[90%] mx-auto">
+                    <label className="block text-base font-medium text-gray-900 mb-2">Property Address</label>
+                    <LocationIcon className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700" />
+                    <Autocomplete
+                      
+                      onLoad={setAutocomplete}
+                      onPlaceChanged={handlePlaceChanged}
+                    >
+                      
+                      <input
+                        type="text"
+                        value={formData.address}
+                        onChange={(e) => handleInputChange("address", e.target.value)}
+                        placeholder="Enter Property Address"
+                        className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                        required
+                      />
+                    </Autocomplete>
+                  </div>
+                ) : (
+                  <div className="relative w-[90%] mx-auto">
+                    <label className="block text-base font-medium text-gray-900 mb-2">Property Address</label>
+                    <input
+                      type="text"
+                      value={formData.address}
+                      onChange={(e) => handleInputChange("address", e.target.value)}
+                      placeholder="Loading Google Maps..."
+                      className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                      disabled
+                    />
+                  </div>
+                )}
                 {/* Map below the address input */}
                 <div
                   className="relative w-[90%] mx-auto mt-4 rounded-2xl border border-gray-500 overflow-hidden"
@@ -458,24 +532,30 @@ export default function NewJobRequestPage() {
                   </label>
                   <label
                     htmlFor="pdf-upload"
-                    className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer  transition-all"
+                    className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer transition-all"
                   >
                     <UploadIcon className="w-6 h-6 text-gray-500 mb-2" />
-                    <p className="text-sm text-gray-700 text-center">
+                    <p className={`text-sm text-center ${uploadedDocName ? "text-green-600 font-semibold" : "text-gray-700"}`}>
                       {uploadedDocName
-                        ? `Uploaded: ${uploadedDocName}`
-                        : <>Upload any additional PDF <br /> related to this job</>
+                        ? (() => {
+                            const fileCount = uploadedDocName.split(",").length;
+                            return fileCount === 1
+                              ? "1 file selected"
+                              : `${fileCount} files selected`;
+                          })()
+                        : <>Upload any additional PDF<br />related to this job</>
                       }
                     </p>
                     <input
                       id="pdf-upload"
                       type="file"
-                      accept="application/pdf"
+                      accept="application/pdf,image/jpeg,image/png"
+                      multiple
                       onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          await handleFileUpload(file);
-                          setUploadedDocName(file.name);
+                        const files = e.target.files;
+                        if (files && files.length > 0) {
+                          await handleMultipleFileUpload(files);
+                          setUploadedDocName(Array.from(files).map(f => f.name).join(","));
                         }
                       }}
                       className="hidden"

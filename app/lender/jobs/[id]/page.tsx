@@ -94,7 +94,7 @@ export default function JobDetailPage() {
                 <CalendarIcon className="w-4 h-4 mr-2" />
                 {new Date(job.preferred_date).toLocaleDateString()}
               </Button>
-              <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-50 transition-colors"
+              <Button variant="outline" size="sm" className="bg-cyan-50 border border-[#014F9D] text-[#014F9D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors"
               onClick={() => router.push(`/lender/chats/${job.id}`)}>
                 <MessageIcon className="w-5 h-5 mr-1" />
                 Message
@@ -124,56 +124,74 @@ export default function JobDetailPage() {
         </div>
 
         {/* Files */}
-<div className="mb-6">
-  <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
-  <div className="flex flex-wrap gap-4 mb-4">
-    {job.lender_doc && (
-      <div className="bg-cyan-50 rounded-xl py-7 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
-        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
-        <a href={job.lender_doc} download target="_blank" rel="noopener noreferrer" className="font-medium text-gray-700 text-sm mb-1 truncate">
-          Floor Plan.pdf
-        </a>
-        <span className="text-gray-500 text-sm">
-          {formatDistanceToNow(new Date(job.created_at), { addSuffix: true }).replace("about ", "")
-          .replace("day", "d")
-          .replace("days"   , "d")}
-        </span>
-      </div>
-    )}
-  </div>
-  <Button
-  className="w-full bg-[#014F9D] hover:bg-[#013B6D] text-white py-7 rounded-lg"
-  onClick={() => {
-    if (job.lender_doc) {
-      const link = document.createElement("a");
-      link.href = job.lender_doc;
-       link.setAttribute("download", "Floor Plan.pdf");
-       link.setAttribute("target", "_blank"); // Optional: open in new tab if not downloaded
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  }}
->
-  Download All
-</Button>
-</div>
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
+          <div className="flex flex-wrap gap-4 mb-4">
+            {job.lender_doc &&
+              job.lender_doc
+                .split(",")
+                .map((url, idx) => {
+                  const ext = url.split(".").pop()?.toLowerCase();
+                  const isPdf = ext === "pdf";
+                  const isImage = ext === "png" || ext === "jpg" || ext === "jpeg";
+                  return (
+                    <div key={idx} className="bg-cyan-50 rounded-xl py-7 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
+                      {isPdf ? (
+                        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
+                      ) : isImage ? (
+                        <ImageIcon className="w-6 h-6 text-gray-700 mb-2" />
+                      ) : (
+                        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
+                      )}
+                      <a
+                        href={url}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-gray-700 text-sm mb-1 truncate max-w-[160px] block"
+                        title={url.split("/").pop()} // Show full filename on hover
+                      >
+                        {url.split("/").pop()}
+                      </a>
+                      <span className="text-gray-500 text-sm">
+                        {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })
+                          .replace("about ", "")
+                          .replace("day", "d")
+                          .replace("days", "d")}
+                      </span>
+                    </div>
+                  );
+                })}
+          </div>
+          {job.lender_doc && (
+            <Button
+              className="w-full bg-[#014F9D] hover:bg-[#013B6D] text-white py-7 rounded-lg"
+              onClick={() => {
+                job.lender_doc.split(",").forEach((url) => {
+                  window.open(url, "_blank");
+                });
+              }}
+            >
+              Download All
+            </Button>
+          )}
+        </div>
 
         {/* Transaction */}
-<div className="mb-6">
-  <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-  <div className="bg-cyan-50 rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 bg-[#014F9D] rounded-full flex items-center justify-center">
-        <CardIcon className="w-8 h-8 text-white" />
-      </div>
-      <span className="text-xl font-semibold text-gray-900">${job.price}</span>
-    </div>
-     <Badge className={`${job.status === "completed" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-lg`}>
-      {job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : "Pending"}
-    </Badge>
-  </div>
-</div>
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
+          <div className="bg-cyan-50 rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#014F9D] rounded-full flex items-center justify-center">
+                <CardIcon className="w-8 h-8 text-white" />
+              </div>
+              <span className="text-xl font-semibold text-gray-900">${job.price}</span>
+            </div>
+             <Badge className={`${job.status === "completed" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-lg`}>
+              {job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : "Pending"}
+            </Badge>
+          </div>
+        </div>
 
         {/* Accept */}
         {job.status !== "completed" && (
