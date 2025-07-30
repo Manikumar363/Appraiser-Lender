@@ -32,12 +32,12 @@ export default function LenderSignUpPage() {
   setError("");
   setFieldErrors({});
 
-
   // ✅ Validate fields
   const errors: {[key: string]: string} = {};
   if(!username.trim()) errors.username= "Username is required";
   if(!email.trim()) errors.email= "Email is required";
   if(!password.trim()) errors.password= "Password is required";
+  if(password.length < 8) errors.password = "Password must be at least 8 characters";
   if(!phone.trim()) errors.phone= "Phone number is required";
   if (!acceptTerms) {
     toast.error("Please accept the Terms of Use and Privacy Policy", {

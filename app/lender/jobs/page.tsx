@@ -12,7 +12,7 @@ interface JobsPageProps {
 
 export default function JobsPage({ searchQuery = "" }: JobsPageProps) {
   const [jobs, setJobs] = useState<Job[]>([])
-  const [activeFilter, setActiveFilter] = useState<JobFilter>("in-progress")
+  const [activeFilter, setActiveFilter] = useState<JobFilter>("All")
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const router = useRouter()
