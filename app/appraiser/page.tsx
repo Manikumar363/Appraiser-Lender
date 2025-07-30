@@ -3,20 +3,21 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 
-export default function LenderHomePage() {
+export default function HomePage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Redirect to lender signin
-    router.push("/lender/auth/signin")
+    // Redirect directly to lender signin - users can switch roles there
+    router.replace("/appraiser/auth/signin")
   }, [router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1e5ba8] mx-auto mb-4"></div>
-        <p className="text-gray-600">Loading lender portal...</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-[#014F9D]">
+      <img
+        src="/images/emadi-logo.png"
+        alt="EMADI Appraisers "
+        className="w-80 h-auto"
+      />
     </div>
   )
 }

@@ -409,6 +409,29 @@ export const CardIcon=(props: React.SVGProps<SVGSVGElement>)=>(
     <path d="M19.25 18.5C18.2554 18.5 17.3016 18.8951 16.5983 19.5983C15.8951 20.3016 15.5 21.2554 15.5 22.25V23H36.5V22.25C36.5 21.2554 36.1049 20.3016 35.4016 19.5983C34.6984 18.8951 33.7446 18.5 32.75 18.5H19.25ZM36.5 24.5H15.5V29.75C15.5 30.7446 15.8951 31.6984 16.5983 32.4017C17.3016 33.1049 18.2554 33.5 19.25 33.5H32.75C33.7446 33.5 34.6984 33.1049 35.4016 32.4017C36.1049 31.6984 36.5 30.7446 36.5 29.75V24.5ZM29.75 29H32.75C32.9489 29 33.1397 29.079 33.2803 29.2197C33.421 29.3603 33.5 29.5511 33.5 29.75C33.5 29.9489 33.421 30.1397 33.2803 30.2803C33.1397 30.421 32.9489 30.5 32.75 30.5H29.75C29.5511 30.5 29.3603 30.421 29.2197 30.2803C29.079 30.1397 29 29.9489 29 29.75C29 29.5511 29.079 29.3603 29.2197 29.2197C29.3603 29.079 29.5511 29 29.75 29Z" fill="white"/>
   </svg>
 )
+export const Select=()=>(
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<foreignObject x="-22" y="-22" width="92" height="92"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(11px);clip-path:url(#bgblur_0_212_4255_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="22">
+<rect width="48" height="48" rx="24" fill="#014F9D"/>
+<path d="M32.5742 15.9141L33.7559 17.0859L20.6699 30.1816L14.2441 23.7559L15.4258 22.5742L20.6699 27.8184L32.5742 15.9141Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="bgblur_0_212_4255_clip_path" transform="translate(22 22)"><rect width="48" height="48" rx="24"/>
+</clipPath></defs>
+</svg>
+)
+
+export const Reject=()=>(
+  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<foreignObject x="-22" y="-22" width="92" height="92"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(11px);clip-path:url(#bgblur_0_212_4258_clip_path);height:100%;width:100%"></div></foreignObject><g data-figma-bg-blur-radius="22">
+<rect x="0.5" y="0.5" width="47" height="47" rx="23.5" stroke="#014F9D"/>
+<path d="M19.6316 28.3692L24.0008 24L28.3699 28.3692M28.3699 19.6309L23.9999 24L19.6316 19.6309" stroke="#014F9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="bgblur_0_212_4258_clip_path" transform="translate(22 22)"><rect x="0.5" y="0.5" width="47" height="47" rx="23.5"/>
+</clipPath></defs>
+</svg>
+)
 
 export const HomeIcon = () => (
  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
