@@ -5,12 +5,13 @@ import { Loader2, XCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import DashboardLayout from "../../../components/dashboard-layout";
-import { getMyJobs } from "../../../lib/api/jobs1";
-import { BuildingIcon } from "../../../components/icons";
-import { get } from "http";
+import { getMyJobs } from "../../../lib/api/jobs1"; // <-- Use lender jobs API
+import { chatApi } from "@/lib/api/chat";
+import ChatListItem from "./components/ChatListItem";
+import { ChatJob } from "./components/types";
 
 export default function LenderChatPage() {
-  const [chatJobs, setChatJobs] = useState<any[]>([]);
+  const [chatJobs, setChatJobs] = useState<ChatJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,17 +23,33 @@ export default function LenderChatPage() {
       setLoading(true);
       setError(null);
 
-      const jobs = await getMyJobs("in-progress");
-      const mapped = jobs.map((job) => ({
-        id: job.id,
-        jobId: job.id,
-        title: job.property_type || "Property Appraisal",
-        location: job.address || "Location not specified",
-        status: job.job_status || job.status,
-        lastActivity: job.updated_at,
-      }));
-      
-      setChatJobs(mapped);
+      // Fetch jobs for lender
+      const response = await getMyJobs("All");
+
+      const jobsWithParticipants = await Promise.all(
+        (response || []).map(async (job: any) => {
+          const mappedJob: ChatJob = {
+            id: job.id,
+            jobId: job.id,
+            title: job.property_type || "Property Appraisal",
+            location: job.address || "Location not specified",
+            status: job.job_status || job.status,
+            lastActivity: job.updated_at,
+          };
+
+          try {
+            const chatImages = await chatApi.getChatImages(job.id);
+            mappedJob.participants = chatImages.chat || {};
+          } catch (err) {
+            console.warn(`Failed to fetch participants for job ${job.id}:`, err);
+            mappedJob.participants = {};
+          }
+
+          return mappedJob;
+        })
+      );
+
+      setChatJobs(jobsWithParticipants);
     } catch (err: any) {
       setError("Failed to load chat conversations");
       toast({
@@ -57,7 +74,10 @@ export default function LenderChatPage() {
     return (
       <DashboardLayout role="lender">
         <div className="flex items-center justify-center h-screen">
-          <Loader2 className="w-6 h-6 animate-spin" />
+          <div className="flex items-center gap-3 text-gray-500">
+            <Loader2 className="w-6 h-6 animate-spin" />
+            <span>Loading conversations...</span>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -65,7 +85,7 @@ export default function LenderChatPage() {
 
   if (error) {
     return (
-      <DashboardLayout role="appraiser">
+      <DashboardLayout role="lender">
         <div className="flex flex-col items-center justify-center h-screen">
           <XCircle className="w-12 h-12 text-red-500 mb-4" />
           <p className="text-red-500 mb-4">{error}</p>
@@ -79,36 +99,23 @@ export default function LenderChatPage() {
   }
 
   return (
-    <DashboardLayout role="appraiser">
+    <DashboardLayout role="lender">
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Chat Conversations</h1>
-        <div className="space-y-4 max-w-4xl">
+        <div className="space-y-4 max-w-6xl flex flex-col mx-auto">
           {chatJobs.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-500">No conversations available.</p>
+              <p className="text-gray-400 text-sm mt-2">
+                Create or accept jobs to start conversations
+              </p>
             </div>
           ) : (
             chatJobs.map((chat) => (
-              <div
+              <ChatListItem
                 key={chat.jobId}
-                className="bg-[#014F9D] rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => handleChatClick(chat.jobId)}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                      <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-1">
-                        {chat.title} - #{chat.jobId}
-                      </h3>
-                      <p className="text-blue-100 text-sm">{chat.location}</p>
-                      <p className="text-blue-200 text-xs">Status: {chat.status}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                chat={chat}
+                onClick={handleChatClick}
+              />
             ))
           )}
         </div>

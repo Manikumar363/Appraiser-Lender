@@ -18,6 +18,7 @@ import "react-phone-input-2/lib/style.css";
 import type { CountryData } from 'react-phone-input-2';
 import axios from "axios";
 import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import toast, { Toaster } from "react-hot-toast";
 
 const mapContainerStyle = {
   width: '100%',
@@ -180,31 +181,65 @@ export default function LenderProfilePage() {
       );
       console.log("✅ Profile updated:", res.data);
 
-      setSuccess("Profile updated successfully!");
       setIsEditing(false);
 
+      // Show toast notification
+      toast.success("Profile updated successfully!");
+
       setTimeout(() => {
-      setSuccess("");
+        setSuccess("");
       }, 3000);
 
       // Optionally refresh profile
       const updatedProfile = await profileApi.getLenderProfile();
       if (updatedProfile.success) {
         setProfile(updatedProfile.user);
+      }
+    } catch (err: any) {
+      console.error("❌ Failed to update profile:", err);
+      setError(err.response?.data?.message || "Failed to update profile");
+      toast.error("Failed to update profile");
+    } finally {
+      setSubmitLoading(false);
     }
-  } catch (err: any) {
-    console.error("❌ Failed to update profile:", err);
-    setError(err.response?.data?.message || "Failed to update profile");
-  } finally {
-    setSubmitLoading(false);
-  }
-};
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    if (profile) {
+      setFormData({
+        name: profile.name || "",
+        email: profile.email || "",
+        applicant: profile.applicant || "",
+        location: profile.location || { type: "Point", coordinates: [0, 0] },
+        phone: profile.phone || "",
+        image: profile.image || "",
+        country_code: profile.country_code || "",
+        address: profile.address || "",
+        province: profile.province || "",
+        city: profile.city || "",
+        postal_code: profile.postal_code || "",
+      });
+      setAddress(profile.address || "");
+      if (profile.location && profile.location.coordinates) {
+        setMapCenter({
+          lat: profile.location.coordinates[1],
+          lng: profile.location.coordinates[0],
+        });
+        setMarker({
+          lat: profile.location.coordinates[1],
+          lng: profile.location.coordinates[0],
+        });
+      }
+    }
+  };
 
   if (loading) return <div className="p-10 text-center">Loading...</div>;
   if (!profile) return <div className="p-10 text-center text-red-600">Profile failed to load.</div>;
 
   return (
     <DashboardLayout role="lender">
+      <Toaster position="top-right" />
       <div className="h-full overflow-hidden">
         <div className="p-8 h-full flex flex-col">
           <div className="flex flex-col items-center mb-8">
@@ -240,7 +275,7 @@ export default function LenderProfilePage() {
               </button>
             ) : (
               <button
-                onClick={() => setIsEditing(false)}
+                onClick={handleCancelEdit}
                 className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full font-medium transition"
               >
                 Cancel
