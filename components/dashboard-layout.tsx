@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
@@ -199,7 +199,11 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
-          <div className="p-6">{children}</div>
+          <div className="p-6">
+            {React.isValidElement(children)
+              ? React.cloneElement(children as React.ReactElement<any>, { searchQuery })
+              : children}
+          </div>
         </main>
       </div>
     </div>
@@ -207,3 +211,4 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
 }
 
 export default DashboardLayout
+

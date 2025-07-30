@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, LoadIcon, RightArrow } from "@/components/icons"
 import DashboardLayout from "@/components/dashboard-layout"
-import { Job, JobFilter } from "../../../lib/api/jobs1"
-import { getMyJobs } from "../../../lib/api/jobs1"
-import { getStatusColor } from "../../../lib/api/jobs1"
+import JobsContent from "./JobsContent"
+import { Job, JobFilter, getMyJobs } from "../../../lib/api/jobs1"
 
-export default function JobsPage() {
+interface JobsPageProps {
+  searchQuery?: string;
+}
+
+export default function JobsPage({ searchQuery = "" }: JobsPageProps) {
   const [jobs, setJobs] = useState<Job[]>([])
   const [activeFilter, setActiveFilter] = useState<JobFilter>("in-progress")
   const [loading, setLoading] = useState(true)
@@ -19,144 +18,31 @@ export default function JobsPage() {
   const router = useRouter()
 
   useEffect(() => {
-  async function fetchJobs() {
-    setLoading(true)
-    try {
-      const data = await getMyJobs(activeFilter)
-      setJobs(data)
-    } catch (err) {
-      console.error("Failed to fetch jobs:", err)
-      setError("Failed to fetch jobs")
-    } finally {
-      setLoading(false)
+    async function fetchJobs() {
+      setLoading(true)
+      try {
+        const data = await getMyJobs(activeFilter)
+        setJobs(data)
+      } catch (err) {
+        setError("Failed to fetch jobs")
+      } finally {
+        setLoading(false)
+      }
     }
-  }
-
-  fetchJobs()
-  }, [activeFilter]) 
-
-  if (loading) return <DashboardLayout role="lender"><div className="p-6">Loading jobs...</div></DashboardLayout>
-  if (error) return <DashboardLayout role="lender"><div className="p-6 text-red-500">Error: {error}</div></DashboardLayout>
-
-  function getCityCountry(address: string) {
-  const parts = address.split(",").map(part => part.trim());
-  if (parts.length >= 3) {
-    return parts[2] + ", " + parts[parts.length - 1]; // "Pune, India"
-  }
-  return address;
-}
+    fetchJobs()
+  }, [activeFilter])
 
   return (
     <DashboardLayout role="lender">
-      <div className="flex flex-col h-full min-h-[calc(80vh-14px)] p-6">
-        <div className="flex-1">
-          {/* Filter Tabs */}
-          <div className="flex gap-4 mb-8">
-            {(
-               [
-                 {key: "All", label: "All"},
-                 { key: "in-progress", label: "In Progress" },
-                 { key: "completed", label: "Completed" },
-                 { key: "cancel", label: "Cancel" },
-               ] as { key: JobFilter; label: string }[]
-             ).map((f) => (
-               <Button
-                 key={f.key}
-                 className={`w-full  py-6  rounded-full ${
-                   activeFilter === f.key
-                     ? "bg-[#014F9D] hover:bg-blue-800 text-white"
-                     : "border-[#014F9D] text-[#014F9D] hover:bg-blue-50 bg-transparent border"
-                 }`}
-                 onClick={() => setActiveFilter(f.key)}
-               >
-                 {f.label}
-               </Button>
-             ))}
-          </div>
-
-          {/* Jobs List */}
-          {jobs.length === 0 && (
-             <div className="flex items-center justify-center py-24">
-               <span className="text-gray-500 text-xl font-medium">
-                 {activeFilter === "completed"
-                   ? "No completed jobs."
-                   : activeFilter === "cancel"
-                   ? "No cancelled jobs."
-                   : activeFilter === "in-progress"
-                   ? "No in-progress jobs."
-                   : "There are no jobs."}
-               </span>
-             </div>
-           )}
-           {jobs.map((job) => (
-              <div key={job.id} className="bg-cyan-50 rounded-2xl p-6 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center">
-                      <BuildingIcon className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.property_type}</h3>
-                      <p className="text-gray-600 text-sm">{job.address}</p>
-                    </div>
-                    {/* <Badge className={`${getStatusColor(job.status)} text-white px-4 py-2 rounded-full text-sm font-medium ml-4`}> */}
-                      {/* <LoadIcon className="w-4 h-4 mr-2" /> */}
-                      {/* {job.status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())} */}
-                    {/* </Badge> */}
-                    <Badge
-                     className="px-4 py-2 rounded-full text-sm font-medium ml-4 flex items-center text-white transition-colors cursor-pointer hover:brightness-110"
-                       style={{
-                         backgroundColor:
-                           job.job_status?.toLowerCase() === "pending" ? "#FFC107"
-                         : job.job_status?.toLowerCase() === "completed" ? "#22c55e"
-                         : job.job_status?.toLowerCase() === "cancelled" ? "#ef4444"
-                         : job.job_status?.toLowerCase() === "accepted" || job.job_status?.toLowerCase() === "active" ? "#00F90A"
-                         : "#FFC107"
-                       }}
-                   >
-                     <LoadIcon className="w-4 h-4 mr-2" />
-                     {job.job_status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
-                   </Badge>
-                  </div>
-                  <div className="flex items-center gap-3 flex-nowrap">
-                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
-                      <MapIcon className="w-6 h-6 mr-1" />
-                      {getCityCountry(job.address)}
-                    </Button>
-                    <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
-                      <CalendarIcon className="w-4 h-4 mr-2" />
-                      {job.preferred_date ? new Date(job.preferred_date).toLocaleDateString() : "N/A"}
-                    </Button>
-                    <Button variant="outline" size="sm" className="bg-white border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-blue-50 transition-colors"
-                    onClick={() => router.push(`/lender/chats/${job.id}`)}>
-                      <MessageIcon className="w-5 h-5 me-1" />
-                      Message
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="lg"
-                      className="bg-white   text-[#014F9D] hover:bg-blue-50 p-0 rounded-full flex items-center justify-center transition-colors w-[40px] h-[40px] shadow"
-                      onClick={() => router.push(`/lender/jobs/${job.id}`)}
-                    >
-                      <span className="flex items-center justify-center w-[44px] h-[44px] rounded-full">
-                        <RightArrow className="w-7 h-7" />
-                      </span>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="w-full pb-8">
-          <button
-            onClick={() => router.push("/lender/dashboard/new")}
-            className="w-full bg-[#1e5ba8] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
-          >
-            <Plus size={20} />
-            New Job Request
-          </button>
-        </div>
+      <JobsContent
+        jobs={jobs}
+        loading={loading}
+        error={error}
+        searchQuery={searchQuery}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        onNewJob={() => router.push("/lender/dashboard/new")}
+      />
     </DashboardLayout>
   )
 }

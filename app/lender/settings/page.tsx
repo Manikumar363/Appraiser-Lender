@@ -55,7 +55,7 @@ const topNavigationItems = [
           onClick={() => setShowConfirm(true)}
           className="flex items-center justify-between gap-4 py-5 font-medium hover:bg-gray-100 w-full rounded-lg px-2 mt-4"
         >
-          <span className="flex items-center gap-4 text-red-500">
+          <span className="flex items-center gap-4 text-gray-800">
            <DeleteIcon className='w-10 h-10' />
              Delete Account
           </span>
