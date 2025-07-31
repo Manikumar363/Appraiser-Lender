@@ -1,10 +1,11 @@
 import React from 'react'
 import {
-    CompanyIcon,
-    DesignationIcon,
-    EmailIcon,
     ProfileIcon,
     ProfileIcon2,
+    ProfileIcon3,
+    EmailIcon,
+    CompanyIcon,
+    DesignationIcon,
     Tick,
     CheckmarkIcon,
     LocationIcon,
@@ -20,6 +21,7 @@ import {
     DeleteIcon,
     ArrowIcon,
     TimerIcon,
+    TimerIcon2,
     BuildingIcon,
     MessageIcon,
     MapIcon,
@@ -29,18 +31,42 @@ import {
     PDFIcon,
     ImageIcon,
     CardIcon,
+    Select,
+    Reject,
     HomeIcon,
     JobsIcon,
     SettingsIcon,
     PrivacyIcon,
+    TermsIcon,
+    HelpIcon,
+    LogoutIcon,
+    LeftArrow,
+    UserIcon,
+    TargettIcon,
+    DollerIcon,
+    SecondaryProfileIcon,
+    ThirdPrimaryIcon,
+    HomeTimerIcon,
+    RightArrowIcon,
+    DateIcon,
+    UploadIcon,
+    TransctionIcon,
+    ResidentialIcon,
+    Msg,
+    Map,
+    Update,
+    Next,
+    Call,
+    Building
 } from '@/components/icons'
 
 const icons = [
-    { name: 'CompanyIcon', Component: CompanyIcon },
-    { name: 'DesignationIcon', Component: DesignationIcon },
-    { name: 'EmailIcon', Component: EmailIcon },
     { name: 'ProfileIcon', Component: ProfileIcon },
     { name: 'ProfileIcon2', Component: ProfileIcon2 },
+    { name: 'ProfileIcon3', Component: ProfileIcon3 },
+    { name: 'EmailIcon', Component: EmailIcon },
+    { name: 'CompanyIcon', Component: CompanyIcon },
+    { name: 'DesignationIcon', Component: DesignationIcon },
     { name: 'Tick', Component: Tick },
     { name: 'CheckmarkIcon', Component: CheckmarkIcon },
     { name: 'LocationIcon', Component: LocationIcon },
@@ -56,6 +82,7 @@ const icons = [
     { name: 'DeleteIcon', Component: DeleteIcon },
     { name: 'ArrowIcon', Component: ArrowIcon },
     { name: 'TimerIcon', Component: TimerIcon },
+    { name: 'TimerIcon2', Component: TimerIcon2 },
     { name: 'BuildingIcon', Component: BuildingIcon },
     { name: 'MessageIcon', Component: MessageIcon },
     { name: 'MapIcon', Component: MapIcon },
@@ -65,23 +92,57 @@ const icons = [
     { name: 'PDFIcon', Component: PDFIcon },
     { name: 'ImageIcon', Component: ImageIcon },
     { name: 'CardIcon', Component: CardIcon },
+    { name: 'Select', Component: Select },
+    { name: 'Reject', Component: Reject },
     { name: 'HomeIcon', Component: HomeIcon },
     { name: 'JobsIcon', Component: JobsIcon },
     { name: 'SettingsIcon', Component: SettingsIcon },
     { name: 'PrivacyIcon', Component: PrivacyIcon },
-    { name: 'TimerIcon', Component: TimerIcon },
-
+    { name: 'TermsIcon', Component: TermsIcon },
+    { name: 'HelpIcon', Component: HelpIcon },
+    { name: 'LogoutIcon', Component: LogoutIcon },
+    { name: 'LeftArrow', Component: LeftArrow },
+    { name: 'UserIcon', Component: UserIcon },
+    { name: 'TargettIcon', Component: TargettIcon },
+    { name: 'DollerIcon', Component: DollerIcon },
+    { name: 'SecondaryProfileIcon', Component: SecondaryProfileIcon },
+    { name: 'ThirdPrimaryIcon', Component: ThirdPrimaryIcon },
+    { name: 'HomeTimerIcon', Component: () => <HomeTimerIcon color="#014F9D" /> },
+    { name: 'RightArrowIcon', Component: RightArrowIcon },
+    { name: 'DateIcon', Component: DateIcon },
+    { name: 'UploadIcon', Component: UploadIcon },
+    { name: 'TransctionIcon', Component: TransctionIcon },
+    { name: 'ResidentialIcon', Component: ResidentialIcon },
+    { name: 'Msg', Component: Msg },
+    { name: 'Map', Component: Map },
+    { name: 'Update', Component: Update },
+    { name: 'Next', Component: Next },
+    { name: 'Call', Component: Call },
+    { name: 'Building', Component: Building }
 ]
 
 export default function TestIconsPage() {
     return (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 ,background:"blue"} }>
-            {icons.map(({ name, Component }) => (
-                <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 100 }}>
-                    <Component />
-                    <span style={{ fontSize: 12, marginTop: 8 }}>{name}</span>
-                </div>
-            ))}
+        <div className='bg-blue-300 p-4 min-h-screen'>
+            <h1>All Icons ({icons.length} total)</h1>
+            <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
+                gap: '16px' 
+            }}>
+                {icons.map(({ name, Component }) => (
+                    <div key={name} style={{ 
+                        border: '1px solid #ddd', 
+                        padding: '10px', 
+                        textAlign: 'center' 
+                    }}>
+                        <Component />
+                        <div style={{ fontSize: '12px', marginTop: '8px' }}>
+                            {name}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
