@@ -12,6 +12,27 @@ import { useChatData } from "../hooks/useChatData"; // lender-side hook
 import { getUserFromToken } from "../components/utils";
 import { UIMessage, User } from "../components/types";
 
+function getDateLabel(dateString: string) {
+  const date = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isToday =
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear();
+
+  const isYesterday =
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear();
+
+  if (isToday) return "Today";
+  if (isYesterday) return "Yesterday";
+  return date.toLocaleDateString();
+}
+
 export default function ChatDetailPage() {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -80,6 +101,7 @@ export default function ChatDetailPage() {
           minute: "2-digit",
         }),
         avatar: messageData.sender_data.image,
+        created_at: messageData.created_at, // <-- add this line
       };
 
       setMessages(prev => [...prev, newMessageObj]);
@@ -132,13 +154,30 @@ export default function ChatDetailPage() {
                 No messages yet. Start the conversation!
               </div>
             ) : (
-              messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  user={user}
-                />
-              ))
+              (() => {
+                let lastDate = "";
+                return messages.map((message) => {
+                  const messageDate = new Date(message.created_at).toDateString();
+                  let showDate = false;
+                  if (messageDate !== lastDate) {
+                    showDate = true;
+                    lastDate = messageDate;
+                  }
+                  return (
+                    <div key={message.id}>
+                      {showDate && (
+                        <div className="text-center text-xs text-gray-400 my-2">
+                          {getDateLabel(message.created_at)}
+                        </div>
+                      )}
+                      <MessageBubble
+                        message={message}
+                        user={user}
+                      />
+                    </div>
+                  );
+                });
+              })()
             )}
             <div ref={messagesEndRef} />
           </div>

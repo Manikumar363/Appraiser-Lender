@@ -6,6 +6,7 @@ export interface UIMessage {
   content: string;
   timestamp: string;
   avatar: string;
+  created_at: string;
 }
 
 export interface Participant {

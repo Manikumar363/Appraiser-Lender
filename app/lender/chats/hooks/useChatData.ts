@@ -62,6 +62,7 @@ export function useChatData(jobId: string) {
           minute: "2-digit",
         }),
         avatar: msg.sender_data?.image || "/placeholder.svg",
+        created_at: msg.created_at, // <-- Add this line
       }));
 
       setMessages(mappedMessages);

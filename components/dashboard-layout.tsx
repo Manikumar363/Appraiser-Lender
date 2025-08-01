@@ -159,13 +159,18 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
           <div className="flex items-center justify-between">
             {/* Search */}
             <div className="flex-1 max-w-md relative">
-              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60" />
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/80" />
               <input
                 type="text"
                 placeholder="Search anything..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
+                className="w-full pl-10 pr-4 py-2 bg-transparent rounded-full text-white placeholder-white/80 focus:outline-none focus:ring-0 border-none shadow-none"
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  boxShadow: "none",
+                }}
               />
             </div>
 

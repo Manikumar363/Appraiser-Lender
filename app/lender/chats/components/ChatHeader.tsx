@@ -1,4 +1,4 @@
-import { BuildingIcon } from "../../../../components/icons";
+import { BuildingIcon, BuildingIcon2 } from "../../../../components/icons";
 import { JobDetails, Participant } from "./types";
 
 interface ChatHeaderProps {
@@ -12,8 +12,8 @@ export default function ChatHeader({ jobDetails, jobId, participants }: ChatHead
     <div className="flex justify-center pb-4 w-full">
       <div className="bg-[#014F9D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-6xl">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-            <BuildingIcon />
+          <div className="w-12 h-12 bg-cyan-50 rounded-full flex items-center justify-center">
+            <BuildingIcon2 className="w-6 h-6 text-[#014F9D]" />
           </div>
           <div>
             <div className="text-white font-semibold text-base">

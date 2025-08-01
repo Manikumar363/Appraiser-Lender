@@ -62,7 +62,8 @@ export default function NewJobRequestPage() {
       ...prev,
       [field]: value,
     }));
-    if (field === "address" && value.trim().length > 5) {
+    // Only geocode if address is long enough (e.g., > 10 chars)
+    if (field === "address" && value.trim().length > 10) {
       geocodeAddress(value);
     }
   }
@@ -145,7 +146,7 @@ export default function NewJobRequestPage() {
 
   // Geocode address to lat/lng
   const geocodeAddress = async (address: string) => {
-    if (!address) return;
+    if (!address || address.trim().length <= 10) return; // Don't geocode short/incomplete addresses
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
       const response = await axios.get(
@@ -157,16 +158,15 @@ export default function NewJobRequestPage() {
           },
         }
       );
-      console.log("Geocode response:", response.data);
       const location = response.data.results[0]?.geometry.location;
       if (location) {
         setMapCenter({ lat: location.lat, lng: location.lng });
         setMarker({ lat: location.lat, lng: location.lng });
       } else {
-        console.error("No location found for address:", address);
+        toast.error("Unable to find location. Please enter a valid address.");
       }
     } catch (error) {
-      console.error("Geocoding failed:", error);
+      toast.error("Geocoding failed. Please try again.");
     }
   };
 

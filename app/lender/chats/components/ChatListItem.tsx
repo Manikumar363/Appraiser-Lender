@@ -1,4 +1,4 @@
-import { BuildingIcon } from "../../../../components/icons";
+import { BuildingIcon, BuildingIcon2 } from "../../../../components/icons";
 import { ChatJob } from "./types";
 import { getParticipantAvatars } from "./utils";
 
@@ -17,8 +17,8 @@ export default function ChatListItem({ chat, onClick }: ChatListItemProps) {
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-            <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
+          <div className="w-12 h-12 bg-cyan-50 rounded-full flex items-center justify-center">
+            <BuildingIcon2 className="w-6 h-6 text-[#014F9D]" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white mb-1">

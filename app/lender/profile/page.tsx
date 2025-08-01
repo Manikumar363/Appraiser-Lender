@@ -20,6 +20,8 @@ import axios from "axios";
 import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
 import toast, { Toaster } from "react-hot-toast";
 import type { Libraries } from "@react-google-maps/api";
+import { isValidPhoneNumber } from "libphonenumber-js";
+
 
 const mapContainerStyle = {
   width: '100%',
@@ -57,6 +59,8 @@ export default function LenderProfilePage() {
   const [mapCenter, setMapCenter] = useState({ lat: 43.6532, lng: -79.3832 });
   const [marker, setMarker] = useState({ lat: 43.6532, lng: -79.3832 });
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const [lastPhoneCountryData, setLastPhoneCountryData] = useState<any>({ format: "+91 99999 99999" });
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -118,12 +122,13 @@ export default function LenderProfilePage() {
     }));
   }
   
- const handlePhoneChange = (value: string, data: any) => {
+  const handlePhoneChange = (value: string, data: any) => {
     setFormData((prev) => ({
-    ...prev,
-    phone: value.startsWith("+") ? value : `+${value}`,
-    country_code: data.dialCode || "", // still save this in case needed separately
-  }));
+      ...prev,
+      phone: value.startsWith("+") ? value : `+${value}`,
+      country_code: data.dialCode || "",
+    }));
+    setLastPhoneCountryData(data); // Save the country data for validation
   };
 
   // Geocode function
@@ -186,11 +191,50 @@ export default function LenderProfilePage() {
     }
   };
 
+  // Validation function
+  function validateFields() {
+    const errors: { [key: string]: string } = {};
+
+    // Name validation: only letters and spaces
+    if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) {
+      errors.name = "Name should contain only letters and spaces";
+    }
+
+    // Applicant validation: only letters and spaces
+    if (!/^[A-Za-z\s]+$/.test(formData.applicant.trim())) {
+      errors.applicant = "Applicant should contain only letters and spaces";
+    }
+
+    // Email validation: basic email regex
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitLoading(true);
     setError("");
     setSuccess("");
+
+    // Validate fields
+    if (!validateFields()) {
+      setSubmitLoading(false);
+      return;
+    }
+
+    // Use the full phone number and country code for validation
+    const phone = formData.phone;
+    const countryCode = lastPhoneCountryData?.countryCode || "IN"; // fallback to India
+
+    if (!isValidPhoneNumber("+" + phone.replace(/\D/g, ""), countryCode)) {
+      toast.error("Please enter a valid phone number for your country.");
+      setSubmitLoading(false);
+      return;
+    }
 
     try {
       const res = await api.patch(
@@ -266,6 +310,13 @@ export default function LenderProfilePage() {
     }
   };
 
+  function getNationalNumberLength(country: any) {
+  if (country && country.format) {
+    return (country.format.match(/\d/g) || []).length;
+  }
+  return 10; // fallback
+}
+
   if (loading) return <div className="p-10 text-center">Loading...</div>;
   if (!profile) return <div className="p-10 text-center text-red-600">Profile failed to load.</div>;
 
@@ -337,6 +388,7 @@ export default function LenderProfilePage() {
                   }`}
                 />
               </div>
+              {fieldErrors.name && <p className="text-red-600 text-xs mt-1">{fieldErrors.name}</p>}
             </div>
 
             {/* Email */}
@@ -357,6 +409,7 @@ export default function LenderProfilePage() {
                   }`}
                 />
               </div>
+              {fieldErrors.email && <p className="text-red-600 text-xs mt-1">{fieldErrors.email}</p>}
             </div>
 
             {/* Designation */}
@@ -377,7 +430,7 @@ export default function LenderProfilePage() {
                   }`}
                 />
               </div>
-            
+              {fieldErrors.applicant && <p className="text-red-600 text-xs mt-1">{fieldErrors.applicant}</p>}
             </div>
            
 
