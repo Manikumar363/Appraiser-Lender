@@ -149,6 +149,8 @@ export function ComplexJobStatusModal({
                 value={effectiveDate}
                 onChange={e => setEffectiveDate(e.target.value)}
                 required
+                 min="1900-01-01"
+  max="2999-12-31"
                 className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
               />
             </div>
@@ -177,7 +179,7 @@ export function ComplexJobStatusModal({
 
  <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block mb-2 text-[#000000] font-urbanist font-semibold">Location *</label>
+                <label className="block mb-2 text-[#000000] font-urbanist font-semibold">Location </label>
                 <EnhancedPropertyMapPicker
                   onLocationSelect={(lat, lng) => setLocation({ latitude: lat, longitude: lng })}
                   initialLocation={location}
@@ -192,8 +194,8 @@ export function ComplexJobStatusModal({
               </div>
 
               <div>
-                <label className="block mb-2 text-[#000000] font-urbanist font-semibold">Upload Document</label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-gray-50 hover:bg-gray-100 transition-colors">
+                <label className="block mb-14 text-[#000000] font-urbanist font-semibold">Upload Document</label>
+                <div className="border-2 border-dashed h-[11rem] border-gray-300 rounded-lg p-8 bg-gray-50 hover:bg-gray-100 transition-colors">
                   <input 
                     type="file" 
                     multiple 
@@ -296,7 +298,7 @@ export function ComplexJobStatusModal({
 
             <button
               type="submit"
-              className="w-full bg-[#014F9D] text-white py-4 rounded-full font-semibold hover:bg-blue-700 transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#014F9D] text-white py-4 rounded-full font-semibold hover:bg-[#014F9F] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? (

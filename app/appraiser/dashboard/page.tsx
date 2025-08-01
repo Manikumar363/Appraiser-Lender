@@ -161,7 +161,7 @@ export default function AppraiserDashboardPage() {
                 {/* LEFT SIDE - Fixed Layout Structure */}
                 <div className="flex items-center gap-4">
                   {/* Building Icon in Blue Circle */}
-                  <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-[#014F9D] rounded-full flex items-center justify-center flex-shrink-0">
                     <BuildingIcon className="w-6 h-6 text-white" />
                   </div>
 
@@ -189,7 +189,7 @@ export default function AppraiserDashboardPage() {
                   <button
                     onClick={() => handleAcceptJob(job.job.id)}
                     disabled={jobActionLoading === job.job.id}
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-[#054c99] hover:bg-[#043a77] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-[#014F9D] hover:bg-[#043a77] transition disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {jobActionLoading === job.job.id ? (
                       <LoadIcon className="text-white animate-spin" />
