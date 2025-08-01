@@ -63,7 +63,9 @@ function getStatusColor(status: string) {
   }
 }
 
-export default function AppraiserJobsContent({ searchQuery = "" }: AppraiserJobsContentProps) {
+export default function AppraiserJobsContent({
+  searchQuery = "",
+}: AppraiserJobsContentProps) {
   const [jobs, setJobs] = useState<AppraiserJob[]>([]);
   const [admin, setAdmin] = useState<{
     phone: string;
@@ -151,10 +153,14 @@ export default function AppraiserJobsContent({ searchQuery = "" }: AppraiserJobs
       if (!searchQuery) return true;
       const details = job.job;
       return (
-        details.property_type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        details.property_type
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
         details.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         details.job_status?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        details.intended_username?.toLowerCase().includes(searchQuery.toLowerCase())
+        details.intended_username
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase())
       );
     });
 
@@ -183,9 +189,9 @@ export default function AppraiserJobsContent({ searchQuery = "" }: AppraiserJobs
             <LoadIcon className="animate-spin w-8 h-8 text-[#014F9D]" />
           </div>
         )}
-        
+
         {error && <div className="text-red-500">{error}</div>}
-        
+
         {!loading && !error && (
           <div className="space-y-4">
             {filteredJobs.length === 0 && (
@@ -195,7 +201,7 @@ export default function AppraiserJobsContent({ searchQuery = "" }: AppraiserJobs
                 </span>
               </div>
             )}
-            
+
             {filteredJobs.map((job) => {
               const details = job.job;
               const job_status = details.job_status;
@@ -325,9 +331,7 @@ export default function AppraiserJobsContent({ searchQuery = "" }: AppraiserJobs
                           title="View Property Location"
                           onClick={() => {
                             const address =
-                              details.resident_address ||
-                              details.address ||
-                              "";
+                              details.resident_address || details.address || "";
                             if (address) {
                               window.open(
                                 `https://maps.google.com/maps?q=${encodeURIComponent(
@@ -358,7 +362,11 @@ export default function AppraiserJobsContent({ searchQuery = "" }: AppraiserJobs
                           onClick={() => openModal(job)}
                           className="hover:text-blue-700"
                         >
-                          <Update />
+                          {job_status === "post_visit_summary" ? (
+                            <Next />
+                          ) : (
+                            <Update />
+                          )}
                         </button>
                       )}
                     </div>
