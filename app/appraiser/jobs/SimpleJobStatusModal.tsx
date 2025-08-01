@@ -110,7 +110,7 @@ export function SimpleJobStatusModal({
             <div className="flex justify-between items-center">
               
               <div className="flex items-center gap-4 flex-1">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                <div className="w-12 h-12  rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
                   <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
                 </div>
                 
