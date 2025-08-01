@@ -82,7 +82,9 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
   const searchEnabledRoutes = [
     "/lender/dashboard",
     "/lender/jobs",
-    "/lender/transaction"
+    "/lender/transaction",
+    "/appraiser/dashboard",
+    "/appraiser/jobs"
   ];
 
   return (
