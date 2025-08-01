@@ -105,8 +105,8 @@ export default function AppraiserJobsContent({ searchQuery = "" }: AppraiserJobs
       setLoading(true);
 
       const res = await appraiserJobsApi.fetchAcceptedJobs({
-        page: 0,
-        limit: 3,
+        page: 1,
+        limit: 20,
       });
       setJobs(Array.isArray(res.jobs) ? res.jobs : []);
       setAdmin(res.admin || null);
