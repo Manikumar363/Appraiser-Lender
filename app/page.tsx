@@ -7,8 +7,9 @@ export default function HomePage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Redirect directly to lender signin - users can switch roles there
-    router.push("/lender/auth/signin")
+    setTimeout(() => {
+    router.push("/appraiser/auth/signin")
+    }, 2000)
   }, [router])
 
   return (

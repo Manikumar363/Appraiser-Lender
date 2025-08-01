@@ -8,8 +8,9 @@ import { chatApi } from "@/lib/api/chat";
 import ChatHeader from "../components/ChatHeader";
 import MessageBubble from "../components/MessageBubble";
 import MessageInput from "../components/MessageInput";
+import DateSeparator from "../components/DateSeparator"
 import { useChatData } from "../hooks/useChatData";
-import { getUserFromToken } from "../components/utils";
+import { getUserFromToken, groupMessagesByDate } from "../components/utils"; // ADD groupMessagesByDate
 import { UIMessage, User } from "../components/types";
 
 export default function ChatDetailPage() {
@@ -80,6 +81,7 @@ export default function ChatDetailPage() {
           minute: "2-digit",
         }),
         avatar: messageData.sender_data.image,
+        created_at: messageData.created_at, // ADD THIS LINE
       };
 
       setMessages(prev => [...prev, newMessageObj]);
@@ -118,29 +120,37 @@ export default function ChatDetailPage() {
 
   return (
     <DashboardLayout role="appraiser">
-      <div className="flex flex-col h-screen  overflow-hidden relative">
+      <div className="flex flex-col h-screen overflow-hidden relative">
         <ChatHeader 
           jobDetails={jobDetails}
           jobId={jobId}
           participants={participants}
         />
 
-        {/* Messages */}
-        <div className="flex-1 w-full flex flex-col items-center overflow-y-auto pb-20">
-          <div className="max-w-6xl w-full mx-auto flex flex-col gap-6 px-4">
-            {messages.length === 0 ? (
-              <div className="text-center py-8 text-gray-500">
-                No messages yet. Start the conversation!
-              </div>
-            ) : (
-              messages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message}
-                  user={user}
-                />
-              ))
-            )}
+       <div className="flex-1 w-full flex flex-col items-center overflow-y-auto pb-20 scrollbar-hide">
+  <div className="max-w-6xl w-full mx-auto flex flex-col gap-6 px-4">
+            {(() => {
+              const groupedMessages = groupMessagesByDate(messages);
+              
+              return messages.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  No messages yet. Start the conversation!
+                </div>
+              ) : (
+                groupedMessages.map((group, groupIndex) => (
+                  <div key={`group-${groupIndex}`}>
+                    <DateSeparator date={group.date} />
+                    {group.messages.map((message) => (
+                      <MessageBubble
+                        key={message.id}
+                        message={message}
+                        user={user}
+                      />
+                    ))}
+                  </div>
+                ))
+              );
+            })()}
             <div ref={messagesEndRef} />
           </div>
         </div>

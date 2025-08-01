@@ -72,7 +72,7 @@ export function EnhancedPropertyMapPicker({ onLocationSelect, initialLocation }:
 
       {/* Map */}
       <GoogleMap
-        mapContainerStyle={{ width: '100%', height: '300px', borderRadius: '8px' }}
+        mapContainerStyle={{ width: '100%', height:'11rem', borderRadius: '8px' }}
         center={initialLocation ? 
           { lat: initialLocation.latitude, lng: initialLocation.longitude } : 
           { lat: 41.8781, lng: -87.6298 }
@@ -95,16 +95,13 @@ export function EnhancedPropertyMapPicker({ onLocationSelect, initialLocation }:
         )}
       </GoogleMap>
 
-      <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-        <p className="text-sm text-blue-800 font-medium">
-          🔍 Search above or click on map to select property location
-        </p>
+      {/* Selected Position Display */}
         {selectedPosition && (
           <div className="mt-2 text-sm text-green-700">
             <strong>Selected:</strong> {selectedPosition.lat().toFixed(6)}, {selectedPosition.lng().toFixed(6)}
           </div>
         )}
-      </div>
+      
     </div>
   ) : <div className="loading-message">Loading map...</div>;
 }

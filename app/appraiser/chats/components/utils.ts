@@ -1,5 +1,5 @@
 import { jwtDecode } from 'jwt-decode';
-import { User } from './types';
+import { User, UIMessage, DateGroup } from './types';
 
 export const getUserFromToken = (): User | null => {
   try {
@@ -66,4 +66,45 @@ export const getParticipantAvatars = (participants: any) => {
   }
   
   return avatars;
+};
+
+// ADD THESE DATE FUNCTIONS:
+export const formatMessageDate = (dateString: string): string => {
+  const messageDate = new Date(dateString);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const messageDateOnly = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.getDate());
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const yesterdayOnly = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+
+  if (messageDateOnly.getTime() === todayOnly.getTime()) {
+    return "Today";
+  } else if (messageDateOnly.getTime() === yesterdayOnly.getTime()) {
+    return "Yesterday";
+  } else {
+    return messageDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  }
+};
+
+export const groupMessagesByDate = (messages: UIMessage[]): DateGroup[] => {
+  const groups: { [key: string]: UIMessage[] } = {};
+
+  messages.forEach(message => {
+    const dateKey = formatMessageDate(message.created_at);
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
+    groups[dateKey].push(message);
+  });
+
+  return Object.entries(groups).map(([date, messages]) => ({
+    date,
+    messages
+  }));
 };

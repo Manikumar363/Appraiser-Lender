@@ -295,8 +295,8 @@ export const BuildingIcon = (props: React.SVGProps<SVGSVGElement>) => (
       />
     </g>
     <defs>
-      <clipPath id="clip0_212_9264">
-        <rect width="24" height="24" fill="white" transform="translate(0 0.5)" />
+      <clipPath id="clip0_27_2788">
+        <rect width="25" height="25" fill="currentColor" />
       </clipPath>
     </defs>
   </svg>
@@ -424,7 +424,7 @@ export const Select=()=>(
 
 export const Reject=()=>(
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M5.63159 14.3692L10.0008 10L14.3699 14.3692M14.3699 5.63086L9.99993 10L5.63159 5.63086" stroke="#014F9D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.63159 14.3692L10.0008 10L14.3699 14.3692M14.3699 5.63086L9.99993 10L5.63159 5.63086" stroke="#014F9D" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 )
@@ -734,8 +734,19 @@ export const Building = ()=>(
 </clipPath>
 </defs>
 </svg>
-
-
+)
+//jobsimple
+export const Notes=()=>(
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.75 1.875V18.125H16.25V5.99625L16.0744 5.80063L12.3244 2.05062L12.1287 1.875H3.75ZM5 3.125H11.25V6.875H15V16.875H5V3.125ZM12.5 4.02375L14.1019 5.625H12.5V4.02375Z" fill="#014F9D"/>
+</svg>
+)
+//complexjobnotes
+export const Comments = () => (
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14 3C14.7652 2.99996 15.5015 3.29233 16.0583 3.81728C16.615 4.34224 16.9501 5.06011 16.995 5.824L17 6V10.379C16.9999 10.8485 16.8346 11.3031 16.533 11.663L16.414 11.793L11.793 16.414C11.461 16.746 11.0227 16.9506 10.555 16.992L10.379 17H6C5.23479 17 4.49849 16.7077 3.94174 16.1827C3.38499 15.6578 3.04989 14.9399 3.005 14.176L3 14L3 6C2.99996 5.23479 3.29233 4.49849 3.81728 3.94174C4.34224 3.38499 5.06011 3.04989 5.824 3.005L6 3L14 3ZM14 4L6 4C5.49542 3.99984 5.00943 4.19041 4.63945 4.5335C4.26947 4.87659 4.04284 5.34684 4.005 5.85L4 6L4 14C3.99984 14.5046 4.19041 14.9906 4.5335 15.3605C4.87659 15.7305 5.34684 15.9572 5.85 15.995L6 16H10L10 13C9.99996 12.2348 10.2923 11.4985 10.8173 10.9417C11.3422 10.385 12.0601 10.0499 12.824 10.005L13 10L16 10V6C16.0002 5.49542 15.8096 5.00943 15.4665 4.63945C15.1234 4.26947 14.6532 4.04284 14.15 4.005L14 4ZM15.783 11.001L13 11C12.4954 10.9998 12.0094 11.1904 11.6395 11.5335C11.2695 11.8766 11.0428 12.3468 11.005 12.85L11 13V15.781L11.086 15.707L15.707 11.086C15.7337 11.0593 15.7587 11.031 15.782 11.001" fill="black"/>
+</svg>
 );
+
 
 

@@ -6,6 +6,12 @@ export interface UIMessage {
   content: string;
   timestamp: string;
   avatar: string;
+  created_at: string;
+}
+
+export interface DateGroup {
+  date: string;
+  messages: UIMessage[];
 }
 
 export interface Participant {
