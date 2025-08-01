@@ -54,7 +54,7 @@ export default function JobsContent({
   }
 
   return (
-    <div className="flex flex-col h-full min-h-[calc(80vh-14px)] p-6">
+    <div className="flex flex-col h-full min-h-[calc(80vh-14px)] p-3">
       <div className="flex-1">
         {/* Filter Tabs */}
         <div className="flex gap-4 mb-8">
@@ -89,30 +89,33 @@ export default function JobsContent({
           </div>
         )}
         {filteredJobs.map((job) => (
-          <div key={job.id} className="bg-cyan-50 rounded-2xl p-6 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
+          <div key={job.id} className="bg-cyan-50 rounded-xl p-2 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-800 rounded-full flex items-center justify-center">
-                  <BuildingIcon className="w-6 h-6 text-white" />
+                <div className="w-14 h-14 bg-[#1e5ba8] rounded-full flex items-center justify-center">
+                  <BuildingIcon className="w-8 h-8 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.property_type}</h3>
                   <p className="text-gray-600 text-sm">{job.address}</p>
+                  {/* Status Badge below address */}
+                  <div className="flex justify-start mt-3">
+                    <Badge
+                      className="px-3 py-2 rounded-full text-sm font-medium flex items-center text-white transition-colors cursor-pointer hover:brightness-110"
+                      style={{
+                        backgroundColor:
+                          job.job_status?.toLowerCase() === "pending" ? "#FFC107"
+                          : job.job_status?.toLowerCase() === "completed" ? "#22c55e"
+                          : job.job_status?.toLowerCase() === "cancelled" ? "#ef4444"
+                          : job.job_status?.toLowerCase() === "accepted" || job.job_status?.toLowerCase() === "active" ? "#00F90A"
+                          : "#FFC107"
+                      }}
+                    >
+                      <LoadIcon className="w-5 h-5 mr-2" />
+                      {job.job_status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                    </Badge>
+                  </div>
                 </div>
-                <Badge
-                  className="px-4 py-2 rounded-full text-sm font-medium ml-4 flex items-center text-white transition-colors cursor-pointer hover:brightness-110"
-                  style={{
-                    backgroundColor:
-                      job.job_status?.toLowerCase() === "pending" ? "#FFC107"
-                      : job.job_status?.toLowerCase() === "completed" ? "#22c55e"
-                      : job.job_status?.toLowerCase() === "cancelled" ? "#ef4444"
-                      : job.job_status?.toLowerCase() === "accepted" || job.job_status?.toLowerCase() === "active" ? "#00F90A"
-                      : "#FFC107"
-                  }}
-                >
-                  <LoadIcon className="w-4 h-4 mr-2" />
-                  {job.job_status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
-                </Badge>
               </div>
               <div className="flex items-center gap-3 flex-nowrap">
                 <Button variant="outline" size="sm" className="bg-cyan border border-[#014F9D] text-[#014F9D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">

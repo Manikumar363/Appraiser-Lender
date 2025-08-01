@@ -79,6 +79,12 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
     }
   }
 
+  const searchEnabledRoutes = [
+    "/lender/dashboard",
+    "/lender/jobs",
+    "/lender/transaction"
+  ];
+
   return (
     <div className="min-h-screen flex bg-[#FFFFFF]">
       {/* Sidebar */}
@@ -200,7 +206,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
           <div className="p-6">
-            {React.isValidElement(children)
+            {React.isValidElement(children) && searchEnabledRoutes.includes(pathname)
               ? React.cloneElement(children as React.ReactElement<any>, { searchQuery })
               : children}
           </div>

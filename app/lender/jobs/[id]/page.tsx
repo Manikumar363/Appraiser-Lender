@@ -65,8 +65,8 @@ export default function JobDetailPage() {
               <div className="flex flex-col">
                 <h2 className="text-lg font-semibold">{job.purpose}</h2>
                 <p className="text-gray-600 text-sm mb-1">{job.address}</p>
-                <Badge 
-                  className="text-white inline-flex items-center px-4 py-2 rounded-full text-xs"
+                <Badge
+                  className="w-fit text-white inline-flex items-center px-4 py-2 rounded-full text-sm font-medium"
                   style={{
                     backgroundColor:
                       job.status === "pending" ||
@@ -74,7 +74,7 @@ export default function JobDetailPage() {
                       job.status === "site-visit-scheduled" ||
                       job.status === "post-visit-summary"
                         ? "#FFC107"
-                        : job.status === "completed"
+                        : job.status === "accepted"
                         ? "#22c55e"
                         : job.status === "cancelled"
                         ? "#ef4444"
@@ -113,9 +113,9 @@ export default function JobDetailPage() {
             {progressSteps.map((step, i) => (
               <div key={i} className="flex flex-col items-center">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2
-                  ${step.status === "completed" ? "bg-blue-800" : step.status === "current" ? "bg-white border-[14px] border-blue-800" : "bg-gray-400"}
+                  ${step.status === "completed" ? "bg-[#014F9D]" : step.status === "current" ? "bg-white border-[14px] border-blue-800" : "bg-gray-400"}
                 `}>
-                  {step.status === "current" && <div className="bg-blue-700" />}
+                  {step.status === "current" && <div className="bg-[#014F9D]" />}
                 </div>
                 <span className="text-sm text-gray-600 text-center">{step.name}</span>
               </div>

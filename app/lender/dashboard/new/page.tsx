@@ -4,7 +4,7 @@ import type React from "react"
 import { useState} from "react"
 import { useRouter } from "next/navigation"
 import DashboardLayout from "../../../../components/dashboard-layout"
-import { MapPin, ChevronDown, Phone, LocateIcon } from "lucide-react"
+import { MapPin, ChevronDown, Phone, LocateIcon, FileText, StickyNote } from "lucide-react"
 import { UserIcon, TargettIcon, DollerIcon, SecondaryProfileIcon, CalendarIcon, DateIcon, UploadIcon, LocationIcon } from "../../../../components/icons"
 import { postJob } from "@/lib/api/jobs1"
 import PhoneInput from "react-phone-input-2";
@@ -15,6 +15,7 @@ import { useCallback } from "react";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import type { Libraries } from "@react-google-maps/api";
+import { Description } from "@radix-ui/react-toast"
 
 
 // Import Library type from @react-google-maps/api and use Library[] type for libraries
@@ -357,7 +358,7 @@ export default function NewJobRequestPage() {
                   <select
                     value={formData.use}
                     onChange={(e) => handleInputChange("use", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent appearance-none text-sm"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-[#1e5ba8] appearance-none text-sm bg-white"
                     required
                   >
                     <option value="">Enter Input</option>
@@ -489,7 +490,7 @@ export default function NewJobRequestPage() {
               <div>
                 <div className="relative w-[90%] mx-auto">
                   <label className="block text-base font-medium text-gray-900 mb-2">Description</label>
-                  <MapPin className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700" size={20} />
+                  <FileText className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700" />
                   <input
                     type="text"
                     value={formData.description}
