@@ -165,7 +165,10 @@ export default function LenderSetNewPasswordContent() {
               type="button"
               className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
               onClick={() => setShowNewPassword(!showNewPassword)}
+              tabIndex={-1}
+              aria-label={showNewPassword ? "Hide password" : "Show password"}
             >
+              {showNewPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
 
@@ -199,7 +202,9 @@ export default function LenderSetNewPasswordContent() {
               className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm font-medium"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               tabIndex={-1}
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
             >
+              {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
 

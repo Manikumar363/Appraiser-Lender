@@ -22,6 +22,11 @@ import { Description } from "@radix-ui/react-toast"
 
 const GOOGLE_MAP_LIBRARIES: Libraries = ["places"]; // <-- define outside component
 
+// Add this function at the top of your component or in a utils file
+const allowOnlyAlphabets = (value: string) => value.replace(/[^a-zA-Z\s]/g, "");
+
+const allowOnlyDigits = (value: string) => value.replace(/[^0-9]/g, "");
+
 export default function NewJobRequestPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
@@ -256,6 +261,11 @@ export default function NewJobRequestPage() {
     }
   };
 
+  const handleRemoveUploadedFile = () => {
+    setUploadedDocName("");
+    handleInputChange("lender_doc", "");
+  };
+
   return (
     <DashboardLayout role="lender">
       <Toaster position="top-right" />
@@ -271,7 +281,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.intended_user}
-                    onChange={(e) => handleInputChange("intended_user", e.target.value)}
+                    onChange={e => handleInputChange("intended_user", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Name"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -287,7 +297,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.intended_username}
-                    onChange={(e) => handleInputChange("intended_username", e.target.value)}
+                    onChange={e => handleInputChange("intended_username", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Name"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -343,7 +353,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.purpose}
-                    onChange={(e) => handleInputChange("purpose", e.target.value)}
+                    onChange={e => handleInputChange("purpose", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Purpose"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -369,7 +379,7 @@ export default function NewJobRequestPage() {
                     ))}
                   </select>
                   <ChevronDown
-                    className="absolute right-[5%] top-[56%] -translate-y-[4%] text-gray-800"
+                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-800"
                     size={20}
                   />
                 </div>
@@ -466,7 +476,7 @@ export default function NewJobRequestPage() {
                     ))}
                   </select>
                   <ChevronDown
-                    className="absolute right-[5%] top-[56%] -translate-y-[4%] text-gray-700"
+                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-700"
                     size={20}
                   />
                 </div>
@@ -479,7 +489,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.price}
-                    onChange={(e) => handleInputChange("price", e.target.value)}
+                    onChange={(e) => handleInputChange("price", allowOnlyDigits(e.target.value))}
                     placeholder="Enter Property Cost"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -509,7 +519,7 @@ export default function NewJobRequestPage() {
                   <select
                     value={formData.property_occupied}
                     onChange={(e) => handleInputChange("property_occupied", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent appearance-none text-sm"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-[#1e5ba8] appearance-none text-sm bg-white"
                     required
                   >
                     <option value="">Enter Input</option>
@@ -520,7 +530,7 @@ export default function NewJobRequestPage() {
                     ))}
                   </select>
                   <ChevronDown
-                    className="absolute right-[5%] top-[56%] -translate-y-[4%] text-gray-700"
+                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-700"
                     size={20}
                   />
                 </div>
@@ -533,7 +543,7 @@ export default function NewJobRequestPage() {
                   </label>
                   <label
                     htmlFor="pdf-upload"
-                    className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer transition-all"
+                    className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer transition-all relative"
                   >
                     <UploadIcon className="w-6 h-6 text-gray-500 mb-2" />
                     <p className={`text-sm text-center ${uploadedDocName ? "text-green-600 font-semibold" : "text-gray-700"}`}>
@@ -561,6 +571,16 @@ export default function NewJobRequestPage() {
                       }}
                       className="hidden"
                     />
+                    {uploadedDocName && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveUploadedFile}
+                        className="absolute top-2 right-2 bg-white rounded-full border border-gray-300 p-1 hover:bg-red-100 transition-colors"
+                        aria-label="Remove uploaded file"
+                      >
+                        <span className="text-lg text-red-500 font-bold">&times;</span>
+                      </button>
+                    )}
                   </label>              
                 </div>
               </div>

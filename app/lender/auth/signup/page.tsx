@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import Link from "next/link"
 import AuthLayout from "../../../../components/auth-layout"
 import { RoleSelector } from "../../../../components/role-selector"
@@ -13,7 +13,19 @@ import "react-phone-input-2/lib/style.css";
 import { userAuth } from "@/lib/api/userAuth";
 import { set } from "date-fns"
 import { toast, Toaster } from "react-hot-toast"
+import { Eye, EyeOff } from "lucide-react"; // Add this import at the top
 
+
+// Add this helper at the top or in a utils file
+function validatePassword(password: string) {
+  if (!password) return "Password is required.";
+  if (password.length < 8) return "Password must be at least 8 characters.";
+  if (!/[A-Z]/.test(password)) return "Password must contain at least one uppercase letter.";
+  if (!/[a-z]/.test(password)) return "Password must contain at least one lowercase letter.";
+  if (!/[0-9]/.test(password)) return "Password must contain at least one digit.";
+  if (!/[^A-Za-z0-9]/.test(password)) return "Password must contain at least one special character.";
+  return "";
+}
 
 export default function LenderSignUpPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("lender")
@@ -26,91 +38,82 @@ export default function LenderSignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
 
  const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setError("");
   setFieldErrors({});
 
-  // ✅ Validate fields
-  const errors: {[key: string]: string} = {};
-  if(!username.trim()) errors.username= "Username is required";
-  if(!email.trim()) errors.email= "Email is required";
-  if(!password.trim()) errors.password= "Password is required";
-  if(password.length < 8) errors.password = "Password must be at least 8 characters";
-  if(!phone.trim()) errors.phone= "Phone number is required";
+  // Enhanced field validations
+  if (!username.trim()) {
+    toast.error("Username is required.");
+    return;
+  }
+  if (!email.trim()) {
+    toast.error("Email is required.");
+    return;
+  }
+
+  // Enhanced password validation
+  const passwordError = validatePassword(password);
+  if (passwordError) {
+    toast.error(passwordError);
+    return;
+  }
+
+  if (!phone || phone.replace(/\D/g, "").length < 10) {
+    toast.error("Please enter a valid phone number.");
+    return;
+  }
+
   if (!acceptTerms) {
-    toast.error("Please accept the Terms of Use and Privacy Policy", {
-      duration: 4000,
-      style: {
-        minWidth: "250px",
-        maxWidth: "500px",
-        fontSize: "1rem",
-        padding: "18px 24px",
-        textAlign: "center",
-        fontWeight: "medium", 
-      },
-    });
+    toast.error("Please accept the Terms of Use and Privacy Policy.");
     return;
   }
 
-  if(Object.keys(errors).length > 0) {
-    setFieldErrors(errors);
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    let countryCode = "";
-    let phoneNumber = "";
-
-    if (phone.startsWith("+")) {
-      const match = phone.match(/^\+\d+/);
-      if (match) {
-        countryCode = match[0];
-        phoneNumber = phone.slice(countryCode.length);
-      } else {
-        countryCode = "+1";
-        phoneNumber = phone;
-      }
+  // Parse phone
+  let countryCode = "";
+  let phoneNumber = "";
+  if (phone.startsWith("+")) {
+    const match = phone.match(/^\+\d+/);
+    if (match) {
+      countryCode = match[0];
+      phoneNumber = phone.slice(countryCode.length).replace(/\D/g, "");
     } else {
       countryCode = "+1";
       phoneNumber = phone;
     }
+  } else {
+    countryCode = "+1";
+    phoneNumber = phone;
+  }
 
-    // ✅ CORRECTED: use userAuth.signUp instead of userAuth()
+  try {
+    setLoading(true);
+    const loadingToast = toast.loading("Creating your account...");
+
     const response = await userAuth.signUp({
-      username,
-      email,
+      username: username.trim(),
+      email: email.trim(),
       password,
       phone: phoneNumber,
       country_code: countryCode,
     });
 
-    console.log("Signup Success:", response);
-
-    // ✅ Store for OTP page
-    localStorage.setItem("signupEmail", email);
-    toast.success("Signup successful",{
+    toast.success("Account created! Please check your email for verification.", {
+      id: loadingToast,
       duration: 5000,
-      style: {
-        minWidth: "350px",
-        maxWidth: "500px",
-        fontSize: "1.1rem",
-        padding: "18px 24px",
-        textAlign: "center",
-        fontWeight: "medium",
-      },
     });
+
+    localStorage.setItem("signupEmail", email.trim());
     setTimeout(() => {
-      // ✅ Redirect to OTP verification screen
-      router.push(`/lender/auth/verify-email?email=${email}`);
-    }, 1200); // 1.2 seconds delay
+      router.push(`/lender/auth/verify-email?email=${encodeURIComponent(email.trim())}`);
+    }, 1500);
 
   } catch (err: any) {
-    console.error("Signup error:", err);
-    setError(err.response?.data?.message || "Sign up failed. Try again.");
+    toast.error(err.response?.data?.message || "Sign up failed. Try again.");
   } finally {
     setLoading(false);
   }
@@ -167,13 +170,28 @@ export default function LenderSignUpPage() {
         <p className="text-red-600 text-sm">{fieldErrors.email}</p>
       )}
 
-      <AuthInput
-        type="password"
-        placeholder="Type your password here"
-        value={password}
-        onChange={setPassword}
-        icon="password"
-      />
+      {/* Password Input */}
+      <div className="relative w-[765px]">
+        <AuthInput
+          ref={passwordRef}
+          type={showPassword ? "text" : "password"}
+          placeholder="Type your password here"
+          value={password}
+          onChange={setPassword}
+          icon="password"
+          name="password"
+          autoComplete="new-password"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword((prev) => !prev)}
+          className="absolute top-1/2 right-6 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10 transition-colors"
+          aria-label={showPassword ? "Hide password" : "Show password"}
+          tabIndex={-1}
+        >
+          {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+        </button>
+      </div>
       {fieldErrors.password && (
         <p className="text-red-600 text-sm">{fieldErrors.password}</p>
       )}
