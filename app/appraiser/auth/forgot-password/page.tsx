@@ -108,7 +108,7 @@ export default function AppraiserForgotPasswordPage() {
           </form>
           {formError && <p className="text-red-600 text-sm mt-2">{formError}</p>}
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 w-[765px] text-center">
             <Link
               href="/appraiser/auth/signin"
               className="text-[#1e5ba8] hover:underline text-sm font-medium"
