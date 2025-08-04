@@ -81,7 +81,7 @@ export default function ChatDetailPage() {
           minute: "2-digit",
         }),
         avatar: messageData.sender_data.image,
-        created_at: messageData.created_at, // ADD THIS LINE
+        created_at: messageData.created_at, 
       };
 
       setMessages(prev => [...prev, newMessageObj]);

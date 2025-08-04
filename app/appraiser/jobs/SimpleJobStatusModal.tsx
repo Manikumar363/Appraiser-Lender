@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { uploadDocs } from "../lib/job";
 import { ProfileIcon3, BuildingIcon, UploadIcon, LoadIcon, ResidentialIcon, Notes } from "@/components/icons";
@@ -29,6 +29,31 @@ export function SimpleJobStatusModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Load persisted data when modal opens
+  useEffect(() => {
+    if (open && jobId) {
+      const persistedData = localStorage.getItem(`job_${jobId}_form_data`);
+      if (persistedData) {
+        try {
+          const data = JSON.parse(persistedData);
+          setPropertyRights(data.property_rights || "");
+          setOccupant(data.occupant || "");
+          setComments(data.comments || "");
+          // Note: Files can't be persisted due to security restrictions
+        } catch (error) {
+          console.log("Failed to load persisted data");
+        }
+      }
+    }
+  }, [open, jobId]);
+
+  // Persist form data when fields change
+  const persistFormData = (data: any) => {
+    if (jobId) {
+      localStorage.setItem(`job_${jobId}_form_data`, JSON.stringify(data));
+    }
+  };
+
   const getStatusOptions = () => {
     if (currentStatus === "accepted"|| currentStatus === "active") {
       return [
@@ -57,12 +82,44 @@ export function SimpleJobStatusModal({
     setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove));
   };
 
+  // Handle field changes with persistence
+  const handlePropertyRightsChange = (value: string) => {
+    setPropertyRights(value);
+    persistFormData({ property_rights: value, occupant, comments });
+  };
+
+  const handleOccupantChange = (value: string) => {
+    setOccupant(value);
+    persistFormData({ property_rights: propertyRights, occupant: value, comments });
+  };
+
+  const handleCommentsChange = (value: string) => {
+    setComments(value);
+    persistFormData({ property_rights: propertyRights, occupant, comments: value });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
+    // ENHANCED VALIDATION: All fields are now required
     if (!selectedStatus) {
       setError("Please select a status to proceed");
+      return;
+    }
+
+    if (!propertyRights.trim()) {
+      setError("Property Rights Appraised is required");
+      return;
+    }
+
+    if (!occupant.trim()) {
+      setError("Occupant information is required");
+      return;
+    }
+
+    if (!comments.trim()) {
+      setError("Comments are required");
       return;
     }
 
@@ -76,13 +133,19 @@ export function SimpleJobStatusModal({
 
       const payload = {
         job_status: selectedStatus,
-        property_rights: propertyRights,
-        occupant: occupant,
-        comments: comments,
+        property_rights: propertyRights.trim(),
+        occupant: occupant.trim(),
+        comments: comments.trim(),
         appraiser_docs: uploadedDocs.length ? uploadedDocs : undefined,
       };
 
       await onSubmit(payload);
+      
+      // Clear persisted data after successful submission
+      if (jobId) {
+        localStorage.removeItem(`job_${jobId}_form_data`);
+      }
+      
       onClose();
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || "Failed to update job status.");
@@ -110,7 +173,7 @@ export function SimpleJobStatusModal({
             <div className="flex justify-between items-center">
               
               <div className="flex items-center gap-4 flex-1">
-                <div className="w-12 h-12  rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
                   <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
                 </div>
                 
@@ -142,7 +205,7 @@ export function SimpleJobStatusModal({
                 </span>
                 <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
                   <ProfileIcon3 className="w-4 h-4 flex-shrink-0" /> 
-                  <span className="truncate">{jobData?.intended_username }</span>
+                  <span className="truncate">{jobData?.intended_username}</span>
                 </span>
                 <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
                   <ResidentialIcon className="w-4 h-4 flex-shrink-0" /> 
@@ -156,12 +219,15 @@ export function SimpleJobStatusModal({
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block mb-2 text-gray-700 font-medium">Update Status</label>
+              <label className="block mb-2 text-gray-700 font-medium">
+                Update Status 
+              </label>
               <div className="relative">
                 <select 
                   className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
+                  required
                 >
                   {getStatusOptions().map(option => (
                     <option key={option.value} value={option.value}>
@@ -181,22 +247,28 @@ export function SimpleJobStatusModal({
             </div>
 
             <div>
-              <label className="block mb-2 text-gray-700 font-medium">Property Rights Appraised</label>
+              <label className="block mb-2 text-gray-700 font-medium">
+                Property Rights Appraised 
+              </label>
               <input
                 type="text"
                 value={propertyRights}
-                onChange={e => setPropertyRights(e.target.value)}
+                onChange={e => handlePropertyRightsChange(e.target.value)}
+                required
                 className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
                 placeholder="Enter Property Rights Appraised"
               />
             </div>
 
             <div>
-              <label className="block mb-2 text-gray-700 font-medium">Occupant</label>
+              <label className="block mb-2 text-gray-700 font-medium">
+                Occupant 
+              </label>
               <input
                 type="text"
                 value={occupant}
-                onChange={e => setOccupant(e.target.value)}
+                onChange={e => handleOccupantChange(e.target.value)}
+                required
                 className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
                 placeholder="Enter Occupant"
               />
@@ -279,10 +351,13 @@ export function SimpleJobStatusModal({
             </div>
 
             <div>
-              <label className="block mb-2 text-gray-700 font-medium">Comments</label>
+              <label className="block mb-2 text-gray-700 font-medium">
+                Comments 
+              </label>
               <textarea
                 value={comments}
-                onChange={e => setComments(e.target.value)}
+                onChange={e => handleCommentsChange(e.target.value)}
+                required
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
                 placeholder="Enter Comments"
               />
