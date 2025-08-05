@@ -55,6 +55,7 @@ export default function NewJobRequestPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [propertyLocation, setPropertyLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
 
   const { isLoaded } = useJsApiLoader({
@@ -216,33 +217,10 @@ export default function NewJobRequestPage() {
   };
 
   const handleMultipleFileUpload = async (files: FileList) => {
-    const formData = new FormData();
-    Array.from(files).forEach(file => {
-      formData.append("files", file); // 'files' matches backend expectation
-    });
-
-    try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const res = await axios.post(`${apiBaseUrl}/upload/multiple`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("Upload response:", res.data);
-      const fileUrls =
-        res.data.imageLinks || // <-- add this line
-        res.data.urls ||
-        res.data.images ||
-        res.data.files ||
-        (Array.isArray(res.data) ? res.data : []);
-
-      if (fileUrls && fileUrls.length > 0) {
-        handleInputChange("lender_doc", fileUrls.join(","));
-        toast.success("Files uploaded successfully!");
-      } else {
-        toast.error("Upload failed: No file URLs returned.");
-      }
-    } catch (err) {
-      toast.error("Failed to upload documents.");
-    }
+    const fileArr = Array.from(files);
+    setUploadedFiles(prev => [...prev, ...fileArr]);
+    // Optionally, upload to server here as well
+    // ...existing upload logic...
   };
 
   const handlePlaceChanged = () => {
@@ -261,9 +239,9 @@ export default function NewJobRequestPage() {
     }
   };
 
-  const handleRemoveUploadedFile = () => {
-    setUploadedDocName("");
-    handleInputChange("lender_doc", "");
+  const handleRemoveUploadedFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    // Optionally, remove from server or update formData.lender_doc as needed
   };
 
   return (
@@ -546,15 +524,10 @@ export default function NewJobRequestPage() {
                     className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer transition-all relative"
                   >
                     <UploadIcon className="w-6 h-6 text-gray-500 mb-2" />
-                    <p className={`text-sm text-center ${uploadedDocName ? "text-green-600 font-semibold" : "text-gray-700"}`}>
-                      {uploadedDocName
-                        ? (() => {
-                            const fileCount = uploadedDocName.split(",").length;
-                            return fileCount === 1
-                              ? "1 file selected"
-                              : `${fileCount} files selected`;
-                          })()
-                        : <>Upload any additional PDF<br />related to this job</>
+                    <p className={`text-sm text-center ${uploadedFiles.length > 0 ? "text-green-600 font-semibold" : "text-gray-700"}`}>
+                      {uploadedFiles.length > 0
+                        ? `${uploadedFiles.length} file(s) selected`
+                        : <>Upload any additional PDF<br />or images related to this job</>
                       }
                     </p>
                     <input
@@ -562,26 +535,42 @@ export default function NewJobRequestPage() {
                       type="file"
                       accept="application/pdf,image/jpeg,image/png"
                       multiple
-                      onChange={async (e) => {
+                      onChange={e => {
                         const files = e.target.files;
                         if (files && files.length > 0) {
-                          await handleMultipleFileUpload(files);
-                          setUploadedDocName(Array.from(files).map(f => f.name).join(","));
+                          handleMultipleFileUpload(files);
                         }
                       }}
                       className="hidden"
                     />
-                    {uploadedDocName && (
-                      <button
-                        type="button"
-                        onClick={handleRemoveUploadedFile}
-                        className="absolute top-2 right-2 bg-white rounded-full border border-gray-300 p-1 hover:bg-red-100 transition-colors"
-                        aria-label="Remove uploaded file"
-                      >
-                        <span className="text-lg text-red-500 font-bold">&times;</span>
-                      </button>
-                    )}
-                  </label>              
+                    {/* Remove button for uploadedDocName is not needed here, as individual file remove buttons are rendered below */}
+                  </label>
+                  {uploadedFiles.length > 0 && (
+  <div className="flex flex-col items-center gap-2 mt-3">
+    {uploadedFiles.map((file, idx) => (
+      <div
+        key={file.name + idx}
+        className="flex items-center px-4 py-2 rounded-lg shadow border border-gray-200 bg-white max-w-[350px] w-full justify-between"
+      >
+        <span className="truncate flex-1">
+          <span className="font-bold text-blue-700 mr-2">
+            {file.type.startsWith("image/") ? "IMG" : file.type.startsWith("application/pdf") ? "PDF" : "FILE"}
+          </span>
+          {file.name}
+        </span>
+        <span className="ml-2 text-gray-500 text-xs">{(file.size / 1024).toFixed(1)} KB</span>
+        <button
+          type="button"
+          onClick={() => handleRemoveUploadedFile(idx)}
+          className="ml-3 text-red-500 hover:text-red-700 text-lg font-bold"
+          aria-label="Remove file"
+        >
+          &times;
+        </button>
+      </div>
+    ))}
+  </div>
+)}
                 </div>
               </div>
             </div>
