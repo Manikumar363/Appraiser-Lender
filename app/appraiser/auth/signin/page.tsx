@@ -21,14 +21,9 @@ export default function AppraiserSignInPage() {
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
-  // ✅ Fixed: Added ESLint disable comment
   useEffect(() => {
     const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-    if (token) {
-      router.replace("/appraiser/dashboard");
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run on mount
+  }, []); 
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
     if (role === selectedRole) return;
@@ -87,7 +82,6 @@ export default function AppraiserSignInPage() {
       const message = err?.response?.data?.message || err?.message || "Sign in failed";
 
       if (status === 401 || status === 403) {
-        // ✅ Fixed: Removed incorrect e.preventDefault()
         setPassword("");
         setTimeout(() => {
           passwordRef.current?.focus();
