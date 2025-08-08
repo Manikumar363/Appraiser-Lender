@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import AuthLayout from "../../../../components/auth-layout"
 import { OTPInput } from "../../../../components/otp-input"
 import {userAuth} from "@/lib/api/userAuth";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function LenderVerifyEmailPage() {
   const [otp, setOtp] = useState("")
@@ -12,6 +13,9 @@ export default function LenderVerifyEmailPage() {
   const [canResend, setCanResend] = useState(false)
   const [error, setError]= useState("");
   const [loading, setLoading]= useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -19,62 +23,165 @@ export default function LenderVerifyEmailPage() {
   const type = searchParams.get("type") || "register" // default to register if missing
   const userId = searchParams.get("userId") // Get userId from search params
 
+  // Check if we have valid email
+  useEffect(() => {
+    if (!email) {
+      toast.error("Email is required. Please restart the process.");
+      router.push(type === "register" ? "/lender/auth/signup" : "/lender/auth/forgot-password");
+    }
+  }, [email, router, type]);
+
+  // Reset timer on email change
+  useEffect(() => {
+    setTimeLeft(60);
+    setCanResend(false);
+    setAttempts(0);
+    setIsBlocked(false);
+  }, [email]);
+
+  // Countdown timer
   useEffect(() => {
     if (timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
     } else {
-      setCanResend(true)
+      setCanResend(true);
     }
-  }, [timeLeft])
+  }, [timeLeft]);
+
+  // Block after too many attempts
+  useEffect(() => {
+    if (attempts >= 3) {
+      setIsBlocked(true);
+      toast.error("Too many failed attempts. Please try again in 5 minutes.");
+      setTimeout(() => {
+        setIsBlocked(false);
+        setAttempts(0);
+      }, 5 * 60 * 1000);
+    }
+  }, [attempts]);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
 
   const handleVerify = async () => {
-    if (otp.length !== 4) return
+    if (otp.length !== 4) {
+      setError("Please enter the complete 4-digit code.");
+      return;
+    }
+
+    if (isBlocked) {
+      toast.error("Too many attempts. Please wait before trying again.");
+      return;
+    }
+
+    setLoading(true);
+    setError(""); // Clear previous errors
+    const loadingToast = toast.loading("Verifying your code...");
+
     try {
       if (type === "register") {
-        await userAuth.verifyRegisterOtp(email, otp)
-        router.push("/lender/auth/signin")
-      } else if (type === "reset") {
-        const response = await userAuth.verifyOtp(email, otp); // returns .data
-        console.log("OTP verify response:", response);
-        const userId = response?.userId; // <-- FIXED HERE
-        if (!userId) {
-          setError("Could not verify user. Please try again.");
-          return;
-        }
-        router.push(`/lender/auth/set-new-password?userId=${userId}`);
+        await userAuth.verifyRegisterOtp(email, otp);
+
+        toast.success("Email verified successfully! Redirecting to sign in...", {
+          id: loadingToast,
+          duration: 3000
+        });
+
+        setTimeout(() => {
+          router.push("/lender/auth/signin");
+        }, 1500);
+
       } else {
-        throw new Error("Invalid verification type.")
+        const res = await userAuth.verifyOtp(email, otp);
+        const userId = res?.userId;
+
+        if (!userId) {
+          throw new Error("Invalid response from server. Please try again.");
+        }
+
+        toast.success("Code verified! Please set your new password.", {
+          id: loadingToast,
+          duration: 3000
+        });
+
+        setTimeout(() => {
+          router.push(`/lender/auth/set-new-password?userId=${encodeURIComponent(userId)}`);
+        }, 1500);
       }
+
+      setAttempts(0);
+
     } catch (err: any) {
-      console.error(err)
-      setError(err.response?.data?.message || "Invalid OTP.")
-      return false
+      setAttempts(prev => prev + 1);
+
+      const errorMessage = err?.response?.data?.message?.toLowerCase() || "";
+
+      if (errorMessage.includes("invalid") || errorMessage.includes("wrong")) {
+        const remainingAttempts = 3 - attempts - 1;
+        const errorMsg = `Invalid code. ${remainingAttempts} attempts remaining.`;
+        setError(errorMsg);
+        toast.error(errorMsg, { id: loadingToast });
+      } else if (errorMessage.includes("expired")) {
+        setError("Code has expired. Please request a new one.");
+        toast.error("Code has expired. Please request a new one.", { id: loadingToast });
+        setCanResend(true);
+        setTimeLeft(0);
+      } else {
+        const errorMsg = err?.response?.data?.message || "Verification failed. Please try again.";
+        setError(errorMsg);
+        toast.error(errorMsg, { id: loadingToast });
+      }
+
+      setOtp("");
+
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const handleResend = async () => {
-    if (!canResend) return
+    if (!canResend || resendLoading) return;
+
+    setResendLoading(true);
+    setError(""); // Clear previous errors
+    const loadingToast = toast.loading("Sending new code...");
+
     try {
       if (type === "register") {
-        await userAuth.resendRegisterOtp(email)
-      } else if (type === "reset") {
-        await userAuth.forgotPassword(email) // for reset, you trigger forgot again to resend OTP
+        await userAuth.resendRegisterOtp(email);
+      } else {
+        await userAuth.forgotPassword(email);
       }
-      setTimeLeft(60)
-      setCanResend(false)
-      setOtp("")
+
+      setOtp("");
+      setTimeLeft(60);
+      setCanResend(false);
+      setAttempts(0);
+
+      toast.success("New verification code sent to your email!", {
+        id: loadingToast,
+        duration: 4000
+      });
+
     } catch (err: any) {
-      console.error(err)
-      setError(err.response?.data?.message || "Failed to resend OTP.")
+      const errorMessage = err?.response?.data?.message || "";
+
+      if (errorMessage.includes("rate") || errorMessage.includes("limit")) {
+        setError("Please wait before requesting another code.");
+        toast.error("Please wait before requesting another code.", { id: loadingToast });
+      } else {
+        const errorMsg = errorMessage || "Failed to send code. Please try again.";
+        setError(errorMsg);
+        toast.error(errorMsg, { id: loadingToast });
+      }
+    } finally {
+      setResendLoading(false);
     }
-  }
+  };
 
   return (
     <AuthLayout>
@@ -121,6 +228,28 @@ export default function LenderVerifyEmailPage() {
         >
           {loading ? "Verifying..." : "Verify"}
         </button>
+
+        <Toaster 
+          position="top-center"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#ffffff',
+              color: '#374151',
+              border: '1px solid #e5e7eb',
+              borderRadius: '12px',
+              fontSize: '14px',
+              maxWidth: '450px',
+              padding: '12px 16px',
+            },
+            success: {
+              iconTheme: { primary: '#10b981', secondary: '#ffffff' },
+            },
+            error: {
+              iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
+            },
+          }}
+        />
       </div>
     </AuthLayout>
   )

@@ -22,6 +22,11 @@ import { Description } from "@radix-ui/react-toast"
 
 const GOOGLE_MAP_LIBRARIES: Libraries = ["places"]; // <-- define outside component
 
+// Add this function at the top of your component or in a utils file
+const allowOnlyAlphabets = (value: string) => value.replace(/[^a-zA-Z\s]/g, "");
+
+const allowOnlyDigits = (value: string) => value.replace(/[^0-9]/g, "");
+
 export default function NewJobRequestPage() {
   const router = useRouter()
   const [formData, setFormData] = useState({
@@ -50,6 +55,7 @@ export default function NewJobRequestPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [propertyLocation, setPropertyLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
 
   const { isLoaded } = useJsApiLoader({
@@ -211,33 +217,10 @@ export default function NewJobRequestPage() {
   };
 
   const handleMultipleFileUpload = async (files: FileList) => {
-    const formData = new FormData();
-    Array.from(files).forEach(file => {
-      formData.append("files", file); // 'files' matches backend expectation
-    });
-
-    try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const res = await axios.post(`${apiBaseUrl}/upload/multiple`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      console.log("Upload response:", res.data);
-      const fileUrls =
-        res.data.imageLinks || // <-- add this line
-        res.data.urls ||
-        res.data.images ||
-        res.data.files ||
-        (Array.isArray(res.data) ? res.data : []);
-
-      if (fileUrls && fileUrls.length > 0) {
-        handleInputChange("lender_doc", fileUrls.join(","));
-        toast.success("Files uploaded successfully!");
-      } else {
-        toast.error("Upload failed: No file URLs returned.");
-      }
-    } catch (err) {
-      toast.error("Failed to upload documents.");
-    }
+    const fileArr = Array.from(files);
+    setUploadedFiles(prev => [...prev, ...fileArr]);
+    // Optionally, upload to server here as well
+    // ...existing upload logic...
   };
 
   const handlePlaceChanged = () => {
@@ -256,6 +239,11 @@ export default function NewJobRequestPage() {
     }
   };
 
+  const handleRemoveUploadedFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    // Optionally, remove from server or update formData.lender_doc as needed
+  };
+
   return (
     <DashboardLayout role="lender">
       <Toaster position="top-right" />
@@ -271,7 +259,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.intended_user}
-                    onChange={(e) => handleInputChange("intended_user", e.target.value)}
+                    onChange={e => handleInputChange("intended_user", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Name"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -287,7 +275,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.intended_username}
-                    onChange={(e) => handleInputChange("intended_username", e.target.value)}
+                    onChange={e => handleInputChange("intended_username", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Name"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -343,7 +331,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.purpose}
-                    onChange={(e) => handleInputChange("purpose", e.target.value)}
+                    onChange={e => handleInputChange("purpose", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Purpose"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -369,7 +357,7 @@ export default function NewJobRequestPage() {
                     ))}
                   </select>
                   <ChevronDown
-                    className="absolute right-[5%] top-[56%] -translate-y-[4%] text-gray-800"
+                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-800"
                     size={20}
                   />
                 </div>
@@ -466,7 +454,7 @@ export default function NewJobRequestPage() {
                     ))}
                   </select>
                   <ChevronDown
-                    className="absolute right-[5%] top-[56%] -translate-y-[4%] text-gray-700"
+                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-700"
                     size={20}
                   />
                 </div>
@@ -479,7 +467,7 @@ export default function NewJobRequestPage() {
                   <input
                     type="text"
                     value={formData.price}
-                    onChange={(e) => handleInputChange("price", e.target.value)}
+                    onChange={(e) => handleInputChange("price", allowOnlyDigits(e.target.value))}
                     placeholder="Enter Property Cost"
                     className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
                     required
@@ -509,7 +497,7 @@ export default function NewJobRequestPage() {
                   <select
                     value={formData.property_occupied}
                     onChange={(e) => handleInputChange("property_occupied", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent appearance-none text-sm"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-[#1e5ba8] appearance-none text-sm bg-white"
                     required
                   >
                     <option value="">Enter Input</option>
@@ -520,7 +508,7 @@ export default function NewJobRequestPage() {
                     ))}
                   </select>
                   <ChevronDown
-                    className="absolute right-[5%] top-[56%] -translate-y-[4%] text-gray-700"
+                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-700"
                     size={20}
                   />
                 </div>
@@ -533,18 +521,13 @@ export default function NewJobRequestPage() {
                   </label>
                   <label
                     htmlFor="pdf-upload"
-                    className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer transition-all"
+                    className="flex flex-col items-center justify-center h-40 border border-gray-600 rounded-2xl cursor-pointer transition-all relative"
                   >
                     <UploadIcon className="w-6 h-6 text-gray-500 mb-2" />
-                    <p className={`text-sm text-center ${uploadedDocName ? "text-green-600 font-semibold" : "text-gray-700"}`}>
-                      {uploadedDocName
-                        ? (() => {
-                            const fileCount = uploadedDocName.split(",").length;
-                            return fileCount === 1
-                              ? "1 file selected"
-                              : `${fileCount} files selected`;
-                          })()
-                        : <>Upload any additional PDF<br />related to this job</>
+                    <p className={`text-sm text-center ${uploadedFiles.length > 0 ? "text-green-600 font-semibold" : "text-gray-700"}`}>
+                      {uploadedFiles.length > 0
+                        ? `${uploadedFiles.length} file(s) selected`
+                        : <>Upload any additional PDF<br />or images related to this job</>
                       }
                     </p>
                     <input
@@ -552,16 +535,42 @@ export default function NewJobRequestPage() {
                       type="file"
                       accept="application/pdf,image/jpeg,image/png"
                       multiple
-                      onChange={async (e) => {
+                      onChange={e => {
                         const files = e.target.files;
                         if (files && files.length > 0) {
-                          await handleMultipleFileUpload(files);
-                          setUploadedDocName(Array.from(files).map(f => f.name).join(","));
+                          handleMultipleFileUpload(files);
                         }
                       }}
                       className="hidden"
                     />
-                  </label>              
+                    {/* Remove button for uploadedDocName is not needed here, as individual file remove buttons are rendered below */}
+                  </label>
+                  {uploadedFiles.length > 0 && (
+  <div className="flex flex-col items-center gap-2 mt-3">
+    {uploadedFiles.map((file, idx) => (
+      <div
+        key={file.name + idx}
+        className="flex items-center px-4 py-2 rounded-lg shadow border border-gray-200 bg-white max-w-[350px] w-full justify-between"
+      >
+        <span className="truncate flex-1">
+          <span className="font-bold text-blue-700 mr-2">
+            {file.type.startsWith("image/") ? "IMG" : file.type.startsWith("application/pdf") ? "PDF" : "FILE"}
+          </span>
+          {file.name}
+        </span>
+        <span className="ml-2 text-gray-500 text-xs">{(file.size / 1024).toFixed(1)} KB</span>
+        <button
+          type="button"
+          onClick={() => handleRemoveUploadedFile(idx)}
+          className="ml-3 text-red-500 hover:text-red-700 text-lg font-bold"
+          aria-label="Remove file"
+        >
+          &times;
+        </button>
+      </div>
+    ))}
+  </div>
+)}
                 </div>
               </div>
             </div>

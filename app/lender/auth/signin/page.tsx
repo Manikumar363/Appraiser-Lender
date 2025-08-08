@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import AuthLayout from "../../../../components/auth-layout"
 import { RoleSelector } from "../../../../components/role-selector"
@@ -8,6 +8,8 @@ import { AuthInput } from "../../../../components/auth-input"
 import { useRouter } from "next/navigation"
 import { userAuth } from "@/lib/api/userAuth"
 import toast, { Toaster } from "react-hot-toast";
+import { Eye, EyeOff } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export default function LenderSignInPage() {
   const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("lender")
@@ -17,6 +19,14 @@ export default function LenderSignInPage() {
   const [error, setError] = useState("")
   const router = useRouter()
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const [previousEmails, setPreviousEmails] = useState<string[]>([]);
+
+  useEffect(() => {
+    const emails = JSON.parse(localStorage.getItem("previousEmails") || "[]");
+    setPreviousEmails(emails);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,22 +48,36 @@ export default function LenderSignInPage() {
     try {
       const res = await userAuth.signIn(email, password);
       localStorage.setItem("authToken", res.token);
-      toast.success("Login successful", {
-        duration: 5000,
-        style: {
-          minWidth: "350px",
-          maxWidth: "500px",
-          fontSize: "1.1rem",
-          padding: "18px 24px",
-          textAlign: "center",
-          fontWeight: "medium",
-        },
-      });
+
+      // Save email to localStorage
+      let emails = JSON.parse(localStorage.getItem("previousEmails") || "[]");
+      if (!emails.includes(email)) {
+        emails.push(email);
+        localStorage.setItem("previousEmails", JSON.stringify(emails));
+      }
+
+      toast.success("Login successful");
       setTimeout(() => {
         router.push("/lender/dashboard");
       }, 1200);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid credentials");
+      const status = err?.response?.status;
+      const message = err?.response?.data?.message || "Invalid credentials";
+      setError(message);
+
+      if (status === 401 || status === 403) {
+        setPassword("");
+        setTimeout(() => {
+          passwordRef.current?.focus();
+        }, 100);
+        toast.error("Invalid email or password. Please try again.");
+      } else if (status === 429) {
+        toast.error("Too many attempts. Please wait a moment and try again.");
+      } else if (status >= 500 && status <= 599) {
+        toast.error("Server error. Please try again in a few minutes.");
+      } else {
+        toast.error(message);
+      }
       return false;
     } finally {
       setLoading(false);
@@ -61,15 +85,41 @@ export default function LenderSignInPage() {
   };
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
+
     setSelectedRole(role)
     if (role === "appraiser") {
-      router.push("/appraiser/auth/signin")
+      const switchingToast = toast.loading("Switching to Appraiser Sign In...");
+      setTimeout(() => {
+        toast.dismiss(switchingToast);
+        router.push("/appraiser/auth/signin");
+      }, 1000);
+
     }
   }
 
   return (
     <AuthLayout>
-      <Toaster position="top-center" /> {/* if needed add py-24 than adding min-h-screen*/}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 5000,
+          style: {
+            background: "#ffffff",
+            color: "#374151",
+            border: "1px solid #e5e7eb",
+            borderRadius: "12px",
+            fontSize: "14px",
+            maxWidth: "450px",
+            padding: "12px 16px",
+          },
+          success: {
+            iconTheme: { primary: "#10b981", secondary: "#ffffff" },
+          },
+          error: {
+            iconTheme: { primary: "#ef4444", secondary: "#ffffff" },
+          },
+        }}
+      />
       <div className="flex flex-col justify-center min-h-screen w-full items-center">
         <div className="w-full max-w-[765px]  px-6">
           <div className="mb-4 mt-0">
@@ -94,18 +144,53 @@ export default function LenderSignInPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            <AuthInput type="email" placeholder="Type your email here" value={email} onChange={setEmail} icon="email" />
+            <div className="relative w-full">
+              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 z-10">
+                <Mail size={20} className="text-gray-800" />
+              </span>
+              <input
+                type="email"
+                placeholder="Type your email here"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+
+                name="email"
+                autoComplete="email"
+                autoFocus
+                className="w-[765px] pl-14 pr-6 h-[56px] py-4 bg-white border border-neutral-600 rounded-full text-gray-700 placeholder-gray-700 focus:outline-none focus:border-[#1e5ba8] focus:ring-0 transition-all text-base shadow-sm"
+              />
+              <datalist id="emails">
+                {previousEmails.map((eml) => (
+                  <option value={eml} key={eml} />
+                ))}
+              </datalist>
+            </div>
             {fieldErrors.email && (
               <p className="text-red-600 text-sm">{fieldErrors.email}</p>
             )}
 
-            <AuthInput
-              type="password"
-              placeholder="Type your password here"
-              value={password}
-              onChange={setPassword}
-              icon="password"
-            />
+            <div className="relative w-[765px]">
+              <AuthInput
+                ref={passwordRef}
+                type={showPassword ? "text" : "password"}
+                placeholder="Type your password here"
+                value={password}
+                onChange={setPassword}
+                icon="password"
+                name="password"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute top-1/2 right-6 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10 transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                tabIndex={-1}
+              >
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
+            </div>
+
             {fieldErrors.password && (
               <p className="text-red-600 text-sm">{fieldErrors.password}</p>
             )}
