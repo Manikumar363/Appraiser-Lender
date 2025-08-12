@@ -222,7 +222,7 @@ export default function LenderVerifyEmailPage() {
           disabled={otp.length !== 4}
           className={`w-full py-4 rounded-full font-medium transition-colors text-base ${
             otp.length === 4
-              ? "bg-[#2A020D] text-white hover:bg-[#1a4f96]"
+              ? "bg-[#2A020D] text-white hover:bg-[#4e1b29]"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
