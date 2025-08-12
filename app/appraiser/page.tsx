@@ -13,9 +13,9 @@ export default function HomePage() {
   }, [router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#014F9D]">
+    <div className="min-h-screen flex items-center justify-center bg-[#2A020D]">
       <img
-        src="/images/emadi-logo.png"
+        src="/images/logolight.svg"
         alt="EMADI Appraisers "
         className="w-80 h-auto"
       />

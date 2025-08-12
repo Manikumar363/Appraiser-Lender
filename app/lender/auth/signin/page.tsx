@@ -157,7 +157,7 @@ export default function LenderSignInPage() {
                 name="email"
                 autoComplete="email"
                 autoFocus
-                className="w-[765px] pl-14 pr-6 h-[56px] py-4 bg-white border border-neutral-600 rounded-full text-gray-700 placeholder-gray-700 focus:outline-none focus:border-[#1e5ba8] focus:ring-0 transition-all text-base shadow-sm"
+                className="w-[765px] pl-14 pr-6 h-[56px] py-4 bg-white border border-neutral-600 rounded-full text-gray-700 placeholder-gray-700 focus:outline-none focus:border-[#2A020D] focus:ring-0 transition-all text-base shadow-sm"
               />
               <datalist id="emails">
                 {previousEmails.map((eml) => (
@@ -209,7 +209,7 @@ export default function LenderSignInPage() {
 
             <button
               type="submit"
-              className="w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#154c8c] transition-colors text-lg shadow-sm disabled:opacity-50"
+              className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium hover:bg-[#154c8c] transition-colors text-lg shadow-sm disabled:opacity-50"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}

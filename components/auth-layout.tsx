@@ -10,9 +10,9 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
     <div className="min-h-screen flex overflow-hidden">
       {/* Left side - Logo (40% width) */}
-      <div className="hidden lg:flex lg:w-[40%] bg-[#014F9D] items-center justify-center p-8">
+      <div className="hidden lg:flex lg:w-[40%] bg-[#2A020D] items-center justify-center p-8">
         <div className="flex items-center justify-center">
-          <img src="/images/emadi-logo.png" alt="EMADI Appraisers" className="w-85 h-auto filter brightness-0 invert" />
+          <img src="/images/logolight.svg" alt="EMADI Appraisers" className="w-85 h-auto filter brightness-0 invert" />
         </div>
       </div>
 

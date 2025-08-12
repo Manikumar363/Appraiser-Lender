@@ -128,7 +128,7 @@ export default function NewJobRequestPage() {
       toast.success("Job submitted successfully!", {
         duration: 5000,
         style: {
-          background: "#014F9D",
+          background: "#2A020D",
           color: "#fff",
           fontWeight: "bold",
           fontSize: "1.1rem",
@@ -137,7 +137,7 @@ export default function NewJobRequestPage() {
         },
         iconTheme: {
           primary: "#fff",
-          secondary: "#014F9D",
+          secondary: "#2A020D",
         },
       });
       setTimeout(() => {
@@ -261,7 +261,7 @@ export default function NewJobRequestPage() {
                     value={formData.intended_user}
                     onChange={e => handleInputChange("intended_user", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Name"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                     required
                   />
                   
@@ -277,7 +277,7 @@ export default function NewJobRequestPage() {
                     value={formData.intended_username}
                     onChange={e => handleInputChange("intended_username", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Name"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                     required
                   />
                 </div>
@@ -333,7 +333,7 @@ export default function NewJobRequestPage() {
                     value={formData.purpose}
                     onChange={e => handleInputChange("purpose", allowOnlyAlphabets(e.target.value))}
                     placeholder="Enter Purpose"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                     required
                   />
                 </div>
@@ -346,7 +346,7 @@ export default function NewJobRequestPage() {
                   <select
                     value={formData.use}
                     onChange={(e) => handleInputChange("use", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-[#1e5ba8] appearance-none text-sm bg-white"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] appearance-none text-sm bg-white"
                     required
                   >
                     <option value="">Enter Input</option>
@@ -370,7 +370,7 @@ export default function NewJobRequestPage() {
                     type="date"
                     value={formData.preferred_date}
                     onChange={(e) => handleInputChange("preferred_date", e.target.value)}
-                    className="hide-date-icon w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                    className="hide-date-icon w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                     required
                     min= "1900-01-01" // Minimum date to prevent invalid dates
                     max= "2099-12-31"
@@ -395,7 +395,7 @@ export default function NewJobRequestPage() {
                         value={formData.address}
                         onChange={(e) => handleInputChange("address", e.target.value)}
                         placeholder="Enter Property Address"
-                        className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                        className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                         required
                       />
                     </Autocomplete>
@@ -408,7 +408,7 @@ export default function NewJobRequestPage() {
                       value={formData.address}
                       onChange={(e) => handleInputChange("address", e.target.value)}
                       placeholder="Loading Google Maps..."
-                      className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                      className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                       disabled
                     />
                   </div>
@@ -443,7 +443,7 @@ export default function NewJobRequestPage() {
                   <select
                     value={formData.property_type}
                     onChange={(e) => handleInputChange("property_type", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent appearance-none text-sm"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent appearance-none text-sm"
                     required
                   >
                     <option value="">Enter Input</option>
@@ -469,7 +469,7 @@ export default function NewJobRequestPage() {
                     value={formData.price}
                     onChange={(e) => handleInputChange("price", allowOnlyDigits(e.target.value))}
                     placeholder="Enter Property Cost"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                     required
                   />
                 </div>
@@ -484,7 +484,7 @@ export default function NewJobRequestPage() {
                     value={formData.description}
                     onChange={(e) => handleInputChange("description", e.target.value)}
                     placeholder="Enter Description"
-                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-transparent text-sm"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
                     required
                   />
                 </div>
@@ -497,7 +497,7 @@ export default function NewJobRequestPage() {
                   <select
                     value={formData.property_occupied}
                     onChange={(e) => handleInputChange("property_occupied", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#1e5ba8] focus:border-[#1e5ba8] appearance-none text-sm bg-white"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] appearance-none text-sm bg-white"
                     required
                   >
                     <option value="">Enter Input</option>
@@ -578,7 +578,7 @@ export default function NewJobRequestPage() {
             <div className="mt-8 w-[90%] max-w-xxl mx-auto">
               <button
                 type="submit"
-                className="w-full bg-[#1e5ba8] rounded-lg text-white py-4 px-6 font-medium hover:bg-[#1a4f96] transition-colors text-lg"
+                className="w-full bg-[#2A020D] rounded-lg text-white py-4 px-6 font-medium hover:bg-[#1a4f96] transition-colors text-lg"
                 disabled={loading}
               >
                 {loading ? "Submitting..." : "Submit Job"}

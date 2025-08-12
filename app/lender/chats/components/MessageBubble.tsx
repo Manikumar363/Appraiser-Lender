@@ -48,7 +48,7 @@ export default function MessageBubble({ message, user }: MessageBubbleProps) {
             <span className="text-base font-bold text-gray-900 truncate mr-2">
               {message.senderName}
             </span>
-            <span className="text-sm font-medium text-[#014F9D] flex-shrink-0">
+            <span className="text-sm font-medium text-[#2A020D] flex-shrink-0">
               {getDisplayRole(message.senderRole)}
             </span>
           </div>

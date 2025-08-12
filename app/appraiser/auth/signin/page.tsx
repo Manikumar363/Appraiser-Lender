@@ -207,7 +207,7 @@ export default function AppraiserSignInPage() {
 
             <button
               type="submit"
-              className="w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-medium hover:bg-[#154c8c] transition-colors text-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium hover:bg-[#2A020D] transition-colors text-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}

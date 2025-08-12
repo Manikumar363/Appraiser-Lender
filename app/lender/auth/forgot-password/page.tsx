@@ -97,7 +97,7 @@ export default function LenderForgotPasswordPage() {
         <button
          type="submit"
          disabled={loading}
-         className={`w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-medium transition-colors ${
+         className={`w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium transition-colors ${
            loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#1a4f96]"
          }`}
         >

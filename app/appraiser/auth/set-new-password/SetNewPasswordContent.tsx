@@ -243,7 +243,7 @@ export function SetNewPasswordContent() {
             <button
               type="submit"
               disabled={!isFormValid || loading}
-              className={`w-full bg-[#1e5ba8] text-white py-4 rounded-full font-medium transition-all duration-200 ${
+              className={`w-full bg-[#2A020D] text-white py-4 rounded-full font-medium transition-all duration-200 ${
                 isFormValid && !loading
                   ? "hover:bg-[#1a4f96] transform hover:scale-[1.02]"
                   : "opacity-50 cursor-not-allowed"
@@ -269,7 +269,7 @@ export function SetNewPasswordContent() {
               Remember your password? {" "}
               <button
                 onClick={() => router.push("/appraiser/auth/signin")}
-                className="text-[#1e5ba8] hover:underline font-medium"
+                className="text-[#2A020D] hover:underline font-medium"
               >
                 Sign In
               </button>

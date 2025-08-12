@@ -56,7 +56,7 @@ const PropertyPage = () => {
   const getCostRange = (): string => {
     const selected = getSelectedProperty();
     if (!selected || !selected.min_price || !selected.max_price) return '';
-    return `${selected.min_price} - ${selected.max_price}`;
+    return `${selected.min_price}-${selected.max_price}`;
   };
 
   // Handle form submit
@@ -99,7 +99,7 @@ const PropertyPage = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-4 flex-1">
             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-              <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
+              <BuildingIcon className="w-6 h-6 text-[#2A020D]" />
             </div>
             
             <div className="flex flex-col">
@@ -124,7 +124,7 @@ const PropertyPage = () => {
           </label>
           <div className="relative">
             <select 
-              className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+              className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
               value={selectedPropertyId}
               onChange={(e) => setSelectedPropertyId(e.target.value)}
               required
@@ -156,7 +156,7 @@ const PropertyPage = () => {
             type="text"
             value={getCostRange()}
             readOnly
-            className="w-full border border-gray-300 rounded-full px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+            className="w-full border border-gray-300 rounded-full px-4 py-3 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
             placeholder="Select property type to see range"
           />
         </div>
@@ -171,7 +171,7 @@ const PropertyPage = () => {
             value={costOfAppraiser}
             onChange={(e) => setCostOfAppraiser(e.target.value)}
             required
-            className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+            className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
             placeholder="Enter appraiser cost"
           />
         </div>
@@ -180,7 +180,7 @@ const PropertyPage = () => {
 
         <button
           type="submit"
-          className="w-full bg-[#014F9D] text-white py-4 rounded-full font-semibold hover:bg-blue-700 transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-blue-700 transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
         >
           {loading ? (

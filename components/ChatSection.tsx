@@ -130,7 +130,7 @@ export default function ChatSection({ chatId, user }: ChatSectionProps) {
     <div className="flex flex-col h-screen bg-white overflow-hidden relative">
       {/* Chat Header Card */}
       <div className="flex justify-center pt-4 pb-4 w-full">
-        <div className="bg-[#014F9D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-4xl">
+        <div className="bg-[#2A020D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-4xl">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
               <BuildingIcon />
@@ -223,7 +223,7 @@ export default function ChatSection({ chatId, user }: ChatSectionProps) {
 
       {/* Sticky Message Input Bar */}
       <div
-        className="w-full flex items-center justify-center bg-[#014F9D]"
+        className="w-full flex items-center justify-center bg-[#2A020D]"
         style={{
           position: "fixed",
           left: "256px",
@@ -262,7 +262,7 @@ export default function ChatSection({ chatId, user }: ChatSectionProps) {
             <Button
               type="submit"
               disabled={!newMessage.trim() || sending}
-              className="bg-white hover:bg-blue-100 text-[#014F9D] p-3 rounded-full shadow-none"
+              className="bg-white hover:bg-blue-100 text-[#2A020D] p-3 rounded-full shadow-none"
               style={{ minWidth: 48, minHeight: 48 }}
             >
               {sending ? (

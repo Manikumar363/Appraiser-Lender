@@ -47,9 +47,9 @@ function filterJobs(job: AppraiserJob, filter: FilterKey) {
 function getStatusColor(status: string) {
   switch (status) {
     case "accepted":
-      return "bg-[#014F9D]";
+      return "bg-[#2A020D]";
     case "active":
-      return "bg-[#014F9D]";
+      return "bg-[#2A020D]";
     case "site_visit_scheduled":
       return "bg-[#FFC107]";
     case "client_visit":
@@ -174,8 +174,8 @@ export default function AppraiserJobsContent({
               key={f.key}
               className={`w-full py-2 rounded-full transition ${
                 activeFilter === f.key
-                  ? "bg-[#014F9D] hover:bg-blue-800 text-white"
-                  : "border-[#014F9D] text-[#014F9D] hover:bg-blue-50 bg-transparent border"
+                  ? "bg-[#2A020D] hover:bg-blue-800 text-white"
+                  : "border-[#2A020D] text-[#2A020D] hover:bg-blue-50 bg-transparent border"
               }`}
               onClick={() => setActiveFilter(f.key)}
             >
@@ -186,7 +186,7 @@ export default function AppraiserJobsContent({
 
         {loading && (
           <div className="flex justify-center items-center py-12">
-            <LoadIcon className="animate-spin w-8 h-8 text-[#014F9D]" />
+            <LoadIcon className="animate-spin w-8 h-8 text-[#2A020D]" />
           </div>
         )}
 
@@ -219,7 +219,7 @@ export default function AppraiserJobsContent({
                 if (diff <= 0) {
                   return (
                     <span
-                      className={`${baseClass} text-[#014F9D] border border-[#014F9D] flex items-center justify-center gap-1`}
+                      className={`${baseClass} text-[#2A020D] border border-[#2A020D] flex items-center justify-center gap-1`}
                     >
                       <TimerIcon2 />
                       <span>Expired</span>
@@ -234,7 +234,7 @@ export default function AppraiserJobsContent({
 
                 return (
                   <span
-                    className={`${baseClass} text-[#014F9D] border border-[#014F9D] bg-white`}
+                    className={`${baseClass} text-[#2A020D] border border-[#2A020D] bg-white`}
                   >
                     <TimerIcon2 />
                     {hours > 0
@@ -298,7 +298,7 @@ export default function AppraiserJobsContent({
                     {timeLeftBadge}
 
                     {/* User Badge */}
-                    <span className="w-[108px] h-[36px] px-[10px] py-[8px] rounded-full border border-[#014F9D] text-[#014F9D] text-sm font-medium flex items-center gap-2 overflow-hidden whitespace-nowrap">
+                    <span className="w-[108px] h-[36px] px-[10px] py-[8px] rounded-full border border-[#2A020D] text-[#2A020D] text-sm font-medium flex items-center gap-2 overflow-hidden whitespace-nowrap">
                       <ProfileIcon3 className="flex-shrink-0" />
                       <span className="truncate max-w-[60px] md:max-w-[120px]">
                         {details.intended_username}

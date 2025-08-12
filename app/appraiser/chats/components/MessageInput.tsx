@@ -18,7 +18,7 @@ export default function MessageInput({
 }: MessageInputProps) {
     return (
         <div
-            className="w-full flex items-center justify-center bg-[#014F9D]"
+            className="w-full flex items-center justify-center bg-[#2A020D]"
             style={{
                 position: "fixed",
                 bottom: 0,
@@ -42,7 +42,7 @@ export default function MessageInput({
             className="text-white hover:text-blue-200 p-1"
             tabIndex={-1}
           >
-            <Paperclip className="w-5 h-5" />
+          
           </Button>
           <input
             type="text"
@@ -58,7 +58,7 @@ export default function MessageInput({
           <Button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="bg-white hover:bg-blue-100 text-[#014F9D] p-3 rounded-full shadow-none"
+            className="bg-white hover:bg-blue-100 text-[#2A020D] p-3 rounded-full shadow-none"
             style={{ minWidth: 48, minHeight: 48 }}
           >
             {sending ? (

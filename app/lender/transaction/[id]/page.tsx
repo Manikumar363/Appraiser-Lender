@@ -94,15 +94,15 @@ export default function TransactionDetailPage() {
               >
                 + $ {transaction.amount}
               </span>
-              <span className="flex items-center gap-2 bg-[#0066B2] text-white rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:bg-[#014F9D]">
+              <span className="flex items-center gap-2 bg-[#0066B2] text-white rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:bg-[#2A020D]">
                 <LoadIcon className="w-5 h-5" />
                 {transaction.status}
               </span>
-              <span className="flex items-center gap-2 bg-cyan-50 border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#e0f2fe] hover:border-[#014F9D]">
+              <span className="flex items-center gap-2 bg-cyan-50 border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#e0f2fe] hover:border-[#2A020D]">
                 <CalendarIcon className="w-5 h-5" />
                 {new Date(transaction.created_at).toLocaleDateString()}
               </span>
-              <span className="flex items-center gap-2 bg-white border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#e0f2fe] hover:border-[#014F9D]">
+              <span className="flex items-center gap-2 bg-white border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#e0f2fe] hover:border-[#2A020D]">
                 <ResidentialIcon className="w-5 h-5" />
                 {transaction.job?.address}
               </span>
@@ -147,7 +147,7 @@ export default function TransactionDetailPage() {
               </div>
               {/* Right: Card, IDs, Date */}
               <div className="flex flex-col items-end gap-2">
-                <span className="bg-[#1e5ba8] text-white rounded-full px-6 py-2 font-semibold text-base mb-2">
+                <span className="bg-[#2A020D] text-white rounded-full px-6 py-2 font-semibold text-base mb-2">
                   {transaction.card_details ? `****${transaction.card_details.last4}` : ""}
                 </span>
                 <div className="text-[#222] text-base">{transaction.id}</div>
@@ -181,13 +181,13 @@ export default function TransactionDetailPage() {
               rel="noopener noreferrer"
               className="block w-full"
             >
-              <Button className="w-full bg-[#014F9D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2">
+              <Button className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2">
                 Download Receipt
               </Button>
             </a>
           ) : (
             <Button
-              className="w-full bg-[#1e5ba8] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96]  transition-colors flex items-center justify-center gap-2 cursor-not-allowed"
+              className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96]  transition-colors flex items-center justify-center gap-2 cursor-not-allowed"
               
             >
               Download Receipt

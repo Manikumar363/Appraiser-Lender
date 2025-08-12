@@ -99,7 +99,7 @@ export default function AppraiserForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-medium transition-colors ${
+              className={`w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium transition-colors ${
                 loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#1a4f96]"
               }`}
             >
@@ -111,7 +111,7 @@ export default function AppraiserForgotPasswordPage() {
           <div className="mt-6 w-[765px] text-center">
             <Link
               href="/appraiser/auth/signin"
-              className="text-[#1e5ba8] hover:underline text-sm font-medium"
+              className="text-[#2A020D] hover:underline text-sm font-medium"
             >
               ← Back to Sign In
             </Link>

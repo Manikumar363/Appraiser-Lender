@@ -10,7 +10,7 @@ interface ChatHeaderProps {
 export default function ChatHeader({ jobDetails, jobId, participants }: ChatHeaderProps) {
   return (
     <div className="flex justify-center pb-4 w-full">
-      <div className="bg-[#014F9D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-6xl">
+      <div className="bg-[#2A020D] rounded-2xl px-8 py-4 flex items-center justify-between shadow w-full max-w-6xl">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
             <BuildingIcon />

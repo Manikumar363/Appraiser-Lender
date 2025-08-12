@@ -107,7 +107,7 @@ const icons = [
     { name: 'DollerIcon', Component: DollerIcon },
     { name: 'SecondaryProfileIcon', Component: SecondaryProfileIcon },
     { name: 'ThirdPrimaryIcon', Component: ThirdPrimaryIcon },
-    { name: 'HomeTimerIcon', Component: () => <HomeTimerIcon color="#014F9D" /> },
+    { name: 'HomeTimerIcon', Component: () => <HomeTimerIcon color="#2A020D" /> },
     { name: 'RightArrowIcon', Component: RightArrowIcon },
     { name: 'DateIcon', Component: DateIcon },
     { name: 'UploadIcon', Component: UploadIcon },

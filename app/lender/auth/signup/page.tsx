@@ -204,7 +204,7 @@ export default function LenderSignUpPage() {
         value={phone}
         onChange={setPhone}
         placeholder="Type your phone number here" // ✅ add this!
-        inputClass="!w-[765px] !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#1e5ba8] focus:!shadow-md"
+        inputClass="!w-[765px] !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#2A020D] focus:!shadow-md"
         containerClass="!w-full"
         buttonClass="!border-r !border-black !rounded-l-full"
         enableSearch
@@ -229,7 +229,7 @@ export default function LenderSignUpPage() {
           <label
             htmlFor="terms"
             className={`flex items-center justify-center w-5 h-5 rounded border-2 cursor-pointer transition-colors ${
-              acceptTerms ? "bg-[#1e5ba8] border-[#1e5ba8]" : "bg-white border-gray-300"
+              acceptTerms ? "bg-[#2A020D] border-[#2A020D]" : "bg-white border-gray-300"
             }`}
           >
             {acceptTerms && (
@@ -262,7 +262,7 @@ export default function LenderSignUpPage() {
       {/* Submit Button */}
       <button
         type="submit"
-        className="w-[765px] bg-[#1e5ba8] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
+        className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
         disabled={loading}
       >
         {loading ? "Signing up..." : "Sign Up"}

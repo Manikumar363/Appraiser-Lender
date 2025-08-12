@@ -91,14 +91,14 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
   return (
     <div className="min-h-screen flex bg-[#FFFFFF]">
       {/* Sidebar */}
-      <div className="w-64 bg-[#014F9D] text-white flex flex-col sticky top-0 h-screen">
+      <div className="w-64 bg-[#2A020D] text-white flex flex-col sticky top-0 h-screen">
         {/* Logo */}
         <div className="p-6 flex items-center justify-between">
           <Link href={role === "lender" ? "/lender/dashboard" : "/appraiser/dashboard"}>
           <img
-            src="/images/emadi-logo-white.png"
+            src="/images/logolight.svg"
             alt="EMADI Appraisers"
-            className="h-14 w-auto brightness-110 contrast-125"
+            className="p-0 m-0 w-fit brightness-110 contrast-125"
           />
           </Link>
         </div>
@@ -156,7 +156,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
       {/* Main */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Header */}
-        <header className="bg-[#014F9D] text-white px-6 py-4">
+        <header className="bg-[#2A020D] text-white px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Search */}
             <div className="flex-1 max-w-md relative">
@@ -185,12 +185,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
                   <AddIcon />
                 </button>
               )}
-              <button
-                className="p-0 hover:bg-white/10 rounded"
-                onClick={() => router.push(`/${role}/notification`)}
-              >
-                <Notification />
-              </button>
+             
               <button
                 className="p-0 hover:bg-white/10 rounded"
                 onClick={() => router.push(`/${role}/chats`)}

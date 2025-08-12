@@ -153,7 +153,7 @@ export default function ProfileForm({
         {!isEditing ? (
             <button
             onClick={onEdit}
-            className="bg-[#014F9D] hover:bg-[#014f9df5] text-white px-6 py-2 rounded-full font-medium transition"
+            className="bg-[#2A020D] hover:bg-[#2A020Df5] text-white px-6 py-2 rounded-full font-medium transition"
             >
             Edit Profile
             </button>
@@ -203,7 +203,7 @@ export default function ProfileForm({
             onChange={setFullPhone}
             placeholder="Type your phone number here"
             disabled={!isEditing}
-            inputClass={`!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-gray-300 focus:!border-[#1e5ba8] focus:!shadow-md transition-all ${
+            inputClass={`!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-gray-300 focus:!border-[#2A020D] focus:!shadow-md transition-all ${
               !isEditing ? "!bg-gray-50 !cursor-not-allowed" : "!bg-white"
             }`}
             containerClass="!w-full"
@@ -220,7 +220,7 @@ export default function ProfileForm({
               className={`w-full py-3 rounded-full font-medium transition ${
                 submitLoading || !hasChanges
                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                  : "bg-[#014F9D] hover:bg-[#014f9df5] text-white"
+                  : "bg-[#2A020D] hover:bg-[#2A020Df5] text-white"
               }`}
             >
               {submitLoading ? "Updating..." : "Save Changes"}

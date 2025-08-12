@@ -54,8 +54,8 @@ export default function TransactionContent({
             onClick={() => setActiveStatus(status)}
             className={`rounded-full w-full py-2 font-semibold shadow-none ${
               activeStatus === status
-                ? "bg-[#014F9D] hover:bg-blue-800 text-white"
-                : "border-[#014F9D] text-[#014F9D] hover:bg-blue-50 bg-transparent border"
+                ? "bg-[#2A020D] hover:bg-blue-800 text-white"
+                : "border-[#2A020D] text-[#2A020D] hover:bg-blue-50 bg-transparent border"
             }`}
             variant={activeStatus === status ? "default" : "outline"}
           >
@@ -132,7 +132,7 @@ export default function TransactionContent({
       <div className="w-full pb-8">
         <Button
           onClick={onNewJob}
-          className="w-full bg-[#1e5ba8] text-white py-7 px-8 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={20} /> New Job Request
         </Button>

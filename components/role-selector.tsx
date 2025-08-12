@@ -16,8 +16,8 @@ export function RoleSelector({ selectedRole, onRoleChange }: RoleSelectorProps) 
       onClick={() => onRoleChange("appraiser")}
       className={`${baseButton} ${
         selectedRole === "appraiser"
-          ? "bg-[#1e5ba8] border-[#1e5ba8] text-white"
-          : "bg-white border-[#1e5ba8] text-[#1e5ba8] hover:bg-[#f1f7ff]"
+          ? "bg-[#2A020D] border-[#2A020D] text-white"
+          : "bg-white border-[#2A020D] text-[#2A020D] hover:bg-[#f1f7ff]"
       }`}
     >
       Appraiser
@@ -28,8 +28,8 @@ export function RoleSelector({ selectedRole, onRoleChange }: RoleSelectorProps) 
       onClick={() => onRoleChange("lender")}
       className={`${baseButton} ${
         selectedRole === "lender"
-          ? "bg-[#1e5ba8] border-[#1e5ba8] text-white"
-          : "bg-white border-[#1e5ba8] text-[#1e5ba8] hover:bg-[#f1f7ff]"
+          ? "bg-[#2A020D] border-[#2A020D] text-white"
+          : "bg-white border-[#2A020D] text-[#2A020D] hover:bg-[#f1f7ff]"
       }`}
     >
       Lender

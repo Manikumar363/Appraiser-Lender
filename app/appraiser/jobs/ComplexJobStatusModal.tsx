@@ -98,7 +98,7 @@ export function ComplexJobStatusModal({
       <Dialog.Panel className="bg-white max-w-5xl w-full rounded-2xl shadow-lg relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 w-8 h-8 bg-[#014F9D] text-white rounded-full flex items-center justify-center hover:bg-blue-700 z-20 shadow-lg"
+          className="absolute right-4 top-4 w-8 h-8 bg-[#2A020D] text-white rounded-full flex items-center justify-center hover:bg-blue-700 z-20 shadow-lg"
         >
           ×
         </button>
@@ -108,7 +108,7 @@ export function ComplexJobStatusModal({
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-4 flex-1">
                 <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                  <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
+                  <BuildingIcon className="w-6 h-6 text-[#2A020D]" />
                 </div>
 
                 <div className="flex flex-col">
@@ -127,17 +127,17 @@ export function ComplexJobStatusModal({
               </div>
 
               <div className="flex gap-2 ml-6">
-                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#2A020D] text-[#2A020D] bg-white text-sm font-medium whitespace-nowrap">
                   <span className="text-xs">
                     <Notes />
                   </span>{" "}
                   #{jobId}
                 </span>
-                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#2A020D] text-[#2A020D] bg-white text-sm font-medium whitespace-nowrap">
                   <ProfileIcon3 className="w-4 h-4 flex-shrink-0" />
                   <span className="truncate">{jobData?.intended_username}</span>
                 </span>
-                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#2A020D] text-[#2A020D] bg-white text-sm font-medium whitespace-nowrap">
                   <ResidentialIcon className="w-4 h-4 flex-shrink-0" />
                   {jobData?.property_type}
                 </span>
@@ -159,7 +159,7 @@ export function ComplexJobStatusModal({
                   value={estimateMarketValue}
                   onChange={(e) => setEstimateMarketValue(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-full px-10 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                  className="w-full border border-gray-300 rounded-full px-10 py-3 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
                   placeholder="Enter Value"
                   max="9999999999"
                   min="0"
@@ -179,7 +179,7 @@ export function ComplexJobStatusModal({
                 required
                 min="1900-01-01"
                 max="2999-12-31"
-                className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+                className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
               />
             </div>
 
@@ -196,7 +196,7 @@ export function ComplexJobStatusModal({
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   required
-                  className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-lg pl-12 pr-4 py-3 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
                   placeholder="Enter your notes or comments here..."
                 />
               </div>
@@ -330,7 +330,7 @@ export function ComplexJobStatusModal({
               </label>
               <div className="relative">
                 <select
-                  className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
                 >
@@ -365,7 +365,7 @@ export function ComplexJobStatusModal({
 
             <button
               type="submit"
-              className="w-full bg-[#014F9D] text-white py-4 rounded-full font-semibold hover:bg-[#014F9F] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#014F9F] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? (

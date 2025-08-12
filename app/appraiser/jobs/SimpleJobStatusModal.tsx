@@ -162,7 +162,7 @@ export function SimpleJobStatusModal({
         
         <button 
           onClick={onClose} 
-          className="absolute right-4 top-4 w-8 h-8 bg-[#014F9D] text-white rounded-full flex items-center justify-center hover:bg-blue-700 z-20 shadow-lg"
+          className="absolute right-4 top-4 w-8 h-8 bg-[#2A020D] text-white rounded-full flex items-center justify-center hover:bg-blue-700 z-20 shadow-lg"
         >
           ×
         </button>
@@ -174,7 +174,7 @@ export function SimpleJobStatusModal({
               
               <div className="flex items-center gap-4 flex-1">
                 <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                  <BuildingIcon className="w-6 h-6 text-[#014F9D]" />
+                  <BuildingIcon className="w-6 h-6 text-[#2A020D]" />
                 </div>
                 
                 <div className="flex flex-col">
@@ -188,7 +188,7 @@ export function SimpleJobStatusModal({
                 
                 <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ml-4
                   ${currentStatus === "accepted" || currentStatus === "active"
-                    ? "bg-[#014F9D] text-white"
+                    ? "bg-[#2A020D] text-white"
                     : "bg-yellow-400 text-black"}`}>
                   <LoadIcon className="w-3 h-3" />
                   {currentStatus === "accepted" || currentStatus === "active"
@@ -200,14 +200,14 @@ export function SimpleJobStatusModal({
               </div>
               
               <div className="flex gap-2 ml-6">
-                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#2A020D] text-[#2A020D] bg-white text-sm font-medium whitespace-nowrap">
                   <span className="text-xs"><Notes/></span> #{jobId}
                 </span>
-                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#2A020D] text-[#2A020D] bg-white text-sm font-medium whitespace-nowrap">
                   <ProfileIcon3 className="w-4 h-4 flex-shrink-0" /> 
                   <span className="truncate">{jobData?.intended_username}</span>
                 </span>
-                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#014F9D] text-[#014F9D] bg-white text-sm font-medium whitespace-nowrap">
+                <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#2A020D] text-[#2A020D] bg-white text-sm font-medium whitespace-nowrap">
                   <ResidentialIcon className="w-4 h-4 flex-shrink-0" /> 
                   {jobData?.property_type}
                 </span>
@@ -224,7 +224,7 @@ export function SimpleJobStatusModal({
               </label>
               <div className="relative">
                 <select 
-                  className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
                   required
@@ -255,7 +255,7 @@ export function SimpleJobStatusModal({
                 value={propertyRights}
                 onChange={e => handlePropertyRightsChange(e.target.value)}
                 required
-                className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+                className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
                 placeholder="Enter Property Rights Appraised"
               />
             </div>
@@ -269,7 +269,7 @@ export function SimpleJobStatusModal({
                 value={occupant}
                 onChange={e => handleOccupantChange(e.target.value)}
                 required
-                className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+                className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
                 placeholder="Enter Occupant"
               />
             </div>
@@ -358,7 +358,7 @@ export function SimpleJobStatusModal({
                 value={comments}
                 onChange={e => handleCommentsChange(e.target.value)}
                 required
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-[#014F9D] focus:border-transparent"
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 h-20 resize-none focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
                 placeholder="Enter Comments"
               />
             </div>
@@ -371,7 +371,7 @@ export function SimpleJobStatusModal({
 
             <button
               type="submit"
-              className="w-full bg-[#014F9D] text-white py-4 rounded-full font-semibold hover:bg-blue-700 transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-blue-700 transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? (
