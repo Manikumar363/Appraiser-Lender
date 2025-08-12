@@ -95,14 +95,14 @@ export default function MessageInput({
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={onKeyPress}
                         disabled={sending}
-                        className="flex-1 bg-[#E6F9F3] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 py-3 px-3"
+                        className="flex-1 bg-[#FBEFF2] text-gray-900 placeholder:text-gray-500 rounded-full border-none focus:ring-0 py-3 px-3"
                         style={{ outline: "none" }}
                         maxLength={1000}
                     />
                     <Button
                         type="submit"
                         disabled={!newMessage.trim() || sending}
-                        className="bg-white hover:bg-blue-100 text-[#2A020D] p-3 rounded-full shadow-none"
+                        className="bg-white hover:bg-[#FBEFF2] text-[#2A020D] p-3 rounded-full shadow-none"
                         style={{ minWidth: 48, minHeight: 48 }}
                     >
                         {sending ? (

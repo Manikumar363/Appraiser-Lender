@@ -39,7 +39,7 @@ export function JobCard({ title, location, jobStatus }: JobCardProps) {
 
 
   return (
-    <div className="bg-cyan-50 rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+    <div className="bg-[#FBEFF2] rounded-xl p-3 shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 bg-[#2A020D] rounded-full flex items-center justify-center text-white shadow-md">
           <BuildingIcon className="w-8 h-8"/>

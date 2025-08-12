@@ -70,8 +70,8 @@ export default function JobsContent({
               key={f.key}
               className={`w-full py-6 rounded-full ${
                 activeFilter === f.key
-                  ? "bg-[#2A020D] hover:bg-blue-800 text-white"
-                  : "border-[#2A020D] text-[#2A020D] hover:bg-blue-50 bg-transparent border"
+                  ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
+                  : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"
               }`}
               onClick={() => setActiveFilter(f.key)}
             >
@@ -89,7 +89,7 @@ export default function JobsContent({
           </div>
         )}
         {filteredJobs.map((job) => (
-          <div key={job.id} className="bg-cyan-50 rounded-xl p-2 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
+          <div key={job.id} className="bg-[#FBEFF2] rounded-xl p-2 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 bg-[#2A020D] rounded-full flex items-center justify-center">
@@ -118,15 +118,15 @@ export default function JobsContent({
                 </div>
               </div>
               <div className="flex items-center gap-3 flex-nowrap">
-                <Button variant="outline" size="sm" className="bg-cyan border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
+                <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
                   <MapIcon className="w-6 h-6 mr-1" />
                   {getCityCountry(job.address)}
                 </Button>
-                <Button variant="outline" size="sm" className="bg-cyan border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
+                <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
                   <CalendarIcon className="w-4 h-4 mr-2" />
                   {job.preferred_date ? new Date(job.preferred_date).toLocaleDateString() : "N/A"}
                 </Button>
-                <Button variant="outline" size="sm" className="bg-white border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-blue-50 transition-colors"
+                <Button variant="outline" size="sm" className="bg-white border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-[#FBEFF2] transition-colors"
                   onClick={() => router.push(`/lender/chats/${job.id}`)}>
                   <MessageIcon className="w-5 h-5 me-1" />
                   Message
@@ -134,7 +134,7 @@ export default function JobsContent({
                 <Button
                   variant="ghost"
                   size="lg"
-                  className="bg-white text-[#2A020D] hover:bg-blue-50 p-0 rounded-full flex items-center justify-center transition-colors w-[40px] h-[40px] shadow"
+                  className="bg-white text-[#2A020D] hover:bg-[#FBEFF2] p-0 rounded-full flex items-center justify-center transition-colors w-[40px] h-[40px] shadow"
                   onClick={() => router.push(`/lender/jobs/${job.id}`)}
                 >
                   <span className="flex items-center justify-center w-[44px] h-[44px] rounded-full">
@@ -149,7 +149,7 @@ export default function JobsContent({
       <div className="w-full pb-8">
         <button
           onClick={onNewJob}
-          className="w-full bg-[#2A020D] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-[#2A020D] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#4e1b29] transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={20} />
           New Job Request

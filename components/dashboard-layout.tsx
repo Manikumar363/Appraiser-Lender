@@ -93,12 +93,12 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
       {/* Sidebar */}
       <div className="w-64 bg-[#2A020D] text-white flex flex-col sticky top-0 h-screen">
         {/* Logo */}
-        <div className="p-6 flex items-center justify-between">
+        <div className="p-0 flex items-start justify-start">
           <Link href={role === "lender" ? "/lender/dashboard" : "/appraiser/dashboard"}>
           <img
             src="/images/logolight.svg"
             alt="EMADI Appraisers"
-            className="p-0 m-0 w-fit brightness-110 contrast-125"
+            className="w-32 h-auto p-0 m-0 ml-10 brightness-140 contrast-125"
           />
           </Link>
         </div>

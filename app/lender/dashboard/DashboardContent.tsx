@@ -33,8 +33,8 @@ export default function DashboardContent({ searchQuery }: DashboardContentProps)
   // Filter jobs by searchQuery
   const filteredJobs = jobs.filter(
     (job) =>
-      job.purpose.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.address.toLowerCase().includes(searchQuery.toLowerCase())
+      (job.purpose?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (job.address?.toLowerCase() || "").includes(searchQuery.toLowerCase())
   );
 
   const handleNewJobRequest = () => {
@@ -72,7 +72,7 @@ export default function DashboardContent({ searchQuery }: DashboardContentProps)
       <div className="w-full pb-8">
         <button
           onClick={handleNewJobRequest}
-          className="w-full bg-[#2A020D] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-[#2A020D] text-white py-4 px-6 rounded-lg font-medium hover:bg-[#4e1b29] transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={20} />
           New Job Request

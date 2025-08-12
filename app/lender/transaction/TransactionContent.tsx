@@ -54,8 +54,8 @@ export default function TransactionContent({
             onClick={() => setActiveStatus(status)}
             className={`rounded-full w-full py-2 font-semibold shadow-none ${
               activeStatus === status
-                ? "bg-[#2A020D] hover:bg-blue-800 text-white"
-                : "border-[#2A020D] text-[#2A020D] hover:bg-blue-50 bg-transparent border"
+                ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
+                : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"
             }`}
             variant={activeStatus === status ? "default" : "outline"}
           >
@@ -74,11 +74,11 @@ export default function TransactionContent({
           filteredTransactions.map((tx) => (
             <div
               key={tx.id}
-              className="flex items-center bg-cyan-50 rounded-2xl px-6 py-5 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow"
+              className="flex items-center bg-[#FBEFF2] rounded-2xl px-6 py-5 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow"
             >
               {/* Left: Icon and IDs */}
               <div className="flex items-center gap-4 min-w-[350px]">
-                <div className="w-14 h-14 bg-[#0066B2] rounded-full flex items-center justify-center">
+                <div className="w-14 h-14 bg-[#4e1b29] rounded-full flex items-center justify-center">
                   <CardIcon width={32} height={32} />
                 </div>
                 <div>
@@ -106,18 +106,18 @@ export default function TransactionContent({
                 >
                   + $ {tx.amount}
                 </span>
-                <span className={`flex items-center gap-2 bg-cyan-50 border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:brightness-110`}>
+                <span className={`flex items-center gap-2 bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:brightness-110`}>
                   <LoadIcon className="w-5 h-5" />
                   {tx.status}
                 </span>
-                <span className="flex items-center gap-2 bg-cyan-50 border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:brightness-110">
+                <span className="flex items-center gap-2 bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:brightness-110">
                   <CalendarIcon className="w-5 h-5" />
                   {new Date(tx.created_at).toLocaleDateString()}
                 </span>
                 <Button
                   onClick={() => router.push(`/lender/transaction/${tx.id}`)}
                   variant="outline"
-                  className="rounded-full px-6 py-2 bg-white text-[#0066B2] border-[#0066B2] font-medium flex items-center gap-2 shadow-none transition-colors cursor-pointer hover:brightness-110"
+                  className="rounded-full px-6 py-2 bg-white text-[#2A020D] border-[#2A020D] font-medium flex items-center gap-2 shadow-none transition-colors cursor-pointer hover:brightness-110"
                 >
                   <RightArrow className="w-8 h-8" />
                   View Details
@@ -132,7 +132,7 @@ export default function TransactionContent({
       <div className="w-full pb-8">
         <Button
           onClick={onNewJob}
-          className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-medium hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-medium hover:bg-[#4e1b29] transition-colors flex items-center justify-center gap-2"
         >
           <Plus size={20} /> New Job Request
         </Button>

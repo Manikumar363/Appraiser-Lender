@@ -12,19 +12,19 @@ export default function ChatListItem({ chat, onClick }: ChatListItemProps) {
 
   return (
     <div
-      className="bg-[#2A020D] rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:bg-[#0159A8]"
+      className="bg-[#2A020D] rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:bg-[#4e1b29]"
       onClick={() => onClick(chat.jobId)}
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-cyan-50 rounded-full flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#FBEFF2] rounded-full flex items-center justify-center">
             <BuildingIcon2 className="w-6 h-6 text-[#2A020D]" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-white mb-1">
               {chat.title}
             </h3>
-            <p className="text-blue-100 text-sm">{chat.location}</p>
+            <p className="text-white text-sm">{chat.location}</p>
           </div>
         </div>
         

@@ -578,7 +578,7 @@ export default function NewJobRequestPage() {
             <div className="mt-8 w-[90%] max-w-xxl mx-auto">
               <button
                 type="submit"
-                className="w-full bg-[#2A020D] rounded-lg text-white py-4 px-6 font-medium hover:bg-[#1a4f96] transition-colors text-lg"
+                className="w-full bg-[#2A020D] rounded-lg text-white py-4 px-6 font-medium hover:bg-[#4e1b29] transition-colors text-lg"
                 disabled={loading}
               >
                 {loading ? "Submitting..." : "Submit Job"}

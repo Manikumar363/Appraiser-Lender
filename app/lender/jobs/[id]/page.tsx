@@ -56,7 +56,7 @@ export default function JobDetailPage() {
         </div>
 
         {/* Info Card */}
-        <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+        <div className="bg-[#FBEFF2] rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#2A020D] rounded-full flex items-center justify-center">
@@ -86,15 +86,15 @@ export default function JobDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" className="bg-cyan-50 border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
+              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
                 <MapIcon className="w-6 h-6 mr-1 " />
                 {job.address}
               </Button>
-              <Button variant="outline" size="sm" className="bg-cyan-50 border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
+              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
                 <CalendarIcon className="w-4 h-4 mr-2" />
                 {new Date(job.preferred_date).toLocaleDateString()}
               </Button>
-              <Button variant="outline" size="sm" className="bg-cyan-50 border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors"
+              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors"
               onClick={() => router.push(`/lender/chats/${job.id}`)}>
                 <MessageIcon className="w-5 h-5 mr-1" />
                 Message
@@ -107,13 +107,13 @@ export default function JobDetailPage() {
         </div>
 
         {/* Progress */}
-        <div className="bg-cyan-50 rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+        <div className="bg-[#FBEFF2] rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">Job Summary</h3>
           <div className="flex items-center justify-center gap-8">
             {progressSteps.map((step, i) => (
               <div key={i} className="flex flex-col items-center">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2
-                  ${step.status === "completed" ? "bg-[#2A020D]" : step.status === "current" ? "bg-white border-[14px] border-blue-800" : "bg-gray-400"}
+                  ${step.status === "completed" ? "bg-[#2A020D]" : step.status === "current" ? "bg-white border-[14px] border-[#4B0E1C]" : "bg-gray-400"}
                 `}>
                   {step.status === "current" && <div className="bg-[#2A020D]" />}
                 </div>
@@ -135,7 +135,7 @@ export default function JobDetailPage() {
                   const isPdf = ext === "pdf";
                   const isImage = ext === "png" || ext === "jpg" || ext === "jpeg";
                   return (
-                    <div key={idx} className="bg-cyan-50 rounded-xl py-7 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
+                    <div key={idx} className="bg-[#FBEFF2] rounded-xl py-7 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
                       {isPdf ? (
                         <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
                       ) : isImage ? (
@@ -165,7 +165,7 @@ export default function JobDetailPage() {
           </div>
           {job.lender_doc && (
             <Button
-              className="w-full bg-[#2A020D] hover:bg-[#013B6D] text-white py-7 rounded-lg"
+              className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-7 rounded-lg"
               onClick={() => {
                 job.lender_doc.split(",").forEach((url) => {
                   window.open(url, "_blank");
@@ -180,7 +180,7 @@ export default function JobDetailPage() {
         {/* Transaction */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-          <div className="bg-cyan-50 rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
+          <div className="bg-[#FBEFF2] rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-[#2A020D] rounded-full flex items-center justify-center">
                 <CardIcon className="w-8 h-8 text-white" />
@@ -193,12 +193,12 @@ export default function JobDetailPage() {
           </div>
         </div>
 
-        {/* Accept */}
+        {/* Accept 
         {job.status !== "completed" && (
-          <Button className="w-full bg-[#2A020D] hover:bg-[#013B6D] text-white py-7 rounded-lg text-lg">
+          <Button className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-7 rounded-lg text-lg">
             Accept
           </Button>
-        )}
+        )}*/}
       </div>
     </DashboardLayout>
   )

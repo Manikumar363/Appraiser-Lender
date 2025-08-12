@@ -352,7 +352,7 @@ export default function LenderProfilePage() {
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="bg-blue-800 hover:bg-blue-800 text-white px-6 py-2 rounded-full font-medium transition"
+                className="bg-[#2A020D] hover:bg-[#4e1b29] text-white px-6 py-2 rounded-full font-medium transition"
               >
                 Edit Profile
               </button>
