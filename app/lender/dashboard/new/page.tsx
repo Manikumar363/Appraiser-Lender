@@ -16,7 +16,7 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import type { Libraries } from "@react-google-maps/api";
 import { Description } from "@radix-ui/react-toast"
-
+import Select, { components } from "react-select";
 
 // Import Library type from @react-google-maps/api and use Library[] type for libraries
 
@@ -26,6 +26,79 @@ const GOOGLE_MAP_LIBRARIES: Libraries = ["places"]; // <-- define outside compon
 const allowOnlyAlphabets = (value: string) => value.replace(/[^a-zA-Z\s]/g, "");
 
 const allowOnlyDigits = (value: string) => value.replace(/[^0-9]/g, "");
+
+const options = [
+  { value: "testing", label: "Testing" },
+  { value: "new10", label: "new 10" },
+  { value: "new8", label: "new 8" },
+  { value: "new7", label: "new 7" },
+  { value: "new6", label: "new 6" },
+  { value: "new5", label: "new 5" },
+  { value: "new4", label: "new 4" },
+  { value: "new3", label: "new 3" },
+  { value: "new2", label: "new 2" },
+  { value: "new_intended_use", label: "new intended use" },
+];
+
+const customStyles = {
+  option: (provided: any, state: any) => ({
+    ...provided,
+    backgroundColor: state.isFocused || state.isSelected ? "#2A020D" : "#fff",
+    color: state.isFocused || state.isSelected ? "#fff" : "#22223B",
+    fontSize: "0.875rem",
+    borderRadius: "8px",
+    paddingLeft: "2.5rem",
+    paddingRight: "1rem",
+    outline: "none",
+    boxShadow: "none",
+  }),
+  control: (provided: any, state: any) => ({
+    ...provided,
+    borderRadius: "9999px",
+    borderColor: "#4B5563", // border-gray-700
+    minHeight: "48px",
+    boxShadow: "none",
+    fontSize: "0.875rem",
+    paddingLeft: "3rem",
+    paddingRight: "1rem",
+    
+    outline: "none",
+    "&:hover": {
+      borderColor: "#2A020D",
+    },
+    "&:focus": {
+      borderColor: "#2A020D",
+      boxShadow: "none", // no glow on focus
+      outline: "none",
+    },
+  }),
+  indicatorSeparator: () => ({
+    display: "none", // removes the vertical line
+  }),
+  dropdownIndicator: (provided: any) => ({
+    ...provided,
+    color: "#4B5563", // border-gray-700
+    paddingRight: "1rem",
+  }),
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "#6B7280", // text-gray-600
+    fontSize: "0.975rem",
+    paddingLeft: "0rem",
+  }),
+  singleValue: (provided: any) => ({
+    ...provided,
+    color: "#22223B",
+    fontSize: "0.875rem",
+    paddingLeft: "0.5rem",
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    borderRadius: "16px",
+     boxShadow: "0 2px 12px rgba(0,0,0,0.15)",
+    zIndex: 20,
+  }),
+};
 
 export default function NewJobRequestPage() {
   const router = useRouter()
@@ -244,6 +317,12 @@ export default function NewJobRequestPage() {
     // Optionally, remove from server or update formData.lender_doc as needed
   };
 
+  const CustomInputIcon = () => (
+    <span className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700 z-10 pointer-events-none">
+      <SecondaryProfileIcon />
+    </span>
+  );
+
   return (
     <DashboardLayout role="lender">
       <Toaster position="top-right" />
@@ -342,23 +421,16 @@ export default function NewJobRequestPage() {
               <div>
                 <div className="relative w-[90%] mx-auto">
                   <label className="block text-base font-medium text-gray-900 mb-2">Intended Use</label>
-                  <SecondaryProfileIcon className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700" />
-                  <select
-                    value={formData.use}
-                    onChange={(e) => handleInputChange("use", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] appearance-none text-sm  bg-white "
-                    required
-                  >
-                    <option value="">Enter Input</option>
-                    {intendedUseOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-800"
-                    size={20}
+                  <CustomInputIcon />
+                  <Select
+                    options={options}
+                    styles={customStyles}
+                    placeholder="Enter Input"
+                    onChange={(selectedOption) => handleInputChange("use", selectedOption?.value || "")}
+                    classNamePrefix="react-select"
+                    className="w-full"
+                    isSearchable={false}
+                    noOptionsMessage={() => "No options found"}
                   />
                 </div>
               </div>
@@ -439,23 +511,21 @@ export default function NewJobRequestPage() {
               <div>
                 <div className="relative w-[90%] mx-auto">
                   <label className="block text-base font-medium text-gray-900 mb-2">Property Type</label>
-                  <SecondaryProfileIcon className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700" />
-                  <select
-                    value={formData.property_type}
-                    onChange={(e) => handleInputChange("property_type", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent appearance-none text-sm"
-                    required
-                  >
-                    <option value="">Enter Input</option>
-                    {requestedByOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-700"
-                    size={20}
+                  <span className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700 z-10 pointer-events-none">
+                    <SecondaryProfileIcon />
+                  </span>
+                  <Select
+                    options={requestedByOptions.map(option => ({ value: option, label: option }))}
+                    styles={customStyles}
+                    placeholder="Enter Input"
+                    onChange={(selectedOption) => handleInputChange("property_type", selectedOption?.value || "")}
+                    classNamePrefix="react-select"
+                    className="w-full"
+                    isSearchable={false}
+                    noOptionsMessage={() => "No options found"}
+                    value={requestedByOptions
+                      .map(option => ({ value: option, label: option }))
+                      .find(opt => opt.value === formData.property_type) || null}
                   />
                 </div>
               </div>
@@ -493,23 +563,21 @@ export default function NewJobRequestPage() {
               <div>
                 <div className="relative w-[90%] mx-auto">
                   <label className="block text-base font-medium text-gray-900 mb-2">Property Occupied</label>
-                  <SecondaryProfileIcon className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-600" />
-                  <select
-                    value={formData.property_occupied}
-                    onChange={(e) => handleInputChange("property_occupied", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] appearance-none text-sm bg-white"
-                    required
-                  >
-                    <option value="">Enter Input</option>
-                    {purposeOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown
-                    className="absolute right-4 top-[56%] -translate-y-[4%] text-gray-700"
-                    size={20}
+                  <span className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700 z-10 pointer-events-none">
+                    <SecondaryProfileIcon />
+                  </span>
+                  <Select
+                    options={purposeOptions.map(option => ({ value: option, label: option }))}
+                    styles={customStyles}
+                    placeholder="Enter Input"
+                    onChange={(selectedOption) => handleInputChange("property_occupied", selectedOption?.value || "")}
+                    classNamePrefix="react-select"
+                    className="w-full"
+                    isSearchable={false}
+                    noOptionsMessage={() => "No options found"}
+                    value={purposeOptions
+                      .map(option => ({ value: option, label: option }))
+                      .find(opt => opt.value === formData.property_occupied) || null}
                   />
                 </div>
               </div>

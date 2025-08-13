@@ -17,7 +17,7 @@ export function RoleSelector({ selectedRole, onRoleChange }: RoleSelectorProps) 
       className={`${baseButton} ${
         selectedRole === "appraiser"
           ? "bg-[#2A020D] border-[#2A020D] text-white"
-          : "bg-white border-[#2A020D] text-[#2A020D] hover:bg-[#f1f7ff]"
+          : "bg-white border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2]"
       }`}
     >
       Appraiser
@@ -29,7 +29,7 @@ export function RoleSelector({ selectedRole, onRoleChange }: RoleSelectorProps) 
       className={`${baseButton} ${
         selectedRole === "lender"
           ? "bg-[#2A020D] border-[#2A020D] text-white"
-          : "bg-white border-[#2A020D] text-[#2A020D] hover:bg-[#f1f7ff]"
+          : "bg-white border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2]"
       }`}
     >
       Lender
