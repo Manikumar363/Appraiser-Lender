@@ -201,7 +201,7 @@ export default function LenderVerifyEmailPage() {
         )}
 
         <div className="flex items-center justify-center gap-4 mb-8 mt-2">
-          <div className="bg-blue-200 text-blue-800 px-5 py-2 rounded-full font-medium text-base border border-[#2A020D]">
+          <div className="bg-[#FBEFF2] text-[#2A020D] px-5 py-2 rounded-full font-medium text-base border border-[#2A020D]">
             {formatTime(timeLeft)}
           </div>
           <button

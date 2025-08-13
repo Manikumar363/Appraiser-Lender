@@ -529,7 +529,7 @@ export default function LenderProfilePage() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="w-full bg-blue-800 hover:bg-blue-800 text-white py-3 rounded-full font-medium"
+                  className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-3 rounded-full font-medium"
                 >
                   {submitLoading ? "Updating..." : "Update Profile"}
                 </button>

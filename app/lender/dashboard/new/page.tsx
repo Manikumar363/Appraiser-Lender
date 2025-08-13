@@ -346,7 +346,7 @@ export default function NewJobRequestPage() {
                   <select
                     value={formData.use}
                     onChange={(e) => handleInputChange("use", e.target.value)}
-                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] appearance-none text-sm bg-white"
+                    className="w-full pl-12 pr-12 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] appearance-none text-sm  bg-white "
                     required
                   >
                     <option value="">Enter Input</option>
@@ -553,7 +553,7 @@ export default function NewJobRequestPage() {
         className="flex items-center px-4 py-2 rounded-lg shadow border border-gray-200 bg-white max-w-[350px] w-full justify-between"
       >
         <span className="truncate flex-1">
-          <span className="font-bold text-blue-700 mr-2">
+          <span className="font-bold text-[#2A020D] mr-2">
             {file.type.startsWith("image/") ? "IMG" : file.type.startsWith("application/pdf") ? "PDF" : "FILE"}
           </span>
           {file.name}

@@ -37,7 +37,7 @@ export default function LenderTermsPage() {
         <h2 className="text-yellow-400 text-sm font-semibold uppercase tracking-widest">
           Agreement
         </h2>
-        <h1 className="text-3xl font-bold text-blue-700 mt-1">
+        <h1 className="text-3xl font-bold text-[#2A020D] mt-1">
           Terms &amp; Condition
         </h1>
       </div>

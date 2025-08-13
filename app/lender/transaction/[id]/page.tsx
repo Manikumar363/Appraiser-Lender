@@ -66,9 +66,9 @@ export default function TransactionDetailPage() {
 
           {/* Transaction Details */}
           {/* Transaction Card */}
-          <div className="flex items-center justify-between bg-cyan-50 rounded-2xl px-6 py-5 shadow border border-[#E6F9F3] mb-6">
+          <div className="flex items-center justify-between bg-[#FBEFF2] rounded-2xl px-6 py-5 shadow border border-[#E6F9F3] mb-6">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 bg-[#0066B2] rounded-full flex items-center justify-center">
+              <div className="w-14 h-14 bg-[#4e1b29] rounded-full flex items-center justify-center">
                 <CardIcon width={32} height={32} />
               </div>
               <div>
@@ -94,15 +94,15 @@ export default function TransactionDetailPage() {
               >
                 + $ {transaction.amount}
               </span>
-              <span className="flex items-center gap-2 bg-[#0066B2] text-white rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:bg-[#2A020D]">
+              <span className="flex items-center gap-2 bg-[#FBEFF2] text-[#2A020D] border border-[#2A020D] rounded-full px-6 py-2 font-medium transition-colors cursor-pointer hover:bg-[#F6D7DE]">
                 <LoadIcon className="w-5 h-5" />
                 {transaction.status}
               </span>
-              <span className="flex items-center gap-2 bg-cyan-50 border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#e0f2fe] hover:border-[#2A020D]">
+              <span className="flex items-center gap-2 bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#F6D7DE] hover:border-[#2A020D]">
                 <CalendarIcon className="w-5 h-5" />
                 {new Date(transaction.created_at).toLocaleDateString()}
               </span>
-              <span className="flex items-center gap-2 bg-white border border-[#0066B2] text-[#0066B2] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#e0f2fe] hover:border-[#2A020D]">
+              <span className="flex items-center gap-2 bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#F6D7DE] hover:border-[#2A020D]">
                 <ResidentialIcon className="w-5 h-5" />
                 {transaction.job?.address}
               </span>
@@ -112,7 +112,7 @@ export default function TransactionDetailPage() {
           {/* Payment Section */}
           <div>
             <h2 className="text-xl font-semibold mb-4">Payment Section</h2>
-            <div className="flex items-center justify-between bg-cyan-100 rounded-2xl px-6 py-6 shadow border border-[#E6F9F3]">
+            <div className="flex items-center justify-between bg-[#FBEFF2] rounded-2xl px-6 py-6 shadow border border-[#E6F9F3]">
               {/* Left: Logo and Title */}
               <div className="flex items-center gap-4">
                 {transaction.card_details?.brand === "visa" ? (
@@ -181,13 +181,13 @@ export default function TransactionDetailPage() {
               rel="noopener noreferrer"
               className="block w-full"
             >
-              <Button className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96] transition-colors flex items-center justify-center gap-2">
+              <Button className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#4e1b29] transition-colors flex items-center justify-center gap-2">
                 Download Receipt
               </Button>
             </a>
           ) : (
             <Button
-              className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#1a4f96]  transition-colors flex items-center justify-center gap-2 cursor-not-allowed"
+              className="w-full bg-[#2A020D] text-white py-7 px-8 rounded-lg font-large hover:bg-[#4e1b29]  transition-colors flex items-center justify-center gap-2 cursor-not-allowed"
               
             >
               Download Receipt

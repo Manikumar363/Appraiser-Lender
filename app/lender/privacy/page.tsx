@@ -45,7 +45,7 @@ export default function PrivacyPolicyPage() {
         <h2 className="text-yellow-400 text-sm font-semibold uppercase tracking-widest">
           01-SEPT-2023
         </h2>
-        <h1 className="text-3xl font-bold text-blue-700 mt-1">
+        <h1 className="text-3xl font-bold text-[#2A020D] mt-1">
           Privacy Policy
         </h1>
       </div>
