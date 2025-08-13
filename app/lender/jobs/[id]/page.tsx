@@ -2,12 +2,25 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
-import {MapIcon, MessageIcon, CalendarIcon, LoadIcon, PDFIcon, ImageIcon, CardIcon, RightArrow, BuildingIcon, LeftArrow} from "@/components/icons"
+import { MapIcon, MessageIcon, CalendarIcon, LoadIcon, PDFIcon, ImageIcon, CardIcon, RightArrow, BuildingIcon, LeftArrow } from "@/components/icons"
 import { Button } from "../../../../components/ui/button"
 import { Badge } from "../../../../components/ui/badge"
 import DashboardLayout from "@/components/dashboard-layout"
-import { getSingleJob, getProgressSteps, JobDetail,getStatusColor } from "../../../../lib/api/jobs1"
-import { formatDistanceToNow } from "date-fns";
+import { getSingleJob, getProgressSteps, JobDetail } from "../../../../lib/api/jobs1"
+import { formatDistanceToNow } from "date-fns"
+
+// Stripe
+import { Elements } from "@stripe/react-stripe-js"
+import { loadStripe } from "@stripe/stripe-js"
+import StripeCheckout from "@/components/payments/StripeCheckout"
+
+// Toasts (optional)
+import { Toaster, toast } from "react-hot-toast"
+
+// API helper
+import { createPaymentIntent } from "@/lib/api/transaction"
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK as string)
 
 export default function JobDetailPage() {
   const params = useParams()!
@@ -16,15 +29,20 @@ export default function JobDetailPage() {
   const [error, setError] = useState("")
   const router = useRouter()
 
+  // Stripe state
+  const [showCheckout, setShowCheckout] = useState(false)
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [intentLoading, setIntentLoading] = useState(false)
+
   if (!params?.id || typeof params.id !== "string") {
     throw new Error("Invalid job ID")
   }
-   const id = params.id
+  const id = params.id
 
   useEffect(() => {
     async function loadJob() {
       try {
-        const data = await getSingleJob(id);
+        const data = await getSingleJob(id)
         setJob(data)
       } catch (err: any) {
         setError(err.message || "Failed to load job")
@@ -35,23 +53,54 @@ export default function JobDetailPage() {
     loadJob()
   }, [id])
 
-  if (loading) return <DashboardLayout role="lender"><div className="p-6">Loading details...</div></DashboardLayout>
-  if (error || !job) return <DashboardLayout role="lender"><div className="p-6 text-red-500">{error || "Job not found"}</div></DashboardLayout>
+  // Start payment: create intent via API and open Elements modal
+  const handlePayNowClick = async () => {
+    if (!job?.id) return
+    try {
+      setIntentLoading(true)
+      const { clientSecret } = await createPaymentIntent(job.id)
+      if (!clientSecret) throw new Error("Missing client secret")
+      setClientSecret(clientSecret)
+      setShowCheckout(true)
+      toast.success("Secure payment initialized")
+    } catch (e: any) {
+      toast.error(e?.message || "Could not start payment")
+    } finally {
+      setIntentLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <DashboardLayout role="lender">
+        <div className="p-6">Loading details...</div>
+      </DashboardLayout>
+    )
+  }
+  if (error || !job) {
+    return (
+      <DashboardLayout role="lender">
+        <div className="p-6 text-red-500">{error || "Job not found"}</div>
+      </DashboardLayout>
+    )
+  }
 
   const progressSteps = getProgressSteps(job.status)
+  const paymentStatus = (job.payment_status ?? "").toLowerCase()
 
   return (
     <DashboardLayout role="lender">
+      <Toaster position="top-center" />
       <div className="p-6 min-h-screen">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button
-                    className="w-10 h-10 flex items-center justify-center rounded-full shadow mb-4"
-                    onClick={() => router.back()}
-                    aria-label="Back"
-                  >
-                    <LeftArrow className="w-10 h-10" />
-                  </button>
+            className="w-10 h-10 flex items-center justify-center rounded-full shadow mb-4"
+            onClick={() => router.back()}
+            aria-label="Back"
+          >
+            <LeftArrow className="w-10 h-10" />
+          </button>
           <h1 className="text-xl font-semibold text-gray-900">Job Details</h1>
         </div>
 
@@ -187,18 +236,41 @@ export default function JobDetailPage() {
               </div>
               <span className="text-xl font-semibold text-gray-900">${job.price}</span>
             </div>
-             <Badge className={`${job.status === "completed" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-lg`}>
-              {job.status ? job.status.charAt(0).toUpperCase() + job.status.slice(1) : "Pending"}
+            <Badge className={`${job.payment_status === "paid" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-lg`}>
+              {job.payment_status ? job.payment_status.charAt(0).toUpperCase() + job.payment_status.slice(1) : "Pending"}
             </Badge>
           </div>
         </div>
 
-        {/* Accept 
-        {job.status !== "completed" && (
-          <Button className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-7 rounded-lg text-lg">
-            Accept
+        {paymentStatus === "pending" && (
+          <Button
+            className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-7 rounded-lg text-lg"
+            onClick={handlePayNowClick}
+            disabled={intentLoading}
+          >
+            {intentLoading ? "Preparing..." : "Pay Now"}
           </Button>
-        )}*/}
+        )}
+
+        {/* Stripe modal */}
+        {showCheckout && clientSecret && (
+          <Elements
+            stripe={stripePromise}
+            options={{ clientSecret, appearance: { theme: "stripe" } }}
+          >
+            <StripeCheckout
+              jobId={job.id}
+              onClose={() => setShowCheckout(false)}
+              onSuccess={async () => {
+                // optionally refetch the job to update payment_status
+                try {
+                  const refreshed = await getSingleJob(id);
+                  setJob(refreshed);
+                } catch {}
+              }}
+            />
+          </Elements>
+        )}
       </div>
     </DashboardLayout>
   )

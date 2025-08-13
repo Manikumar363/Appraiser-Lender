@@ -55,6 +55,7 @@ export interface Job {
   appraiser_docs: string | null;
   status: "pending" | "accepted" | "client-visit" | "site-visit-scheduled" | "post-visit-summary" | "completed" | "cancelled";
   job_status?: "Client Visit" | "Active" | "Site Visit Scheduled" | "Post Visit Summary";
+  payment_status: "pending" | "paid";
   property_rights: string | null;
   occupant: string | null;
   comments: string | null;
