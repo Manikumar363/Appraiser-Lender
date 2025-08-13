@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LenderPaySuccessPage() {
+export const dynamic = "force-dynamic";
+
+function SuccessContent() {
   const router = useRouter();
   const params = useSearchParams();
   const status = (params.get("redirect_status") || "succeeded").toLowerCase();
@@ -34,5 +36,13 @@ export default function LenderPaySuccessPage() {
         <p className="text-gray-600">Finalizing and redirecting…</p>
       </div>
     </div>
+  );
+}
+
+export default function LenderPaySuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading…</div>}>
+      <SuccessContent />
+    </Suspense>
   );
 }

@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LenderPayCancelPage() {
+export const dynamic = "force-dynamic";
+
+function CancelContent() {
   const router = useRouter();
   const params = useSearchParams();
   const jobId = params.get("jobId") || "";
@@ -34,5 +36,13 @@ export default function LenderPayCancelPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function LenderPayCancelPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading…</div>}>
+      <CancelContent />
+    </Suspense>
   );
 }
