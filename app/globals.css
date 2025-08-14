@@ -3,7 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+/* Custom dropdown option styling */
+select option:hover {
+  background-color: #4e1b29 !important;
+  color: white !important;
+}
 
+select option:checked {
+  background-color: #4e1b29 !important;
+  color: white !important;
+}
+
+/* For webkit browsers */
+select:focus option:checked {
+  background-color: #4e1b29 !important;
+}
 .scrollbar-hide {
   -ms-overflow-style: none;  /* Internet Explorer 10+ */
   scrollbar-width: none;  /* Firefox */

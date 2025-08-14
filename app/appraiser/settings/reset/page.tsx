@@ -133,7 +133,7 @@ export default function ResetPasswordForm() {
               className="ml-2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
               disabled={loading}
             >
-              {showNewPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+              {showNewPassword ? <EyeIcon className="w-5 h-5" /> : <EyeOffIcon className="w-5 h-5" />}
             </button>
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function ResetPasswordForm() {
               className="ml-2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
               disabled={loading}
             >
-              {showConfirmPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+              {showConfirmPassword ? <EyeIcon className="w-5 h-5" /> : <EyeOffIcon className="w-5 h-5" />}
             </button>
           </div>
         </div>
