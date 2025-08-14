@@ -132,7 +132,7 @@ export default function ResetPasswordForm() {
                 aria-label={showOld ? "Hide password" : "Show password"}
                 className="ml-3 text-gray-600 hover:text-gray-800"
               >
-                {showOld ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showOld ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
           </div>
@@ -158,7 +158,7 @@ export default function ResetPasswordForm() {
                 aria-label={showNew ? "Hide password" : "Show password"}
                 className="ml-3 text-gray-600 hover:text-gray-800"
               >
-                {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showNew ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
 
@@ -209,7 +209,7 @@ export default function ResetPasswordForm() {
                 aria-label={showConfirm ? "Hide password" : "Show password"}
                 className="ml-3 text-gray-600 hover:text-gray-800"
               >
-                {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
           </div>
