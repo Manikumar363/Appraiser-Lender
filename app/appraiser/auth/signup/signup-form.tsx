@@ -7,18 +7,21 @@ import { useRouter } from "next/navigation";
 import { authApi } from "@/lib/api/auth";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import toast from 'react-hot-toast';
+import toast from "react-hot-toast";
 
 // Simple debounce hook - FIXED
 const useDebounce = (callback: Function, delay: number) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  
-  return useCallback((...args: any[]) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = setTimeout(() => callback(...args), delay);
-  }, [callback, delay]);
+
+  return useCallback(
+    (...args: any[]) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => callback(...args), delay);
+    },
+    [callback, delay]
+  );
 };
 
 // Enhanced but reasonable password validation
@@ -26,14 +29,14 @@ const validatePassword = (password: string) => {
   if (!password) return "Password is required";
   if (password.length < 8) return "Password must be at least 8 characters";
   if (password.length > 128) return "Password is too long";
-  
+
   // Check for at least one letter and one number (reasonable requirement)
   const hasLetter = /[a-zA-Z]/.test(password);
   const hasNumber = /\d/.test(password);
-  
+
   if (!hasLetter) return "Password must contain at least one letter";
   if (!hasNumber) return "Password must contain at least one number";
-  
+
   return null; // Valid password
 };
 
@@ -77,19 +80,19 @@ export default function SignUpForm() {
       usernameRef.current?.focus();
       return;
     }
-    
+
     if (username.trim().length < 3) {
       toast.error("Username must be at least 3 characters.");
       usernameRef.current?.focus();
       return;
     }
-    
+
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       toast.error("Please enter a valid email address.");
       emailRef.current?.focus();
       return;
     }
-    
+
     // Use the enhanced password validation
     const passwordError = validatePassword(password);
     if (passwordError) {
@@ -97,12 +100,12 @@ export default function SignUpForm() {
       passwordRef.current?.focus();
       return;
     }
-    
+
     if (!fullPhone || fullPhone.replace(/\D/g, "").length < 10) {
       toast.error("Please enter a valid phone number.");
       return;
     }
-    
+
     if (!acceptTerms) {
       toast.error("Please accept the Terms of Use and Privacy Policy.");
       return;
@@ -128,18 +131,30 @@ export default function SignUpForm() {
     try {
       setLoading(true);
       const loadingToast = toast.loading("Creating your account...");
-      
-      await authApi.signUp(username.trim(), email.trim(), password, phoneNumber, countryCode);
-      
-      toast.success("Account created! Please check your email for verification.", {
-        id: loadingToast,
-        duration: 5000
-      });
-      
+
+      await authApi.signUp(
+        username.trim(),
+        email.trim(),
+        password,
+        phoneNumber,
+        countryCode
+      );
+
+      toast.success(
+        "Account created! Please check your email for verification.",
+        {
+          id: loadingToast,
+          duration: 5000,
+        }
+      );
+
       setTimeout(() => {
-        router.push(`/appraiser/auth/verify-email?email=${encodeURIComponent(email.trim())}`);
+        router.push(
+          `/appraiser/auth/verify-email?email=${encodeURIComponent(
+            email.trim()
+          )}`
+        );
       }, 1500);
-      
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Sign up failed. Try again.");
     } finally {
@@ -217,11 +232,17 @@ export default function SignUpForm() {
             <label
               htmlFor="terms"
               className={`flex items-center justify-center w-5 h-5 rounded border-2 cursor-pointer transition-colors ${
-                acceptTerms ? "bg-[#2A020D] border-[#2A020D]" : "bg-white border-gray-300"
+                acceptTerms
+                  ? "bg-[#2A020D] border-[#2A020D]"
+                  : "bg-white border-gray-300"
               }`}
             >
               {acceptTerms && (
-                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <svg
+                  className="w-4 h-4 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -231,14 +252,23 @@ export default function SignUpForm() {
               )}
             </label>
           </div>
-          
-          <label htmlFor="terms" className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center justify-center">
+
+          <label
+            htmlFor="terms"
+            className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center justify-center"
+          >
             <span className="flex flex-wrap gap-2">
-              <Link href="/appraiser/terms" className="text-[#333333] hover:underline font-medium">
+              <Link
+                href="/appraiser/terms"
+                className="text-[#333333] hover:underline font-medium"
+              >
                 Terms of Use
               </Link>
               <span></span>
-              <Link href="/appraiser/privacy" className="text-[#333333] hover:underline font-medium">
+              <Link
+                href="/appraiser/privacy"
+                className="text-[#333333] hover:underline font-medium"
+              >
                 Privacy Policy
               </Link>
             </span>
@@ -248,7 +278,7 @@ export default function SignUpForm() {
         {/* Submit Button - matching lender side width */}
         <button
           type="submit"
-          className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#2A020D] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
+          className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#4e1b29] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
           disabled={loading}
         >
           {loading ? "Creating Account..." : "Sign Up"}
@@ -257,8 +287,13 @@ export default function SignUpForm() {
 
       {/* Footer Link - matching lender side alignment */}
       <div className="w-[765px] mx-auto text-center mt-4">
-        <span className="text-gray-700 text-base">Already Have An Account? </span>
-        <Link href="/appraiser/auth/signin" className="text-[#333333] font-medium hover:underline text-base">
+        <span className="text-gray-700 text-base">
+          Already Have An Account?{" "}
+        </span>
+        <Link
+          href="/appraiser/auth/signin"
+          className="text-[#333333] font-medium hover:underline text-base"
+        >
           Sign In
         </Link>
       </div>

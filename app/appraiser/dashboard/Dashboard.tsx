@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { appraiserJobsApi, AppraiserJob } from "@/app/appraiser/lib/job";
-import { HomeTimerIcon, BuildingIcon, LoadIcon, Select, Reject, TimerIcon } from "../../../components/icons";
+import {
+  HomeTimerIcon,
+  BuildingIcon,
+  LoadIcon,
+  Select,
+  Reject,
+  TimerIcon,
+} from "../../../components/icons";
 import { useAppraiserTimer } from "./Timer";
 
 interface DashboardContentProps {
@@ -19,27 +26,29 @@ function formatTimeLeft(expiry: string): string {
   return `${mins} Min Left`;
 }
 
-export default function DashboardContent({ searchQuery = "" }: DashboardContentProps) {
+export default function DashboardContent({
+  searchQuery = "",
+}: DashboardContentProps) {
   const [jobs, setJobs] = useState<AppraiserJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [jobActionLoading, setJobActionLoading] = useState<string | null>(null);
-  
-  const { 
-    timer, 
-    isRunning, 
+
+  const {
+    timer,
+    isRunning,
     toggleLoading,
     initialLoading,
-    handleToggle, 
-    detectActualTimerState 
+    handleToggle,
+    detectActualTimerState,
   } = useAppraiserTimer();
 
   const handleAcceptJob = async (jobId: string) => {
     if (jobActionLoading) return;
-    
+
     try {
       setJobActionLoading(jobId);
       await appraiserJobsApi.acceptJob(jobId);
-      setJobs(prev => prev.filter(job => job.job.id !== jobId));
+      setJobs((prev) => prev.filter((job) => job.job.id !== jobId));
       toast.success("Job accepted successfully!");
     } catch (err) {
       toast.error("Failed to accept job");
@@ -50,11 +59,11 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
 
   const handleDeclineJob = async (jobId: string) => {
     if (jobActionLoading) return;
-    
+
     try {
       setJobActionLoading(jobId);
       await appraiserJobsApi.declineJob(jobId);
-      setJobs(prev => prev.filter(job => job.job.id !== jobId));
+      setJobs((prev) => prev.filter((job) => job.job.id !== jobId));
       toast.success("Job declined");
     } catch (err) {
       toast.error("Failed to decline job");
@@ -68,15 +77,14 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
     const initializeApp = async () => {
       try {
         setLoading(true);
-        
+
         const jobsResult = await appraiserJobsApi.getPendingJobs().catch(() => {
           toast.error("Failed to load jobs");
           return [];
         });
-        
+
         setJobs(jobsResult);
         await detectActualTimerState();
-        
       } catch (err) {
         toast.error("Failed to initialize dashboard");
       } finally {
@@ -92,9 +100,13 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
     if (!searchQuery) return true;
     const details = job.job;
     return (
-      details.property_type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      details.property_type
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       details.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      details.intended_username?.toLowerCase().includes(searchQuery.toLowerCase())
+      details.intended_username
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase())
     );
   });
 
@@ -118,20 +130,18 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
                 {isTimerLoading ? "Loading..." : timer}
               </div>
               <div className="text-sm text-gray-500">
-                {loading ? (
-                  "Initializing dashboard..."
-                ) : isTimerLoading ? (
-                  "Syncing timer state..."
-                ) : isRunning ? (
-                  "Available for new job requests"
-                ) : (
-                  "Timer is stopped"
-                )}
+                {loading
+                  ? "Initializing dashboard..."
+                  : isTimerLoading
+                  ? "Syncing timer state..."
+                  : isRunning
+                  ? "Available for new job requests"
+                  : "Timer is stopped"}
               </div>
             </div>
           </div>
         </div>
-        
+
         {/* Enhanced Toggle Switch */}
         <div
           onClick={handleToggle}
@@ -156,14 +166,16 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
       {loading ? (
         <div className="flex items-center justify-center py-8">
           <div className="flex items-center gap-3 text-gray-500">
-            <LoadIcon className="w-4 h-4 text-[#2A020D] animate-spin"/>
+            <LoadIcon className="w-4 h-4 text-[#2A020D] animate-spin" />
             <span className="text-sm">Loading jobs...</span>
           </div>
         </div>
       ) : filteredJobs.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-sm text-gray-400 mb-2">
-            {searchQuery ? "No jobs found matching your search." : "No jobs assigned yet."}
+            {searchQuery
+              ? "No jobs found matching your search."
+              : "No jobs assigned yet."}
           </p>
         </div>
       ) : (
@@ -186,30 +198,30 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
                   <h3 className="text-lg font-semibold text-gray-800 mb-1">
                     {job.job.property_type || "Residential Appraisal"}
                   </h3>
-                  
+
                   {/* Address */}
                   <p className="text-sm text-gray-600 mb-2">
                     {job.job.address}
                   </p>
-                  
+
                   {/* Timer Badge */}
                   <span className="inline-flex items-center gap-1 text-xs text-white bg-[#FD5D2D] px-2 py-0.5 rounded-full w-fit">
-                    <TimerIcon/> {formatTimeLeft(job.job.expires_at)}
+                    <TimerIcon /> {formatTimeLeft(job.job.expires_at)}
                   </span>
                 </div>
               </div>
-              
+
               {/* RIGHT SIDE - Action Buttons */}
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleAcceptJob(job.job.id)}
                   disabled={jobActionLoading === job.job.id}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#2A020D] hover:bg-[#2A020D] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#2A020D] hover:bg-[#4e1b29] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {jobActionLoading === job.job.id ? (
                     <LoadIcon className="text-white animate-spin" />
                   ) : (
-                    <Select/>
+                    <Select />
                   )}
                 </button>
                 <button
@@ -217,11 +229,7 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
                   disabled={jobActionLoading === job.job.id}
                   className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-400 hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {jobActionLoading === job.job.id ? (
-                    <LoadIcon/>
-                  ) : (
-                    <Reject/>
-                  )}
+                  {jobActionLoading === job.job.id ? <LoadIcon /> : <Reject />}
                 </button>
               </div>
             </div>

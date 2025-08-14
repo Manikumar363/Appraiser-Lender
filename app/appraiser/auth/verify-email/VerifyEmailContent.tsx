@@ -26,7 +26,11 @@ export function AppraiserVerifyEmailContent() {
   useEffect(() => {
     if (!email) {
       toast.error("Email is required. Please restart the process.");
-      router.push(type === "register" ? "/appraiser/auth/signup" : "/appraiser/auth/forgot-password");
+      router.push(
+        type === "register"
+          ? "/appraiser/auth/signup"
+          : "/appraiser/auth/forgot-password"
+      );
     }
   }, [email, router, type]);
 
@@ -64,7 +68,9 @@ export function AppraiserVerifyEmailContent() {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const handleVerify = async () => {
@@ -81,45 +87,50 @@ export function AppraiserVerifyEmailContent() {
     setLoading(true);
     setError(""); // Clear previous errors
     const loadingToast = toast.loading("Verifying your code...");
-    
+
     try {
       if (type === "register") {
         await authApi.verifyRegisterOtp(email, otp);
-        
-        toast.success("Email verified successfully! Redirecting to sign in...", {
-          id: loadingToast,
-          duration: 3000
-        });
-        
+
+        toast.success(
+          "Email verified successfully! Redirecting to sign in...",
+          {
+            id: loadingToast,
+            duration: 3000,
+          }
+        );
+
         setTimeout(() => {
           router.push("/appraiser/auth/signin");
         }, 1500);
-        
       } else {
         const res = await authApi.verifyOtp(email, otp);
         const userId = res.data.userId;
-        
+
         if (!userId) {
           throw new Error("Invalid response from server. Please try again.");
         }
-        
+
         toast.success("Code verified! Please set your new password.", {
           id: loadingToast,
-          duration: 3000
+          duration: 3000,
         });
-        
+
         setTimeout(() => {
-          router.push(`/appraiser/auth/set-new-password?userId=${encodeURIComponent(userId)}`);
+          router.push(
+            `/appraiser/auth/set-new-password?userId=${encodeURIComponent(
+              userId
+            )}`
+          );
         }, 1500);
       }
-      
+
       setAttempts(0);
-      
     } catch (err: any) {
-      setAttempts(prev => prev + 1);
-      
+      setAttempts((prev) => prev + 1);
+
       const errorMessage = err?.response?.data?.message?.toLowerCase() || "";
-      
+
       if (errorMessage.includes("invalid") || errorMessage.includes("wrong")) {
         const remainingAttempts = 3 - attempts - 1;
         const errorMsg = `Invalid code. ${remainingAttempts} attempts remaining.`;
@@ -127,17 +138,20 @@ export function AppraiserVerifyEmailContent() {
         toast.error(errorMsg, { id: loadingToast });
       } else if (errorMessage.includes("expired")) {
         setError("Code has expired. Please request a new one.");
-        toast.error("Code has expired. Please request a new one.", { id: loadingToast });
+        toast.error("Code has expired. Please request a new one.", {
+          id: loadingToast,
+        });
         setCanResend(true);
         setTimeLeft(0);
       } else {
-        const errorMsg = err?.response?.data?.message || "Verification failed. Please try again.";
+        const errorMsg =
+          err?.response?.data?.message ||
+          "Verification failed. Please try again.";
         setError(errorMsg);
         toast.error(errorMsg, { id: loadingToast });
       }
-      
+
       setOtp("");
-      
     } finally {
       setLoading(false);
     }
@@ -145,36 +159,38 @@ export function AppraiserVerifyEmailContent() {
 
   const handleResend = async () => {
     if (!canResend || resendLoading) return;
-    
+
     setResendLoading(true);
     setError(""); // Clear previous errors
     const loadingToast = toast.loading("Sending new code...");
-    
+
     try {
       if (type === "register") {
         await authApi.resendRegisterOtp(email);
       } else {
         await authApi.forgotPassword(email);
       }
-      
+
       setOtp("");
       setTimeLeft(60);
       setCanResend(false);
       setAttempts(0);
-      
+
       toast.success("New verification code sent to your email!", {
         id: loadingToast,
-        duration: 4000
+        duration: 4000,
       });
-      
     } catch (err: any) {
       const errorMessage = err?.response?.data?.message || "";
-      
+
       if (errorMessage.includes("rate") || errorMessage.includes("limit")) {
         setError("Please wait before requesting another code.");
-        toast.error("Please wait before requesting another code.", { id: loadingToast });
+        toast.error("Please wait before requesting another code.", {
+          id: loadingToast,
+        });
       } else {
-        const errorMsg = errorMessage || "Failed to send code. Please try again.";
+        const errorMsg =
+          errorMessage || "Failed to send code. Please try again.";
         setError(errorMsg);
         toast.error(errorMsg, { id: loadingToast });
       }
@@ -185,31 +201,30 @@ export function AppraiserVerifyEmailContent() {
 
   return (
     <AuthLayout>
-      <Toaster 
+      <Toaster
         position="top-center"
         toastOptions={{
           duration: 4000,
           style: {
-            background: '#ffffff',
-            color: '#374151',
-            border: '1px solid #e5e7eb',
-            borderRadius: '12px',
-            fontSize: '14px',
-            maxWidth: '450px',
-            padding: '12px 16px',
+            background: "#ffffff",
+            color: "#374151",
+            border: "1px solid #e5e7eb",
+            borderRadius: "12px",
+            fontSize: "14px",
+            maxWidth: "450px",
+            padding: "12px 16px",
           },
           success: {
-            iconTheme: { primary: '#10b981', secondary: '#ffffff' },
+            iconTheme: { primary: "#10b981", secondary: "#ffffff" },
           },
           error: {
-            iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
+            iconTheme: { primary: "#ef4444", secondary: "#ffffff" },
           },
         }}
       />
 
       {/* UI Structure matching lender side exactly */}
       <div className="flex flex-col justify-center items-center min-h-screen w-full text-center px-4">
-        
         <h1 className="text-4xl font-bold text-gray-800 mb-4 self-start text-left">
           Email Verification
         </h1>
@@ -224,11 +239,11 @@ export function AppraiserVerifyEmailContent() {
           )}
         </p>
 
-        <OTPInput 
-          length={4} 
-          value={otp} 
-          onChange={setOtp} 
-          onComplete={() => {}} 
+        <OTPInput
+          length={4}
+          value={otp}
+          onChange={setOtp}
+          onComplete={() => {}}
         />
 
         {error && (
@@ -263,7 +278,7 @@ export function AppraiserVerifyEmailContent() {
           disabled={otp.length !== 4 || loading || isBlocked}
           className={`w-full py-4 rounded-full font-medium transition-colors text-base ${
             otp.length === 4 && !loading && !isBlocked
-              ? "bg-[#2A020D] text-white hover:bg-[#2A020D]"
+              ? "bg-[#2A020D] text-white hover:bg-[#4e1b29]"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >

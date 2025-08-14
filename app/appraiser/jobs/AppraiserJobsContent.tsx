@@ -174,8 +174,8 @@ export default function AppraiserJobsContent({
               key={f.key}
               className={`w-full py-2 rounded-full transition ${
                 activeFilter === f.key
-                  ? "bg-[#2A020D] hover:bg-[#2A020D] text-white"
-                  : "border-[#2A020D] text-[#2A020D] hover:bg-blue-50 bg-transparent border"
+                  ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
+                  : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"
               }`}
               onClick={() => setActiveFilter(f.key)}
             >
@@ -251,7 +251,7 @@ export default function AppraiserJobsContent({
               return (
                 <div
                   key={job.id}
-                  className="flex justify-between items-center bg-[#E9FFFD] p-4 rounded-lg shadow"
+                  className="flex justify-between items-center bg-[#FBEFF2] p-4 rounded-lg shadow"
                 >
                   {/* LEFT SIDE - Icon and Job Info */}
                   <div className="flex items-center gap-4">

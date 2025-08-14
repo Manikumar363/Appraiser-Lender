@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import DashboardLayout from "../../../../components/dashboard-layout";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { LockIcon } from "../../../../components/icons";
+
 import { authApi } from "@/lib/api/auth";
 
 export default function ResetPasswordForm() {
@@ -13,6 +15,11 @@ export default function ResetPasswordForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // Show/hide password states
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const router = useRouter();
 
@@ -20,6 +27,18 @@ export default function ResetPasswordForm() {
     e.preventDefault();
     setError("");
 
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setError("All fields are required!");
+      return;
+    }
+    if( oldPassword === newPassword) {
+      setError("New password cannot be the same as old password!");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setError("New password must be at least 8 characters long!");
+      return;
+    }
     if (newPassword !== confirmPassword) {
       setError("New password and retype password do not match!");
       return;
@@ -39,8 +58,8 @@ export default function ResetPasswordForm() {
 
         // Small delay for better UX
         setTimeout(() => {
-          router.push("/appraiser/settings");
-        }, 1500);
+          router.replace("/appraiser/settings");
+        }, 1000);
       } else {
         toast.dismiss(loadingToast);
         const errorMsg = res.data?.message || "Something went wrong.";
@@ -74,7 +93,7 @@ export default function ResetPasswordForm() {
           <div className="flex items-center bg-white rounded-full px-6 py-4 shadow-sm border border-gray-300">
             <LockIcon className="mr-4" />
             <input
-              type="password"
+              type={showOldPassword ? "text" : "password"}
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
               className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
@@ -82,6 +101,14 @@ export default function ResetPasswordForm() {
               required
               disabled={loading}
             />
+            <button
+              type="button"
+              onClick={() => setShowOldPassword(!showOldPassword)}
+              className="ml-2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+              disabled={loading}
+            >
+              {showOldPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 
@@ -92,7 +119,7 @@ export default function ResetPasswordForm() {
           <div className="flex items-center bg-white rounded-full px-6 py-4 shadow-sm border border-gray-300">
             <LockIcon className="mr-4" />
             <input
-              type="password"
+              type={showNewPassword ? "text" : "password"}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
@@ -100,6 +127,14 @@ export default function ResetPasswordForm() {
               required
               disabled={loading}
             />
+            <button
+              type="button"
+              onClick={() => setShowNewPassword(!showNewPassword)}
+              className="ml-2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+              disabled={loading}
+            >
+              {showNewPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 
@@ -110,7 +145,7 @@ export default function ResetPasswordForm() {
           <div className="flex items-center bg-white rounded-full px-6 py-4 shadow-sm border border-gray-300">
             <LockIcon className="mr-4" />
             <input
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
@@ -118,6 +153,14 @@ export default function ResetPasswordForm() {
               required
               disabled={loading}
             />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="ml-2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+              disabled={loading}
+            >
+              {showConfirmPassword ? <EyeOffIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+            </button>
           </div>
         </div>
 
@@ -131,7 +174,7 @@ export default function ResetPasswordForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2A020D] hover:bg-[#2A020D] disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-full font-medium transition-colors"
+            className="w-full bg-[#2A020D] hover:bg-[#4e1b29] disabled:opacity-50 disabled:cursor-not-allowed text-white py-4 rounded-full font-medium transition-colors"
           >
             {loading ? "Updating..." : "Update Password"}
           </button>

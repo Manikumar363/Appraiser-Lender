@@ -186,7 +186,7 @@ export function SimpleJobStatusModal({
       <Dialog.Panel className="bg-white max-w-5xl w-full rounded-2xl shadow-lg relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 w-8 h-8 bg-[#2A020D] text-white rounded-full flex items-center justify-center hover:bg-[#2A020D] z-20 shadow-lg"
+          className="absolute right-4 top-4 w-8 h-8 bg-[#2A020D] text-white rounded-full flex items-center justify-center hover:bg-[#4e1b29] z-20 shadow-lg"
         >
           ×
         </button>
@@ -436,7 +436,7 @@ export function SimpleJobStatusModal({
 
             <button
               type="submit"
-              className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#2A020D] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#4e1b29] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? (

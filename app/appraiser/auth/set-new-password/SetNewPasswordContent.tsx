@@ -298,7 +298,7 @@ export function SetNewPasswordContent() {
               disabled={!isFormValid || loading}
               className={`w-full bg-[#2A020D] text-white py-4 rounded-full font-medium transition-all duration-200 ${
                 isFormValid && !loading
-                  ? "hover:bg-[#2A020D] transform hover:scale-[1.02]"
+                  ? "hover:bg-[#4e1b29] transform hover:scale-[1.02]"
                   : "opacity-50 cursor-not-allowed"
               }`}
             >
