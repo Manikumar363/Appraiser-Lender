@@ -7,11 +7,11 @@ import { getMyJobs, Job } from "@/lib/api/jobs1";
 import { Plus } from "lucide-react";
 
 interface DashboardContentProps {
-  searchQuery: string;
+  searchQuery?: string;
   ts?: string; // cache-bust trigger passed from server
 }
 
-export default function DashboardContent({ searchQuery, ts = "" }: DashboardContentProps) {
+export default function DashboardContent({ searchQuery = "", ts = "" }: DashboardContentProps) {
   const router = useRouter();
 
   const [jobs, setJobs] = useState<Job[]>([]);
@@ -47,6 +47,7 @@ export default function DashboardContent({ searchQuery, ts = "" }: DashboardCont
     };
   }, [fetchJobs]);
 
+  const query = (searchQuery ?? "").toLowerCase();
   // Newest first
   const getCreated = (j: any) => {
     const d =
@@ -62,11 +63,11 @@ export default function DashboardContent({ searchQuery, ts = "" }: DashboardCont
   const sorted = [...jobs].sort((a, b) => getCreated(b) - getCreated(a));
 
   // Filter by search
-  const filteredJobs = sorted.filter(
-    (job) =>
-      (job.purpose?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (job.address?.toLowerCase() || "").includes(searchQuery.toLowerCase())
-  );
+  const filteredJobs = sorted.filter((job) => {
+    const purpose = (job?.purpose ?? "").toString().toLowerCase();
+    const address = (job?.address ?? "").toString().toLowerCase();
+    return purpose.includes(query) || address.includes(query);
+  });
 
   const handleNewJobRequest = () => {
     router.push("/lender/dashboard/new");
