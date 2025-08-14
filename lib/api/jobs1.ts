@@ -53,9 +53,9 @@ export interface Job {
   description: string;
   lender_doc: string;
   appraiser_docs: string | null;
-  status: "pending" | "accepted" | "client-visit" | "site-visit-scheduled" | "post-visit-summary" | "completed" | "cancelled";
-  job_status?: "Client Visit" | "Active" | "Site Visit Scheduled" | "Post Visit Summary";
-  payment_status: "pending" | "paid";
+  status: "pending" | "accepted" | "client_visit" | "site_visit_scheduled" | "post_visit_summary" | "completed" | "cancelled";
+  job_status?: "client_visit" | "active" | "site_visit_scheduled" | "post_visit_summary" | "completed" | "cancelled" | "in-progress";
+  payment_status: "pending" | "completed";
   property_rights: string | null;
   occupant: string | null;
   comments: string | null;
@@ -116,12 +116,12 @@ export function getProgressSteps(status: Job["status"] | "in-progress") {
   ];
   let currentStep = 0;
   switch (status) {
-    case "client-visit":
-    case "site-visit-scheduled":
+    case "client_visit":
+    case "site_visit_scheduled":
     case "in-progress":
       currentStep = 1;
       break;
-    case "post-visit-summary":
+    case "post_visit_summary":
       currentStep = 2;
       break;
     case "completed":

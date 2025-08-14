@@ -63,7 +63,7 @@ export default function JobsContent({
               { key: "All", label: "All" },
               { key: "in-progress", label: "In Progress" },
               { key: "completed", label: "Completed" },
-              { key: "cancel", label: "Cancel" },
+              { key: "cancelled", label: "Cancelled" },
             ] as { key: JobFilter; label: string }[]
           ).map((f) => (
             <Button

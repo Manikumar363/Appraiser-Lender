@@ -7,7 +7,7 @@ import DashboardLayout from "../../../../components/dashboard-layout"
 import { MapPin, ChevronDown, Phone, LocateIcon, FileText, StickyNote } from "lucide-react"
 import { UserIcon, TargettIcon, DollerIcon, SecondaryProfileIcon, CalendarIcon, DateIcon, UploadIcon, LocationIcon } from "../../../../components/icons"
 import { postJob } from "@/lib/api/jobs1"
-import PhoneInput from "react-phone-input-2";
+
 import "react-phone-input-2/lib/style.css";
 import { CountryData } from "react-phone-input-2";
 import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from "@react-google-maps/api";
@@ -17,6 +17,7 @@ import toast, { Toaster } from "react-hot-toast";
 import type { Libraries } from "@react-google-maps/api";
 import { Description } from "@radix-ui/react-toast"
 import Select, { components } from "react-select";
+import dynamic from "next/dynamic"
 
 // Import Library type from @react-google-maps/api and use Library[] type for libraries
 
@@ -25,8 +26,12 @@ const GOOGLE_MAP_LIBRARIES: Libraries = ["places"]; // <-- define outside compon
 // Add this function at the top of your component or in a utils file
 const allowOnlyAlphabets = (value: string) => value.replace(/[^a-zA-Z\s]/g, "");
 
+// Dynamically import PhoneInput on the client only to avoid SSR/hydration issues
+const PhoneInput = dynamic(() => import("react-phone-input-2"), { ssr: false })
+
 const allowOnlyDigits = (value: string) => value.replace(/[^0-9]/g, "");
 
+// Removed unused options and kept only the ones used in the component
 const options = [
   { value: "testing", label: "Testing" },
   { value: "new10", label: "new 10" },
@@ -129,6 +134,7 @@ export default function NewJobRequestPage() {
   const [propertyLocation, setPropertyLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false) // ADD
 
 
   const { isLoaded } = useJsApiLoader({
@@ -182,42 +188,90 @@ export default function NewJobRequestPage() {
     "new 2",
   ]
 
+  const buildPayload = () => {
+    const toNumber = (s: string) => {
+      const n = Number(String(s).replace(/[, ]/g, ""))
+      return Number.isFinite(n) ? n : 0
+    }
+    const plusCode = formData.country_code
+      ? `+${String(formData.country_code).replace(/^\+/, "")}`
+      : ""
+
+    return {
+      intended_user: formData.intended_user.trim(),
+      intended_username: formData.intended_username.trim(),
+      phone: formData.phone.trim(),
+      country_code: plusCode,
+      purpose: formData.purpose.trim(),
+      use: formData.use,
+      preferred_date: formData.preferred_date, // yyyy-mm-dd from input[type=date]
+      address: formData.address.trim(),
+      property_type: formData.property_type,
+      price: toNumber(formData.price),
+      description: formData.description.trim(),
+      lender_doc: formData.lender_doc || null,
+      property_occupied: formData.property_occupied,
+      purchase_price: formData.purchase_price ? toNumber(formData.purchase_price) : undefined,
+
+      // Backend flags/required extras
+      is_rush_req: false,
+      resident_country_code: "",
+      resident_phone: "",
+      resident_address: "",
+    }
+  }
+
+  const extractApiMessage = (err: any) => {
+    const data = err?.response?.data
+    if (!data) return err?.message || "Failed to submit job."
+    if (typeof data === "string") return data
+    return data.message || data.error || "Failed to submit job."
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploading) {
+      toast.error("Please wait for upload to finish.");
+      return;
+    }
     const validationErrors = validate();
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    if (Object.keys(validationErrors).length > 0) {
+      if (validationErrors.lender_doc) {
+        toast.error(validationErrors.lender_doc); // show toast for missing doc
+      } else {
+        // optional: toast the first other validation error
+        const firstMsg = Object.values(validationErrors)[0];
+        if (firstMsg) toast.error(firstMsg);
+      }
+      return;
+    }
+
+    const payload = buildPayload()
+    if (!payload.price || payload.price <= 0) {
+      toast.error("Please enter a valid property cost.")
+      return
+    }
 
     setLoading(true);
     try {
-      const payload = {
-        ...formData,
-        is_rush_req: false,
-        resident_country_code: "",
-        resident_phone: "",
-        resident_address: "",
-      };
+      // Helpful when debugging
+      // console.log("Submitting payload:", payload)
       await postJob(payload);
       toast.success("Job submitted successfully!", {
-        duration: 5000,
-        style: {
-          background: "#2A020D",
-          color: "#fff",
-          fontWeight: "bold",
-          fontSize: "1.1rem",
-          borderRadius: "8px",
-          boxShadow: "0 2px 12px rgba(1,79,157,0.15)",
-        },
-        iconTheme: {
-          primary: "#fff",
-          secondary: "#2A020D",
-        },
+        duration: 4000,
+        style: { background: "#2A020D", color: "#fff", fontWeight: "bold" },
       });
-      setTimeout(() => {
-        router.push("/lender/dashboard");
-      }, 1200);
-    } catch (err) {
-      toast.error("Failed to submit job."); // <-- Toast for error
+      router.push(`/lender/dashboard?ts=${Date.now()}`); // cache-bust navigation
+    } catch (err: any) {
+      // Surface API validation errors if present
+      const apiMsg = extractApiMessage(err)
+      const apiFieldErrors = err?.response?.data?.errors
+      if (apiFieldErrors && typeof apiFieldErrors === "object") {
+        setErrors(apiFieldErrors)
+      }
+      console.error("Job submit failed:", err?.response?.data || err)
+      toast.error(apiMsg)
     } finally {
       setLoading(false);
     }
@@ -262,38 +316,51 @@ export default function NewJobRequestPage() {
     if (!formData.price.trim()) newErrors.price = "Cost of the property is required";
     if (!formData.description.trim()) newErrors.description = "Description is required";
     if (!formData.property_occupied.trim()) newErrors.property_occupied = "Property occupied is required";
+    if (!formData.lender_doc) newErrors.lender_doc = "Document is required";
     // Add more as needed
     return newErrors;
   };
 
-  const handleFileUpload = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
+  // Upload a single file and return its public URL
+  const uploadSingleFile = async (file: File): Promise<string> => {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    if (!apiBaseUrl) throw new Error("NEXT_PUBLIC_BASE_URL is not configured");
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await axios.post(`${apiBaseUrl}/upload`, fd); // let axios set headers
+    const url =
+      res.data?.image ||
+      res.data?.url ||
+      res.data?.fileUrl ||
+      res.data?.data?.[0]?.url;
+    if (!url) throw new Error("Upload failed: No file URL returned.");
+    return url;
+  };
 
+  // Keep this helper but make it use uploadSingleFile and manage state
+  const handleFileUpload = async (file: File) => {
     try {
-      const apiBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const res = await axios.post(`${apiBaseUrl}/upload`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      setUploading(true);
+      const url = await uploadSingleFile(file);
+      handleInputChange("lender_doc", url);
+      setUploadedDocName(file.name);
+      setErrors(prev => {
+        const { lender_doc, ...rest } = prev;
+        return rest;
       });
-      // Use 'image' or 'url' depending on your backend response
-      const fileUrl = res.data.image || res.data.url;
-      if (fileUrl) {
-        handleInputChange("lender_doc", fileUrl); // Save public URL, not blob
-        setUploadedDocName(file.name);
-        toast.success("File uploaded successfully!");
-      } else {
-        toast.error("Upload failed: No file URL returned.");
-      }
-    } catch (err) {
-      toast.error("Failed to upload document.");
+      toast.success("File uploaded successfully!");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to upload document.");
+    } finally {
+      setUploading(false);
     }
   };
 
   const handleMultipleFileUpload = async (files: FileList) => {
     const fileArr = Array.from(files);
-    setUploadedFiles(prev => [...prev, ...fileArr]);
-    // Optionally, upload to server here as well
-    // ...existing upload logic...
+    setUploadedFiles(prev => [...prev, ...fileArr]); // show selection
+    // Upload the first file and set lender_doc (backend requires a single doc)
+    await handleFileUpload(fileArr[0]);
   };
 
   const handlePlaceChanged = () => {
@@ -423,6 +490,7 @@ export default function NewJobRequestPage() {
                   <label className="block text-base font-medium text-gray-900 mb-2">Intended Use</label>
                   <CustomInputIcon />
                   <Select
+                    instanceId="intended-use-select"
                     options={options}
                     styles={customStyles}
                     placeholder="Enter Input"
@@ -515,6 +583,7 @@ export default function NewJobRequestPage() {
                     <SecondaryProfileIcon />
                   </span>
                   <Select
+                    instanceId="property-type-select"
                     options={requestedByOptions.map(option => ({ value: option, label: option }))}
                     styles={customStyles}
                     placeholder="Enter Input"
@@ -567,6 +636,7 @@ export default function NewJobRequestPage() {
                     <SecondaryProfileIcon />
                   </span>
                   <Select
+                    instanceId="property-occupied-select"
                     options={purposeOptions.map(option => ({ value: option, label: option }))}
                     styles={customStyles}
                     placeholder="Enter Input"
@@ -647,10 +717,13 @@ export default function NewJobRequestPage() {
               <button
                 type="submit"
                 className="w-full bg-[#2A020D] rounded-lg text-white py-4 px-6 font-medium hover:bg-[#4e1b29] transition-colors text-lg"
-                disabled={loading}
+                disabled={loading || uploading} // UPDATED
               >
-                {loading ? "Submitting..." : "Submit Job"}
+                {loading ? "Submitting..." : uploading ? "Uploading..." : "Submit Job"}
               </button>
+              {errors.lender_doc && (
+                <p className="mt-2 text-sm text-red-600">{errors.lender_doc}</p>
+              )}
             </div>
           </form>
         </div>

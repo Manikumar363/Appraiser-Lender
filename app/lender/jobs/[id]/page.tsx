@@ -115,17 +115,17 @@ export default function JobDetailPage() {
                 <h2 className="text-lg font-semibold">{job.purpose}</h2>
                 <p className="text-gray-600 text-sm mb-1">{job.address}</p>
                 <Badge
-                  className="w-fit text-white inline-flex items-center px-4 py-2 rounded-full text-sm font-medium"
+                  className="w-fit text-white inline-flex items-center px-4 py-2 rounded-full text-sm font-medium cursor-pointer"
                   style={{
                     backgroundColor:
-                      job.status === "pending" ||
-                      job.status === "client-visit" ||
-                      job.status === "site-visit-scheduled" ||
-                      job.status === "post-visit-summary"
+                      job.job_status === "active" ||
+                      job.job_status === "client_visit" ||
+                      job.job_status === "site_visit_scheduled" ||
+                      job.job_status === "post_visit_summary"
                         ? "#FFC107"
-                        : job.status === "accepted"
+                        : job.job_status === "completed"
                         ? "#22c55e"
-                        : job.status === "cancelled"
+                        : job.job_status === "cancelled"
                         ? "#ef4444"
                         : "#FFC107"                
                   }}>
@@ -135,20 +135,20 @@ export default function JobDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
+              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
                 <MapIcon className="w-6 h-6 mr-1 " />
                 {job.address}
               </Button>
-              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors">
+              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
                 <CalendarIcon className="w-4 h-4 mr-2" />
                 {new Date(job.preferred_date).toLocaleDateString()}
               </Button>
-              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-blue-100 transition-colors"
+              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors"
               onClick={() => router.push(`/lender/chats/${job.id}`)}>
                 <MessageIcon className="w-5 h-5 mr-1" />
                 Message
               </Button>
-              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600 p-2">
+              <Button variant="ghost" size="sm" className="text-white hover:text-white p-2">
                 <RightArrow className="w-5 h-5" />
               </Button>
             </div>
@@ -236,8 +236,16 @@ export default function JobDetailPage() {
               </div>
               <span className="text-xl font-semibold text-gray-900">${job.price}</span>
             </div>
-            <Badge className={`${job.payment_status === "paid" ? "bg-green-500" : "bg-orange-400"} text-white px-4 py-2 rounded-full text-lg`}>
-              {job.payment_status ? job.payment_status.charAt(0).toUpperCase() + job.payment_status.slice(1) : "Pending"}
+            <Badge
+              className={`${
+                job.payment_status?.toLowerCase() === "completed"
+                  ? "bg-green-500 hover:bg-green-400"
+                  : "bg-orange-400 hover:bg-orange-300"
+              } text-white px-4 py-2 rounded-full text-lg transition-colors duration-200 cursor-pointer`}
+            >
+              {job.payment_status
+                ? job.payment_status.charAt(0).toUpperCase() + job.payment_status.slice(1)
+                : "Pending"}
             </Badge>
           </div>
         </div>
