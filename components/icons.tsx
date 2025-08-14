@@ -216,7 +216,7 @@ export const ResetIcon=(props: React.SVGProps<SVGSVGElement>)=>(
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         >
-        <rect width="52" height="52" rx="26" fill="#CDE6EE" />
+        <rect width="52" height="52" rx="26" fill="#FBEFF2" />
         <path
             fillRule="evenodd"
             clipRule="evenodd"
@@ -234,7 +234,7 @@ export const DeleteIcon=(props: React.SVGProps<SVGSVGElement>)=>(
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         >
-        <rect width="52" height="52" rx="26" fill="#CDE6EE" />
+        <rect width="52" height="52" rx="26" fill="#FBEFF2" />
         <path
             d="M26 15L35.5 20.5V31.5L26 37L16.5 31.5V20.5L26 15ZM26 29C26.7956 29 27.5587 28.6839 28.1213 28.1213C28.6839 27.5587 29 26.7956 29 26C29 25.2044 28.6839 24.4413 28.1213 23.8787C27.5587 23.3161 26.7956 23 26 23C25.2044 23 24.4413 23.3161 23.8787 23.8787C23.3161 24.4413 23 25.2044 23 26C23 26.7956 23.3161 27.5587 23.8787 28.1213C24.4413 28.6839 25.2044 29 26 29Z"
             fill="#2A020D"
