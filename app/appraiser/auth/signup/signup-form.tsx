@@ -248,7 +248,7 @@ export default function SignUpForm() {
         {/* Submit Button - matching lender side width */}
         <button
           type="submit"
-          className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#1a4f96] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
+          className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#2A020D] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
           disabled={loading}
         >
           {loading ? "Creating Account..." : "Sign Up"}

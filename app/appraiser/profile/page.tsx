@@ -105,7 +105,7 @@ export default function AppraiserProfilePage() {
     return (
       <DashboardLayout role="appraiser">
         <div className="flex items-center justify-center h-full">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2A020D]"></div>
         </div>
       </DashboardLayout>
     );
@@ -119,7 +119,7 @@ export default function AppraiserProfilePage() {
             <p className="text-red-600 mb-4">Profile failed to load.</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700"
+              className="bg-[#2A020D] text-white px-4 py-2 rounded-full hover:bg-[#2A020D]"
             >
               Retry
             </button>

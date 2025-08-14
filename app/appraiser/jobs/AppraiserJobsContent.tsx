@@ -174,7 +174,7 @@ export default function AppraiserJobsContent({
               key={f.key}
               className={`w-full py-2 rounded-full transition ${
                 activeFilter === f.key
-                  ? "bg-[#2A020D] hover:bg-blue-800 text-white"
+                  ? "bg-[#2A020D] hover:bg-[#2A020D] text-white"
                   : "border-[#2A020D] text-[#2A020D] hover:bg-blue-50 bg-transparent border"
               }`}
               onClick={() => setActiveFilter(f.key)}
@@ -310,7 +310,7 @@ export default function AppraiserJobsContent({
                       <button
                         title="Chat"
                         onClick={() => handleChatClick(details.id)}
-                        className="hover:text-blue-700 transition-colors"
+                        className="hover:text-[#2A020D] transition-colors"
                       >
                         <Msg />
                       </button>
@@ -320,7 +320,7 @@ export default function AppraiserJobsContent({
                           <a
                             href={`tel:+${details.country_code}${details.phone}`}
                             title="Call"
-                            className="hover:text-blue-700"
+                            className="hover:text-[#2A020D]"
                           >
                             <Call />
                           </a>
@@ -350,7 +350,7 @@ export default function AppraiserJobsContent({
                               );
                             }
                           }}
-                          className="hover:text-blue-700"
+                          className="hover:text-[#2A020D]"
                         >
                           <Map />
                         </button>
@@ -360,7 +360,7 @@ export default function AppraiserJobsContent({
                         <button
                           title="Update status"
                           onClick={() => openModal(job)}
-                          className="hover:text-blue-700"
+                          className="hover:text-[#2A020D]"
                         >
                           {job_status === "post_visit_summary" ? (
                             <Next />

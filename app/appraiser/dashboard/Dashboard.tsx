@@ -204,7 +204,7 @@ export default function DashboardContent({ searchQuery = "" }: DashboardContentP
                 <button
                   onClick={() => handleAcceptJob(job.job.id)}
                   disabled={jobActionLoading === job.job.id}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#2A020D] hover:bg-[#043a77] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#2A020D] hover:bg-[#2A020D] transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {jobActionLoading === job.job.id ? (
                     <LoadIcon className="text-white animate-spin" />

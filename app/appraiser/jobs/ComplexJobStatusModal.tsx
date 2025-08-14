@@ -98,7 +98,7 @@ export function ComplexJobStatusModal({
       <Dialog.Panel className="bg-white max-w-5xl w-full rounded-2xl shadow-lg relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 w-8 h-8 bg-[#2A020D] text-white rounded-full flex items-center justify-center hover:bg-blue-700 z-20 shadow-lg"
+          className="absolute right-4 top-4 w-8 h-8 bg-[#2A020D] text-white rounded-full flex items-center justify-center hover:bg-[#2A020D] z-20 shadow-lg"
         >
           ×
         </button>
@@ -283,7 +283,7 @@ export function ComplexJobStatusModal({
                                     PDF
                                   </span>
                                 ) : (
-                                  <span className="text-blue-600 text-xs font-bold">
+                                  <span className="text-[#2A020D] text-xs font-bold">
                                     IMG
                                   </span>
                                 )}
@@ -365,7 +365,7 @@ export function ComplexJobStatusModal({
 
             <button
               type="submit"
-              className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#014F9F] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#2A020D] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? (
