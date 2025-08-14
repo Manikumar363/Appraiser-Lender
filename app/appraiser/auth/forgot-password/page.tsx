@@ -100,7 +100,7 @@ export default function AppraiserForgotPasswordPage() {
               type="submit"
               disabled={loading}
               className={`w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium transition-colors ${
-                loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#1a4f96]"
+                loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#2A020D]"
               }`}
             >
               {loading ? "Sending..." : "Send Code"}
