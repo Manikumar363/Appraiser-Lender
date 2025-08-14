@@ -2,18 +2,17 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { JobCard } from "../../../components/job-card";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getMyJobs, Job } from "@/lib/api/jobs1";
 import { Plus } from "lucide-react";
 
 interface DashboardContentProps {
   searchQuery: string;
+  ts?: string; // cache-bust trigger passed from server
 }
 
-export default function DashboardContent({ searchQuery }: DashboardContentProps) {
+export default function DashboardContent({ searchQuery, ts = "" }: DashboardContentProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const ts = searchParams.get("ts") || ""; // cache-bust trigger
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
