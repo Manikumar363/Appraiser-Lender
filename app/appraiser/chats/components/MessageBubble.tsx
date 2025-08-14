@@ -25,7 +25,9 @@ export default function MessageBubble({ message, user }: MessageBubbleProps) {
 
   return (
     <div
-      className={`flex items-center mb-4 ${isAppraiser ? "justify-end" : "justify-start"}`}
+      className={`flex items-center mb-4 ${
+        isAppraiser ? "justify-end" : "justify-start"
+      }`}
     >
       {/* Avatar on left - aligned with center of bubble */}
       {!isAppraiser && (
@@ -42,7 +44,7 @@ export default function MessageBubble({ message, user }: MessageBubbleProps) {
 
       {/* Message Bubble Container */}
       <div className="flex flex-col max-w-md min-w-[280px]">
-        <div className="rounded-[20px] px-6 py-4 bg-[#E9FFFD] shadow-sm">
+        <div className="rounded-[20px] px-6 py-4 bg-[#FBEFF2] shadow-sm">
           {/* Name & Role Row */}
           <div className="flex justify-between items-center mb-3">
             <span className="text-base font-bold text-gray-900 truncate mr-2">
@@ -52,18 +54,17 @@ export default function MessageBubble({ message, user }: MessageBubbleProps) {
               {getDisplayRole(message.senderRole)}
             </span>
           </div>
-          
+
           {/* Message Content */}
           <div className="text-base text-gray-900 mb-3 leading-relaxed break-words">
             {message.content}
           </div>
-          
+
           {/* Time & Status Row */}
           <div className="flex justify-between items-center">
             <span className="text-xs text-gray-500">{message.timestamp}</span>
-           
-              <CheckCircle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
-            
+
+            <CheckCircle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
           </div>
         </div>
       </div>

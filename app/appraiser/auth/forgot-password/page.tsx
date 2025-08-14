@@ -42,7 +42,9 @@ export default function AppraiserForgotPasswordPage() {
       toast.success("Reset code sent to your email!");
 
       router.push(
-        `/appraiser/auth/verify-email?email=${encodeURIComponent(trimmedEmail)}&type=reset`
+        `/appraiser/auth/verify-email?email=${encodeURIComponent(
+          trimmedEmail
+        )}&type=reset`
       );
     } catch (err: any) {
       const backendMessage =
@@ -80,9 +82,12 @@ export default function AppraiserForgotPasswordPage() {
       <div className="flex items-center justify-center min-h-screen px-6">
         <div className="w-full max-w-[765px]">
           <div className="mb-4">
-            <h1 className="text-4xl font-bold text-gray-900 mb-5">Forgot Password</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-5">
+              Forgot Password
+            </h1>
             <p className="text-gray-800 text-base">
-              Don't worry! It happens. Please enter the email address linked with your account.
+              Don't worry! It happens. Please enter the email address linked
+              with your account.
             </p>
           </div>
 
@@ -100,13 +105,15 @@ export default function AppraiserForgotPasswordPage() {
               type="submit"
               disabled={loading}
               className={`w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium transition-colors ${
-                loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#2A020D]"
+                loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#4e1b29]"
               }`}
             >
               {loading ? "Sending..." : "Send Code"}
             </button>
           </form>
-          {formError && <p className="text-red-600 text-sm mt-2">{formError}</p>}
+          {formError && (
+            <p className="text-red-600 text-sm mt-2">{formError}</p>
+          )}
 
           <div className="mt-6 w-[765px] text-center">
             <Link

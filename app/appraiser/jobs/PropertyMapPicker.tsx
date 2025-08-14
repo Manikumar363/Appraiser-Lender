@@ -83,7 +83,7 @@ export function PropertyMapPicker({
           />
         )}
       </GoogleMap>
-      <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+      <div className="mt-3 p-3 bg-[#FBEFF2] rounded-lg">
         <p className="text-sm text-blue-800 font-medium">
           📍 Click anywhere on the map to select property location
         </p>

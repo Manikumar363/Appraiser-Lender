@@ -11,7 +11,9 @@ import { authApi } from "@/lib/api/auth";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AppraiserSignInPage() {
-  const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("appraiser");
+  const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">(
+    "appraiser"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,8 +24,9 @@ export default function AppraiserSignInPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
-  }, []); 
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+  }, []);
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
     if (role === selectedRole) return;
@@ -79,7 +82,8 @@ export default function AppraiserSignInPage() {
       }, 1000);
     } catch (err: any) {
       const status = err?.response?.status;
-      const message = err?.response?.data?.message || err?.message || "Sign in failed";
+      const message =
+        err?.response?.data?.message || err?.message || "Sign in failed";
 
       if (status === 401 || status === 403) {
         setPassword("");
@@ -101,7 +105,7 @@ export default function AppraiserSignInPage() {
           duration: 5000,
         });
       } else {
-        toast.error(message, { 
+        toast.error(message, {
           id: loadingToast,
           duration: 5000,
         });
@@ -142,17 +146,20 @@ export default function AppraiserSignInPage() {
           </div>
 
           <div className="mb-6">
-            <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
+            <RoleSelector
+              selectedRole={selectedRole}
+              onRoleChange={handleRoleChange}
+            />
           </div>
 
           <div className="mb-5">
             <h2
               className="text-[42px] font-semibold text-gray-800 leading-[100%] mb-1"
               style={{
-              fontFamily: "Urbanist",
-              fontWeight: 600,
-              fontStyle: "normal",
-              letterSpacing: "0%",
+                fontFamily: "Urbanist",
+                fontWeight: 600,
+                fontStyle: "normal",
+                letterSpacing: "0%",
               }}
             >
               Welcome Back Appraisers
@@ -207,7 +214,7 @@ export default function AppraiserSignInPage() {
 
             <button
               type="submit"
-              className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium hover:bg-[#2A020D] transition-colors text-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium hover:bg-[#4e1b29] transition-colors text-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}

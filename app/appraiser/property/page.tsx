@@ -93,7 +93,7 @@ const PropertyPage = () => {
     <DashboardLayout role="appraiser">
       <div className="p-2 ">
         {/* Header */}
-        <div className="bg-[#E9FFFD] rounded-lg p-6 mb-6 shadow-sm">
+        <div className="bg-[#FBEFF2] rounded-lg p-6 mb-6 shadow-sm">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4 flex-1">
               <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
@@ -186,7 +186,7 @@ const PropertyPage = () => {
 
           <button
             type="submit"
-            className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#2A020D] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#4e1b29] transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (

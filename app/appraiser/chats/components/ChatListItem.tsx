@@ -12,7 +12,7 @@ export default function ChatListItem({ chat, onClick }: ChatListItemProps) {
 
   return (
     <div
-      className="bg-[#2A020D] rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:bg-[#2A020D]"
+      className="bg-[#2A020D] rounded-2xl px-6 py-5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:bg-[#4e1b29]"
       onClick={() => onClick(chat.jobId)}
     >
       <div className="flex items-center justify-between">
@@ -27,7 +27,7 @@ export default function ChatListItem({ chat, onClick }: ChatListItemProps) {
             <p className="text-blue-100 text-sm">{chat.location}</p>
           </div>
         </div>
-        
+
         <div className="flex -space-x-3">
           {participantAvatars.map((participant) => (
             <img
@@ -37,7 +37,7 @@ export default function ChatListItem({ chat, onClick }: ChatListItemProps) {
               className="min-w-9 h-10 rounded-full border-2 border-white object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = '/placeholder.svg';
+                target.src = "/placeholder.svg";
               }}
             />
           ))}
