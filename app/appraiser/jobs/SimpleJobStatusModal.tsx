@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Dialog } from "@headlessui/react";
+import { Dialog, Listbox } from "@headlessui/react";
 import { uploadDocs } from "../lib/job";
 import {
   ProfileIcon3,
@@ -10,6 +10,8 @@ import {
   ResidentialIcon,
   Notes,
 } from "@/components/icons";
+import { ChevronDown, Check } from "lucide-react";
+
 
 interface SimpleJobStatusModalProps {
   open: boolean;
@@ -249,43 +251,58 @@ export function SimpleJobStatusModal({
           <h2 className="text-xl font-semibold mb-6">Update Status</h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block mb-2 text-gray-700 font-medium">
-                Update Status
-              </label>
-              <div className="relative">
-                <select
-                  className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
-                  value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                  required
-                >
-                  {getStatusOptions().map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                  <LoadIcon className="w-5 h-5 text-gray-400" />
-                </div>
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
+           <div>
+  <label className="block mb-2 text-gray-700 font-medium">
+    Update Status
+  </label>
+  <Listbox value={selectedStatus} onChange={setSelectedStatus}>
+    <div className="relative">
+      <Listbox.Button className="w-full border border-gray-300 rounded-full px-12 py-3 bg-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] text-left">
+        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+          <LoadIcon className="w-5 h-5 text-gray-400" />
+        </div>
+        <span className="block truncate">
+          {getStatusOptions().find(option => option.value === selectedStatus)?.label || "Enter Status"}
+        </span>
+        <ChevronDown className="w-5 h-5 text-gray-400" />
+      </Listbox.Button>
+      
+      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-lg border border-gray-200 text-base overflow-auto focus:outline-none">
+        {getStatusOptions().map((option) => (
+          <Listbox.Option
+            key={option.value}
+            value={option.value}
+            className={({ active, selected }) =>
+  `cursor-pointer select-none relative py-3 pl-8 pr-4 ${
+    selected 
+      ? 'bg-[#2A020D] text-white font-medium' 
+      : active 
+        ? 'bg-[#FBEFF2] text-[#2A020D]' 
+        : 'text-gray-900'
+  }`
+}
+
+
+          >
+            {({ selected }) => (
+              <>
+                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                  {option.label}
+                </span>
+                {selected && (
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-2">
+                    <Check className="h-4 w-4" />
+                  </span>
+                )}
+              </>
+            )}
+          </Listbox.Option>
+        ))}
+      </Listbox.Options>
+    </div>
+  </Listbox>
+</div>
+
 
             <div>
               <label className="block mb-2 text-gray-700 font-medium">
