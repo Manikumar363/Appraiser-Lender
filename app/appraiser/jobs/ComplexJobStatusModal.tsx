@@ -1,8 +1,10 @@
 "use client";
+import { Listbox } from '@headlessui/react'
 import React, { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { uploadDocs } from "../lib/job";
 import { EnhancedPropertyMapPicker } from "./EnhancedPropertyMapPicker";
+import { ChevronDown, Check } from 'lucide-react'
 import {
   ProfileIcon3,
   BuildingIcon,
@@ -179,7 +181,7 @@ export function ComplexJobStatusModal({
                 required
                 min="1900-01-01"
                 max="2999-12-31"
-                className="w-full border border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
+                className="w-full border appearance-none border-gray-300 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
               />
             </div>
 
@@ -325,37 +327,49 @@ export function ComplexJobStatusModal({
             </div>
 
             <div>
-              <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
-                Status
-              </label>
-              <div className="relative">
-                <select
-                  className="w-full border border-gray-300 rounded-full px-12 py-3 pr-10 appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent"
-                  value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value)}
-                >
-                  <option value="completed">Completed</option>
-                </select>
-                <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                  <LoadIcon className="w-5 h-5 text-gray-400" />
-                </div>
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <svg
-                    className="w-5 h-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </div>
+  <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
+    Status
+  </label>
+  <Listbox value={selectedStatus} onChange={setSelectedStatus}>
+    <div className="relative">
+      <Listbox.Button className="w-full h-12 border border-gray-300 rounded-full px-12 py-3 bg-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] text-left">
+        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+          <LoadIcon className="w-5 h-5 text-gray-400" />
+        </div>
+        <span className="block truncate">
+          {selectedStatus === 'completed' ? 'Completed' : 'Select status'}
+        </span>
+        <ChevronDown className="w-5 h-5 text-gray-400" />
+      </Listbox.Button>
+      
+      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-lg border border-gray-200 text-base overflow-auto focus:outline-none">
+        <Listbox.Option
+          value="completed"
+          className={({ active, selected }) =>
+            `cursor-pointer select-none relative py-3 pl-8 pr-4 ${
+              active ? 'bg-[#4e1b29]' : ''
+            } ${selected ? 'bg-[#2A020D] text-white' : 'text-gray-900'}`
+          }
+        >
+          {({ selected }) => (
+            <>
+              <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                Completed
+              </span>
+              {selected && (
+                <span className="absolute inset-y-0 left-0 flex items-center pl-2">
+                  <Check className="h-4 w-4" />
+                </span>
+              )}
+            </>
+          )}
+        </Listbox.Option>
+      </Listbox.Options>
+    </div>
+  </Listbox>
+</div>
+
+
 
             {error && (
               <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-200">
