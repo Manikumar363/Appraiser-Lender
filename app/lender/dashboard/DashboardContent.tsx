@@ -117,7 +117,7 @@ export default function DashboardContent({ searchQuery = "", ts = "" }: Dashboar
               className="cursor-pointer"
               onClick={() => router.push(`/lender/jobs/${job.id}`)}
             >
-              <JobCard title={job.property_type} location={job.address} jobStatus={job.job_status} />
+              <JobCard title={job.intended_username} location={job.address} jobStatus={job.job_status} />
             </div>
           ))}
 
