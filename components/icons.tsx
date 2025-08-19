@@ -763,5 +763,12 @@ export const BuildingIcon2= (props: React.SVGProps<SVGSVGElement>)=>(
   </svg>
 )
 
+export const property = (props: React.SVGProps<SVGSVGElement>)=>(
+  <svg width="45" height="45" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="52" height="52" rx="26" fill="#FBEFF2"/>
+<path d="M16 21H34M30 16L35 21L30 26M36 31H18M22 26L17 31L22 36" stroke="#2A020D" stroke-width="2"/>
+</svg>
 
+
+)
 

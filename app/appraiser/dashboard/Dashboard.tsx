@@ -183,7 +183,7 @@ export default function DashboardContent({
           {filteredJobs.map((job) => (
             <div
               key={job.id}
-              className="flex items-center justify-between bg-[#e8fafa] p-4 rounded-xl shadow-sm"
+              className="flex items-center justify-between bg-[#FBEFF2] p-4 rounded-xl shadow-sm"
             >
               {/* LEFT SIDE - Fixed Layout Structure */}
               <div className="flex items-center gap-4">

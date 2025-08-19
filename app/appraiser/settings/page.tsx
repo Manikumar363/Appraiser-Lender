@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import { DeleteIcon, ResetIcon, ArrowIcon } from "../../../components/icons";
+import { DeleteIcon, ResetIcon, ArrowIcon, property } from "../../../components/icons";
+
 import DashboardLayout from "../../../components/dashboard-layout";
 import { authApi } from "@/lib/api/auth";
 import { useRouter } from "next/navigation";
@@ -60,27 +61,30 @@ export default function AppraiserSettingsPage() {
 
   const topNavigationItems = [
     { icon: ResetIcon, label: "Reset Password", href: "/appraiser/settings/reset" },
+    { icon: property, label: "Properties", href: "/appraiser/settings/property" },
   ];
 
   return (
     <DashboardLayout role="appraiser">
       <div className="px-4">
-        {topNavigationItems.map((item, index) => (
-          <Link
-            key={index}
-            href={item.href}
-            className="flex items-center justify-between py-5 hover:bg-gray-100 transition px-2"
-          >
-            <div className="flex items-center gap-4">
-              <item.icon className="w-10 h-10" />
-              <span className="text-gray-800 font-medium">{item.label}</span>
-            </div>
-            <ArrowIcon />
-          </Link>
-        ))}
-
-        {/* Straight divider line */}
+      {topNavigationItems.map((item, index) => (
+        <div key={index}>
+        <Link
+          href={item.href}
+          className="flex items-center justify-between py-5 hover:bg-gray-100 transition px-2"
+        >
+          <div className="flex items-center gap-4">
+          <item.icon className="w-10 h-10" />
+          <span className="text-gray-800 font-medium">{item.label}</span>
+          </div>
+          <ArrowIcon />
+        </Link>
         <div className="border-t border-gray-300"></div>
+        </div>
+      ))}
+
+      {/* Divider before delete button */}
+      <div className="border-t border-gray-300"></div>
 
         {/* Delete account button */}
         <button

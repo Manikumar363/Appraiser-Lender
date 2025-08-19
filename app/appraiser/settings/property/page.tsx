@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { BuildingIcon, LoadIcon, ResidentialIcon } from "@/components/icons";
-import { propertyApi } from "../lib/property";
+import { propertyApi } from "../../lib/property";
 import DashboardLayout from "@/components/dashboard-layout";
 
 interface Property {

@@ -36,7 +36,6 @@ const appraiserTopNav = [
   { icon: HomeIcon, label: "Home", href: "/appraiser/dashboard" },
   { icon: JobsIcon, label: "Jobs", href: "/appraiser/jobs" },
   { icon: ProfileIcon, label: "Profile", href: "/appraiser/profile" },
-  {icon: LandPlot, label: "Proposal Preference", href: "/appraiser/property" },
 ]
 
 const lenderBottomNav = [
