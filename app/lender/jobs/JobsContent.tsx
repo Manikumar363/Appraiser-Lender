@@ -175,7 +175,7 @@ export default function JobsContent({
                   <BuildingIcon className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.property_type}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.intended_username}</h3>
                   <p className="text-gray-600 text-sm">{job.address}</p>
                   <div className="flex justify-start mt-3">
                     <Badge

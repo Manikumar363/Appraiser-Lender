@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { getSingleTransaction } from "@/lib/api/transaction";
 
+function getCityCountry(address: string) {
+  const parts = address.split(",").map(part => part.trim());
+  if (parts.length >= 3) {
+    return parts[2] + ", " + parts[parts.length - 1];
+  }
+  return address;
+}
+
+
 export default function TransactionDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -102,9 +111,9 @@ export default function TransactionDetailPage() {
                 <CalendarIcon className="w-5 h-5" />
                 {new Date(transaction.created_at).toLocaleDateString()}
               </span>
-              <span className="flex items-center gap-2 truncate   bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#F6D7DE] hover:border-[#2A020D]">
+              <span className="flex items-center justify-center gap-2 truncate w-[200px]  bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#F6D7DE] hover:border-[#2A020D]">
                 <ResidentialIcon className="w-5 h-5" />
-                {transaction.job?.address}
+                {getCityCountry(transaction.job?.address)}
               </span>
             </div>
           </div>

@@ -22,6 +22,14 @@ import { createPaymentIntent } from "@/lib/api/transaction"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PK as string)
 
+function getCityCountry(address: string) {
+  const parts = address.split(",").map(part => part.trim());
+  if (parts.length >= 3) {
+    return parts[2] + ", " + parts[parts.length - 1];
+  }
+  return address;
+}
+
 export default function JobDetailPage() {
   const params = useParams()!
   const [job, setJob] = useState<JobDetail | null>(null)
@@ -155,9 +163,9 @@ export default function JobDetailPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
+              <Button variant="outline" size="sm" className="bg-[#FBEFF2] truncate border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
                 <MapIcon className="w-6 h-6 mr-1 " />
-                {job.address}
+                {getCityCountry(job.address)}
               </Button>
               <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
                 <CalendarIcon className="w-4 h-4 mr-2" />
