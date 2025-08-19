@@ -1,5 +1,6 @@
-import { useRouter, useSearchParams } from "next/navigation";
+'use client'
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Job, JobFilter, getMyJobsPaginated } from "../../../lib/api/jobs1";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +8,6 @@ import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, LoadIcon, RightArrow 
 import { Plus } from "lucide-react";
 
 interface JobsContentProps {
-  // REMOVE jobs/loading/error props when using server-side fetch
   searchQuery: string;
   activeFilter: JobFilter;
   setActiveFilter: (f: JobFilter) => void;
@@ -31,12 +31,10 @@ export default function JobsContent({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Server data
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Simple server-side pagination (Prev/Next only)
   const PAGE_SIZE = 10;
   const [currentPage, setCurrentPage] = useState<number>(() => {
     const p = Number(searchParams.get("page") || "1");
@@ -70,7 +68,7 @@ export default function JobsContent({
         page: currentPage,
         limit: PAGE_SIZE,
         search: searchQuery,
-        status: activeFilter, // "All" -> backend returns all
+        status: activeFilter,
       });
       setJobs(res.jobs || []);
       setMeta({
@@ -89,13 +87,11 @@ export default function JobsContent({
     fetchJobs();
   }, [fetchJobs]);
 
-  // Reset to page 1 when search/filter changes
   useEffect(() => {
     setCurrentPage(1);
     setPageInUrl(1);
   }, [searchQuery, activeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Helpers (unchanged)
   const strIncludes = (v: string | undefined, q: string) => (v || "").toLowerCase().includes(q.toLowerCase());
   const matchesFilter = (job: Job, filter: JobFilter) => {
     const s = (job.status || "").toLowerCase();
@@ -111,7 +107,6 @@ export default function JobsContent({
     }
   };
 
-  // Optional extra client-side search on the server page
   const visibleJobs = useMemo(() => {
     const q = (searchQuery || "").trim().toLowerCase();
     return jobs.filter((job) => {
@@ -147,7 +142,7 @@ export default function JobsContent({
               { key: "All", label: "All" },
               { key: "in-progress", label: "In Progress" },
               { key: "completed", label: "Completed" },
-              { key: "cancel", label: "Cancelled" }, // fixed key
+              { key: "cancel", label: "Cancelled" },
             ] as { key: JobFilter; label: string }[]
           ).map((f) => (
             <Button
@@ -182,7 +177,6 @@ export default function JobsContent({
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.property_type}</h3>
                   <p className="text-gray-600 text-sm">{job.address}</p>
-                  {/* Status Badge below address */}
                   <div className="flex justify-start mt-3">
                     <Badge
                       className="px-3 py-2 rounded-full text-sm font-medium flex items-center text-white transition-colors cursor-pointer hover:brightness-110"
