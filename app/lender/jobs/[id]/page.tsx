@@ -140,7 +140,7 @@ export default function JobDetailPage() {
                 <BuildingIcon className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-lg font-semibold">{job.purpose}</h2>
+                <h2 className="text-lg font-semibold">{job.intended_username}</h2>
                 <p className="text-gray-600 text-sm mb-1">{job.address}</p>
                 <Badge
                   className="w-fit text-white inline-flex items-center px-4 py-2 rounded-full text-sm font-medium cursor-pointer"
