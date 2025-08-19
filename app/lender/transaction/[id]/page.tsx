@@ -102,7 +102,7 @@ export default function TransactionDetailPage() {
                 <CalendarIcon className="w-5 h-5" />
                 {new Date(transaction.created_at).toLocaleDateString()}
               </span>
-              <span className="flex items-center gap-2 bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#F6D7DE] hover:border-[#2A020D]">
+              <span className="flex items-center gap-2 truncate   bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 font-medium transition-all duration-150 cursor-pointer hover:bg-[#F6D7DE] hover:border-[#2A020D]">
                 <ResidentialIcon className="w-5 h-5" />
                 {transaction.job?.address}
               </span>
@@ -114,34 +114,42 @@ export default function TransactionDetailPage() {
             <h2 className="text-xl font-semibold mb-4">Payment Section</h2>
             <div className="flex items-center justify-between bg-[#FBEFF2] rounded-2xl px-6 py-6 shadow border border-[#E6F9F3]">
               {/* Left: Logo and Title */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-start gap-2">
+                {/* Card Logo */}
                 {transaction.card_details?.brand === "visa" ? (
                   <img
-                    src="/visa.png"
+                    src="/images/visa.png"
                     alt="Visa Logo"
-                    className="w-14 h-14 rounded-full object-contain bg-white"
+                    className="w-16 h-16 object-contain"
                   />
                 ) : transaction.card_details?.brand === "mastercard" ? (
                   <img
-                    src="/mastercard.png"
+                    src="/images/master-card3.png"
                     alt="Mastercard Logo"
-                    className="w-14 h-14 rounded-full object-contain bg-white"
+                    className="w-16 h-16 object-contain"
                   />
                 ) : (
                   <img
-                    src="/images/mastercard.png"
+                    src="/images/master-card3.png"
                     alt="Mastercard Logo"
-                    className="w-14 h-14 rounded-full object-contain bg-white"
+                    className="w-16 h-16 object-contain"
                   />
                 )}
+                {/* Residential Appraisal and Transaction Details */}
                 <div>
                   <div className="font-semibold text-lg text-[#222]">
-                    {transaction.card?.type}
+                    {transaction.job?.address || "Residential Appraisal"}
                   </div>
                   <div className="text-[#7B7B7B] text-base mt-2">
-                    Transaction ID :<br />
-                    Reference Number<br />
-                    Payment Date
+                    Transaction ID : {transaction.id}<br />
+                    Reference Number: {transaction.payment_id || "N/A"}<br />
+                    Payment Date: {transaction.status?.toLowerCase() === "completed" && transaction.updated_at
+                      ? new Date(transaction.updated_at).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "N/A"}
                   </div>
                 </div>
               </div>
@@ -166,7 +174,10 @@ export default function TransactionDetailPage() {
                   )}
                 </div>
                 <div className="text-[#222] text-base">
-                  {new Date(transaction.created_at).toLocaleDateString()}
+                    {transaction.status?.toLowerCase() === "completed" && transaction.updated_at
+                      ? new Date(transaction.updated_at).toLocaleDateString()
+                      : "N/A"
+                    }
                 </div>
               </div>
             </div>

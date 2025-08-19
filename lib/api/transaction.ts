@@ -1,7 +1,7 @@
 import api from "./axios"; // or use fetch if you prefer
 
 
-export async function getTransactions(params: { page: number; limit: number; status: string }) {
+export async function getTransactions(params: { page: number; limit: number}) {
   const query = new URLSearchParams(params as any).toString();
   const res = await api.get(`/transactions?${query}`);
   return res.data;
@@ -24,3 +24,4 @@ export async function createPaymentIntent(jobId: string): Promise<CreatePaymentI
     clientSecret: data.clientSecret ?? data.client_secret,
   };
 }
+

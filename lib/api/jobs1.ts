@@ -70,6 +70,8 @@ export interface Job {
   assigned_appraiser: AssignedAppraiser[];
 }
 
+export type JobFilter = "All" | "in-progress" | "completed" | "cancel";
+
 export interface JobListResponse {
   success: boolean;
   total_jobs: number;
@@ -83,8 +85,6 @@ export interface JobDetail extends Job {
   amount: number
   paymentStatus: "paid" | "pending"
 }
-export type JobFilter = "All" | "in-progress" | "completed" | "cancel";
-
 export function getStatusColor(status: string) {
   switch (status?.toLowerCase()) {
     case "client-visit":
@@ -142,9 +142,7 @@ export async function getMyJobs(filter: JobFilter = "in-progress"): Promise<Job[
   const res = await api.get(`/lender/my-jobs`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  if (res.status === 204) {
-    return [];
-  }
+  if (res.status === 204) return [];
 
   const allJobs: Job[] = res.data.jobs;
 
@@ -152,9 +150,9 @@ export async function getMyJobs(filter: JobFilter = "in-progress"): Promise<Job[
     case "All":
       return allJobs;
     case "in-progress":
-      return allJobs.filter(
-        (job) =>
-          ["pending","Client Visit", "Active", "Site Visit Scheduled", "Post Visit Summary"].includes(job.status)
+      // backend statuses: pending | accepted | client_visit | site_visit_scheduled | post_visit_summary
+      return allJobs.filter((job) =>
+        ["pending", "accepted", "client_visit", "site_visit_scheduled", "post_visit_summary"].includes(job.status)
       );
     case "completed":
       return allJobs.filter((job) => job.status === "completed");
@@ -165,6 +163,29 @@ export async function getMyJobs(filter: JobFilter = "in-progress"): Promise<Job[
   }
 }
 
+// New: server-side pagination
+export async function getMyJobsPaginated(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: JobFilter; // optional, pass "All" to fetch without status filter
+}): Promise<JobListResponse> {
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const { page = 1, limit = 10, search, status } = params || {};
+
+  const query: Record<string, any> = { page, limit };
+  if (search) query.q = search;
+  if (status && status !== "All") query.status = status;
+
+  const res = await api.get(`/lender/my-jobs`, {
+    params: query,
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  // API already returns { success, total_jobs, page, limit, totalPages, jobs }
+  return res.data as JobListResponse;
+}
+
 export async function postJob(payload: any): Promise<any>{
     const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
     const res = await api.post("job/post-job", payload, {
@@ -172,12 +193,25 @@ export async function postJob(payload: any): Promise<any>{
     });
     return res.data;
 }
-export async function getSingleJob(id: string): Promise<JobDetail> {
+export async function getSingleJob(
+  id: string,
+  { noCache = false }: { noCache?: boolean } = {}
+): Promise<JobDetail> {
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const res = await api.get(`/lender/my-jobs/${id}`, {
-    headers: { Authorization: `Bearer ${token}` },
+  const url = `/lender/my-jobs/${id}${noCache ? `?ts=${Date.now()}` : ""}`;
+  const res = await api.get(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(noCache
+        ? {
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          }
+        : {}),
+    },
   });
   const data = res.data;
-  if (!data.success || !data.job) throw new Error("Job not found");
+  if (!data?.success || !data?.job) throw new Error("Job not found");
   return data.job;
 }

@@ -1,14 +1,13 @@
-import { Job, JobFilter } from "../../../lib/api/jobs1";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Job, JobFilter, getMyJobsPaginated } from "../../../lib/api/jobs1";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, LoadIcon, RightArrow } from "@/components/icons";
 import { Plus } from "lucide-react";
 
 interface JobsContentProps {
-  jobs: Job[];
-  loading: boolean;
-  error: string;
+  // REMOVE jobs/loading/error props when using server-side fetch
   searchQuery: string;
   activeFilter: JobFilter;
   setActiveFilter: (f: JobFilter) => void;
@@ -24,22 +23,107 @@ function getCityCountry(address: string) {
 }
 
 export default function JobsContent({
-  jobs,
-  loading,
-  error,
   searchQuery,
   activeFilter,
   setActiveFilter,
   onNewJob,
 }: JobsContentProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const filteredJobs = jobs.filter(
-    (job) =>
-      job.property_type?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.job_status?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Server data
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Simple server-side pagination (Prev/Next only)
+  const PAGE_SIZE = 10;
+  const [currentPage, setCurrentPage] = useState<number>(() => {
+    const p = Number(searchParams.get("page") || "1");
+    return Number.isFinite(p) && p > 0 ? p : 1;
+  });
+  const [meta, setMeta] = useState<{ page: number; totalPages: number; totalJobs: number }>({
+    page: 1,
+    totalPages: 1,
+    totalJobs: 0,
+  });
+
+  const setPageInUrl = (page: number) => {
+    const sp = new URLSearchParams(Array.from(searchParams.entries()));
+    sp.set("page", String(page));
+    router.replace(`/lender/jobs?${sp.toString()}`);
+  };
+
+  const goToPage = (page: number) => {
+    const safe = Math.min(Math.max(1, page), meta.totalPages || 1);
+    if (safe === currentPage) return;
+    setCurrentPage(safe);
+    setPageInUrl(safe);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const fetchJobs = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const res = await getMyJobsPaginated({
+        page: currentPage,
+        limit: PAGE_SIZE,
+        search: searchQuery,
+        status: activeFilter, // "All" -> backend returns all
+      });
+      setJobs(res.jobs || []);
+      setMeta({
+        page: res.page,
+        totalPages: res.totalPages,
+        totalJobs: res.total_jobs,
+      });
+    } catch (e: any) {
+      setError(e?.message || "Failed to fetch jobs");
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, searchQuery, activeFilter]);
+
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
+
+  // Reset to page 1 when search/filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+    setPageInUrl(1);
+  }, [searchQuery, activeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Helpers (unchanged)
+  const strIncludes = (v: string | undefined, q: string) => (v || "").toLowerCase().includes(q.toLowerCase());
+  const matchesFilter = (job: Job, filter: JobFilter) => {
+    const s = (job.status || "").toLowerCase();
+    switch (filter) {
+      case "in-progress":
+        return ["pending", "accepted", "client_visit", "site_visit_scheduled", "post_visit_summary"].includes(s);
+      case "completed":
+        return s === "completed";
+      case "cancel":
+        return s === "cancelled";
+      default:
+        return true;
+    }
+  };
+
+  // Optional extra client-side search on the server page
+  const visibleJobs = useMemo(() => {
+    const q = (searchQuery || "").trim().toLowerCase();
+    return jobs.filter((job) => {
+      const matchSearch =
+        !q ||
+        strIncludes(job.property_type, q) ||
+        strIncludes(job.address, q) ||
+        strIncludes(job.job_status, q) ||
+        strIncludes(job.status, q);
+      return matchSearch && matchesFilter(job, activeFilter);
+    });
+  }, [jobs, searchQuery, activeFilter]);
 
   if (loading) {
     return (
@@ -63,7 +147,7 @@ export default function JobsContent({
               { key: "All", label: "All" },
               { key: "in-progress", label: "In Progress" },
               { key: "completed", label: "Completed" },
-              { key: "cancelled", label: "Cancelled" },
+              { key: "cancel", label: "Cancelled" }, // fixed key
             ] as { key: JobFilter; label: string }[]
           ).map((f) => (
             <Button
@@ -81,14 +165,14 @@ export default function JobsContent({
         </div>
 
         {/* Jobs List */}
-        {filteredJobs.length === 0 && (
+        {visibleJobs.length === 0 && (
           <div className="flex items-center justify-center py-24">
             <span className="text-gray-500 text-xl font-medium">
               No jobs found.
             </span>
           </div>
         )}
-        {filteredJobs.map((job) => (
+        {visibleJobs.map((job) => (
           <div key={job.id} className="bg-[#FBEFF2] rounded-xl p-2 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -145,7 +229,32 @@ export default function JobsContent({
             </div>
           </div>
         ))}
+
+        {/* Simple pagination controls (server-side) */}
+        {meta.totalJobs > 0 && (
+          <div className="flex items-center justify-between pt-4 mb-6">
+            <button
+              className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+              onClick={() => goToPage(meta.page - 1)}
+              disabled={meta.page <= 1}
+            >
+              Previous
+            </button>
+            <div className="text-sm text-gray-600">
+              Page {meta.page} of {meta.totalPages} • Showing {(meta.page - 1) * PAGE_SIZE + (visibleJobs.length ? 1 : 0)}-
+              {Math.min(meta.page * PAGE_SIZE, meta.totalJobs)} of {meta.totalJobs}
+            </div>
+            <button
+              className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+              onClick={() => goToPage(meta.page + 1)}
+              disabled={meta.page >= meta.totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
+
       <div className="w-full pb-8">
         <button
           onClick={onNewJob}

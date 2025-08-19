@@ -39,18 +39,37 @@ export default function JobDetailPage() {
   }
   const id = params.id
 
+  const pollJobUntilPaid = async (jobId: string) => {
+    for (let i = 0; i < 12; i++) {
+      try {
+        const refreshed = await getSingleJob(jobId, { noCache: true });
+        const s = (refreshed.payment_status ?? "").toLowerCase();
+        if (["completed", "succeeded", "paid"].includes(s)) {
+          setJob(refreshed);
+          return true;
+        }
+      } catch {}
+      await new Promise((r) => setTimeout(r, 1200));
+    }
+    return false;
+  };
+
   useEffect(() => {
     async function loadJob() {
       try {
-        const data = await getSingleJob(id)
-        setJob(data)
-      } catch (err: any) {
-        setError(err.message || "Failed to load job")
+        const j = await getSingleJob(id, { noCache: true });
+        setJob(j);
+        // If user landed back here and webhook is slightly delayed, poll once
+        if ((j.payment_status ?? "").toLowerCase() === "pending") {
+          pollJobUntilPaid(id);
+        }
+      } catch (e: any) {
+        setError(e?.message || "Failed to load job");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-    loadJob()
+    loadJob();
   }, [id])
 
   // Start payment: create intent via API and open Elements modal
@@ -87,6 +106,7 @@ export default function JobDetailPage() {
 
   const progressSteps = getProgressSteps(job.status)
   const paymentStatus = (job.payment_status ?? "").toLowerCase()
+  const isPaid = ["completed", "succeeded", "paid"].includes(paymentStatus)
 
   return (
     <DashboardLayout role="lender">
@@ -237,20 +257,14 @@ export default function JobDetailPage() {
               <span className="text-xl font-semibold text-gray-900">${job.price}</span>
             </div>
             <Badge
-              className={`${
-                job.payment_status?.toLowerCase() === "completed"
-                  ? "bg-green-500 hover:bg-green-400"
-                  : "bg-orange-400 hover:bg-orange-300"
-              } text-white px-4 py-2 rounded-full text-lg transition-colors duration-200 cursor-pointer`}
+              className={`${isPaid ? "bg-green-500 hover:bg-green-400" : "bg-orange-400 hover:bg-orange-300"} text-white px-4 py-2 rounded-full text-lg transition-colors duration-200 cursor-pointer`}
             >
-              {job.payment_status
-                ? job.payment_status.charAt(0).toUpperCase() + job.payment_status.slice(1)
-                : "Pending"}
+              {isPaid ? "Completed" : "Pending"}
             </Badge>
           </div>
         </div>
 
-        {paymentStatus === "pending" && (
+        {!isPaid && (
           <Button
             className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-7 rounded-lg text-lg"
             onClick={handlePayNowClick}
@@ -270,11 +284,10 @@ export default function JobDetailPage() {
               jobId={job.id}
               onClose={() => setShowCheckout(false)}
               onSuccess={async () => {
-                // optionally refetch the job to update payment_status
-                try {
-                  const refreshed = await getSingleJob(id);
-                  setJob(refreshed);
-                } catch {}
+                // Optimistic UI
+                setJob(prev => (prev ? { ...prev, payment_status: "completed" } as JobDetail : prev))
+                // Reconcile with backend
+                await pollJobUntilPaid(id);
               }}
             />
           </Elements>

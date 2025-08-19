@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { JobCard } from "../../../components/job-card";
-import { useRouter } from "next/navigation";
-import { getMyJobs, Job } from "@/lib/api/jobs1";
+import { useRouter, useSearchParams } from "next/navigation";
+import { getMyJobsPaginated, Job } from "@/lib/api/jobs1"; // UPDATED import
 import { Plus } from "lucide-react";
 
 interface DashboardContentProps {
@@ -13,28 +13,66 @@ interface DashboardContentProps {
 
 export default function DashboardContent({ searchQuery = "", ts = "" }: DashboardContentProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Pagination (server-driven)
+  const PAGE_SIZE = 10;
+  const [currentPage, setCurrentPage] = useState<number>(() => {
+    const p = Number(searchParams.get("page") || "1");
+    return Number.isFinite(p) && p > 0 ? p : 1;
+  });
+  const [meta, setMeta] = useState<{ page: number; limit: number; totalJobs: number; totalPages: number }>({
+    page: 1,
+    limit: PAGE_SIZE,
+    totalJobs: 0,
+    totalPages: 1,
+  });
+
+  const setPageInUrl = (page: number) => {
+    const sp = new URLSearchParams(Array.from(searchParams.entries()));
+    sp.set("page", String(page));
+    router.replace(`/lender/dashboard?${sp.toString()}`);
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    setPageInUrl(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Fetch from server by page/limit/search
   const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
-      const data = await getMyJobs("All");
-      setJobs(Array.isArray(data) ? data : []);
+      const res = await getMyJobsPaginated({
+        page: currentPage,
+        limit: PAGE_SIZE,
+        search: searchQuery,
+        status: "All",
+      });
+      setJobs(res.jobs || []);
+      setMeta({
+        page: res.page,
+        limit: res.limit,
+        totalJobs: res.total_jobs,
+        totalPages: res.totalPages,
+      });
     } catch (err) {
       console.error("Fetch jobs error:", err);
       setError("Failed to fetch jobs");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [currentPage, searchQuery]);
 
   useEffect(() => {
     fetchJobs();
-  }, [fetchJobs, ts]); // refetch when redirected with ?ts=
+  }, [fetchJobs, ts]);
 
   useEffect(() => {
     const onFocus = () => fetchJobs();
@@ -47,31 +85,19 @@ export default function DashboardContent({ searchQuery = "", ts = "" }: Dashboar
     };
   }, [fetchJobs]);
 
-  const query = (searchQuery ?? "").toLowerCase();
-  // Newest first
-  const getCreated = (j: any) => {
-    const d =
-      j?.created_at || j?.createdAt || j?.created_on || j?.created || j?.updated_at || "";
-    const t = d ? Date.parse(d) : NaN;
-    if (!Number.isFinite(t)) {
-      const idNum = Number(j?.id);
-      return Number.isFinite(idNum) ? idNum : 0;
-    }
-    return t;
-  };
-
-  const sorted = [...jobs].sort((a, b) => getCreated(b) - getCreated(a));
-
-  // Filter by search
-  const filteredJobs = sorted.filter((job) => {
-    const purpose = (job?.purpose ?? "").toString().toLowerCase();
-    const address = (job?.address ?? "").toString().toLowerCase();
-    return purpose.includes(query) || address.includes(query);
-  });
+  useEffect(() => {
+    // reset to page 1 when search changes
+    setCurrentPage(1);
+    setPageInUrl(1);
+  }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleNewJobRequest = () => {
     router.push("/lender/dashboard/new");
   };
+
+  // For footer text
+  const showingStart = (meta.page - 1) * meta.limit + (jobs.length ? 1 : 0);
+  const showingEnd = Math.min(meta.page * meta.limit, meta.totalJobs);
 
   return (
     <div className="flex flex-col h-full min-h-[calc(90vh-14px)]">
@@ -79,12 +105,13 @@ export default function DashboardContent({ searchQuery = "", ts = "" }: Dashboar
         <div className="space-y-4 mb-8">
           {loading && <div>Loading...</div>}
           {error && <div className="text-red-500">{error}</div>}
-          {!loading && !error && filteredJobs.length === 0 && (
+          {!loading && !error && jobs.length === 0 && (
             <div className="text-gray-500 text-center py-8 text-lg font-medium">
               No results found
             </div>
           )}
-          {filteredJobs.map((job) => (
+
+          {jobs.map((job) => (
             <div
               key={job.id}
               className="cursor-pointer"
@@ -93,8 +120,32 @@ export default function DashboardContent({ searchQuery = "", ts = "" }: Dashboar
               <JobCard title={job.property_type} location={job.address} jobStatus={job.job_status} />
             </div>
           ))}
+
+          {/* Pagination controls (server-side) */}
+          {!loading && !error && meta.totalJobs > 0 && (
+            <div className="flex items-center justify-between pt-4">
+              <button
+                className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+                onClick={() => goToPage(Math.max(1, meta.page - 1))}
+                disabled={meta.page <= 1}
+              >
+                Previous
+              </button>
+              <div className="text-sm text-gray-600">
+                Page {meta.page} of {meta.totalPages} • Showing {showingStart}-{showingEnd} of {meta.totalJobs}
+              </div>
+              <button
+                className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+                onClick={() => goToPage(Math.min(meta.totalPages, meta.page + 1))}
+                disabled={meta.page >= meta.totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
       <div className="w-full pb-8">
         <button
           onClick={handleNewJobRequest}
