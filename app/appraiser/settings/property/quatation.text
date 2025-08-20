@@ -1,0 +1,45 @@
+{/* Existing Quotations */}
+        {/* {quotations.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-xl font-semibold mb-6">Your Quotations</h2>
+            <div className="space-y-4">
+              {quotations.map((quotation: any) => (
+                <div
+                  key={quotation.id}
+                  className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">
+                        {quotation.property_type?.property_type}
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-2">
+                        Market Range: {quotation.cost}
+                      </p>
+                      <p className="text-sm text-gray-600 mb-1">
+                        Appraiser Cost: ${quotation.cost_of_appraiser}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Appraiser: {quotation.appraiser?.name}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      <span
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                          quotation.approved
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {quotation.approved ? "Approved" : "Pending"}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(quotation.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )} */}
