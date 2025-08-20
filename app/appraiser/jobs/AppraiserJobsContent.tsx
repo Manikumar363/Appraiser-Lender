@@ -235,7 +235,7 @@ export default function AppraiserJobsContent({
                 const totalMinutes = Math.max(Math.floor(diff / (1000 * 60)), 0);
                 return (
                   <span
-                  className={`${baseClass} text-[#2A020D] border border-[#2A020D] bg-white`}
+                  className={`${baseClass} text-[#2A020D] border border-[#2A020D]`}
                   >
                   <TimerIcon2 />
                   {`${totalMinutes}m Left`}
