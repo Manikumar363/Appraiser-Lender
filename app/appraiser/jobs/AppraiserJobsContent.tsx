@@ -47,9 +47,9 @@ function filterJobs(job: AppraiserJob, filter: FilterKey) {
 function getStatusColor(status: string) {
   switch (status) {
     case "accepted":
-      return "bg-[#2A020D]";
+      return "bg-blue-600";
     case "active":
-      return "bg-[#2A020D]";
+      return "bg-blue-600";
     case "site_visit_scheduled":
       return "bg-[#FFC107]";
     case "client_visit":
@@ -232,14 +232,13 @@ export default function AppraiserJobsContent({
                   (diff % (1000 * 60 * 60)) / (1000 * 60)
                 );
 
+                const totalMinutes = Math.max(Math.floor(diff / (1000 * 60)), 0);
                 return (
                   <span
-                    className={`${baseClass} text-[#2A020D] border border-[#2A020D] bg-white`}
+                  className={`${baseClass} text-[#2A020D] border border-[#2A020D] bg-white`}
                   >
-                    <TimerIcon2 />
-                    {hours > 0
-                      ? `${hours}h ${minutes}m Left`
-                      : `${minutes}m Left`}
+                  <TimerIcon2 />
+                  {`${totalMinutes}m Left`}
                   </span>
                 );
               };
