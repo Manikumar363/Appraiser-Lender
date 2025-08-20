@@ -60,7 +60,7 @@ export default function AppraiserSettingsPage() {
   };
 
   const topNavigationItems = [
-      { icon: property, label: "Properties", href: "/appraiser/settings/property" },
+      { icon: property, label: "Proposal Preferences", href: "/appraiser/settings/property" },
     { icon: ResetIcon, label: "Reset Password", href: "/appraiser/settings/reset" },
   ];
 
