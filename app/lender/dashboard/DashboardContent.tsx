@@ -120,31 +120,31 @@ export default function DashboardContent({ searchQuery = "", ts = "" }: Dashboar
               <JobCard title={job.intended_username} location={job.address} jobStatus={job.job_status} />
             </div>
           ))}
-
-          {/* Pagination controls (server-side) */}
-          {!loading && !error && meta.totalJobs > 0 && (
-            <div className="flex items-center justify-between pt-4">
-              <button
-                className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
-                onClick={() => goToPage(Math.max(1, meta.page - 1))}
-                disabled={meta.page <= 1}
-              >
-                Previous
-              </button>
-              <div className="text-sm text-gray-600">
-                Page {meta.page} of {meta.totalPages} • Showing {showingStart}-{showingEnd} of {meta.totalJobs}
-              </div>
-              <button
-                className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
-                onClick={() => goToPage(Math.min(meta.totalPages, meta.page + 1))}
-                disabled={meta.page >= meta.totalPages}
-              >
-                Next
-              </button>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Move pagination controls here */}
+      {!loading && !error && meta.totalJobs > 0 && (
+        <div className="flex items-center justify-between pt-4 pb-4">
+          <button
+            className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+            onClick={() => goToPage(Math.max(1, meta.page - 1))}
+            disabled={meta.page <= 1}
+          >
+            Previous
+          </button>
+          <div className="text-sm text-gray-600">
+            Page {meta.page} of {meta.totalPages} • Showing {showingStart}-{showingEnd} of {meta.totalJobs}
+          </div>
+          <button
+            className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+            onClick={() => goToPage(Math.min(meta.totalPages, meta.page + 1))}
+            disabled={meta.page >= meta.totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
 
       <div className="w-full pb-8">
         <button

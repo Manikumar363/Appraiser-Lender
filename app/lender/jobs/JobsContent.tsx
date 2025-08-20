@@ -68,7 +68,7 @@ export default function JobsContent({
         page: currentPage,
         limit: PAGE_SIZE,
         search: searchQuery,
-        status: activeFilter,
+        status: "All",
       });
       setJobs(res.jobs || []);
       setMeta({
@@ -94,14 +94,22 @@ export default function JobsContent({
 
   const strIncludes = (v: string | undefined, q: string) => (v || "").toLowerCase().includes(q.toLowerCase());
   const matchesFilter = (job: Job, filter: JobFilter) => {
-    const s = (job.status || "").toLowerCase();
+    const status = (job.job_status || "").toLowerCase();
     switch (filter) {
       case "in-progress":
-        return ["pending", "accepted", "client_visit", "site_visit_scheduled", "post_visit_summary"].includes(s);
+        return [
+          "pending",
+          "accepted",
+          "client_visit",
+          "site_visit_scheduled",
+          "post_visit_summary",
+          "active"
+        ].includes(status);
       case "completed":
-        return s === "completed";
-      case "cancel":
-        return s === "cancelled";
+        return status === "completed";
+      case "cancelled":
+        return status === "cancelled";
+      case "All":
       default:
         return true;
     }
@@ -133,8 +141,9 @@ export default function JobsContent({
   }
 
   return (
-    <div className="flex flex-col h-full min-h-[calc(80vh-14px)] p-3">
-      <div className="flex-1">
+    <div className="flex flex-col h-full min-h-[calc(90vh-14px)]">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
         {/* Filter Tabs */}
         <div className="flex gap-4 mb-8">
           {(
@@ -142,7 +151,7 @@ export default function JobsContent({
               { key: "All", label: "All" },
               { key: "in-progress", label: "In Progress" },
               { key: "completed", label: "Completed" },
-              { key: "cancel", label: "Cancelled" },
+              { key: "cancelled", label: "Cancelled" },
             ] as { key: JobFilter; label: string }[]
           ).map((f) => (
             <Button
@@ -160,95 +169,97 @@ export default function JobsContent({
         </div>
 
         {/* Jobs List */}
-        {visibleJobs.length === 0 && (
-          <div className="flex items-center justify-center py-24">
+        {visibleJobs.length === 0 ? (
+          <div className="flex items-center justify-center py-24 flex-1">
             <span className="text-gray-500 text-xl font-medium">
               No jobs found.
             </span>
           </div>
-        )}
-        {visibleJobs.map((job) => (
-          <div key={job.id} className="bg-[#FBEFF2] rounded-xl p-2 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-[#2A020D] rounded-full flex items-center justify-center">
-                  <BuildingIcon className="w-8 h-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.intended_username}</h3>
-                  <p className="text-gray-600 text-sm">{job.address}</p>
-                  <div className="flex justify-start mt-3">
-                    <Badge
-                      className="px-3 py-2 rounded-full text-sm font-medium flex items-center text-white transition-colors cursor-pointer hover:brightness-110"
-                      style={{
-                        backgroundColor:
-                          job.job_status?.toLowerCase() === "pending" ? "#FFC107"
-                          : job.job_status?.toLowerCase() === "completed" ? "#22c55e"
-                          : job.job_status?.toLowerCase() === "cancelled" ? "#ef4444"
-                          : job.job_status?.toLowerCase() === "accepted" || job.job_status?.toLowerCase() === "active" ? "#00F90A"
-                          : "#FFC107"
-                      }}
-                    >
-                      <LoadIcon className="w-5 h-5 mr-2" />
-                      {job.job_status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
-                    </Badge>
+        ) : (
+          visibleJobs.map((job) => (
+            <div key={job.id} className="bg-[#FBEFF2] rounded-xl p-2 shadow border border-[#E6F9F3] hover:shadow-md transition-shadow mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-[#2A020D] rounded-full flex items-center justify-center">
+                    <BuildingIcon className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">{job.intended_username}</h3>
+                    <p className="text-gray-600 text-sm">{job.address}</p>
+                    <div className="flex justify-start mt-3">
+                      <Badge
+                        className="px-3 py-2 rounded-full text-sm font-medium flex items-center text-white transition-colors cursor-pointer hover:brightness-110"
+                        style={{
+                          backgroundColor:
+                            job.job_status?.toLowerCase() === "pending" ? "#FFC107"
+                            : job.job_status?.toLowerCase() === "completed" ? "#22c55e"
+                            : job.job_status?.toLowerCase() === "cancelled" ? "#ef4444"
+                            : job.job_status?.toLowerCase() === "accepted" || job.job_status?.toLowerCase() === "active" ? "#22c55e"
+                            : "#FFC107"
+                        }}
+                      >
+                        <LoadIcon className="w-5 h-5 mr-2" />
+                        {job.job_status?.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 flex-nowrap">
-                <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
-                  <MapIcon className="w-6 h-6 mr-1" />
-                  {getCityCountry(job.address)}
-                </Button>
-                <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  {job.preferred_date ? new Date(job.preferred_date).toLocaleDateString() : "N/A"}
-                </Button>
-                <Button variant="outline" size="sm" className="bg-white border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-[#FBEFF2] transition-colors"
-                  onClick={() => router.push(`/lender/chats/${job.id}`)}>
-                  <MessageIcon className="w-5 h-5 me-1" />
-                  Message
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  className="bg-white text-[#2A020D] hover:bg-[#FBEFF2] p-0 rounded-full flex items-center justify-center transition-colors w-[40px] h-[40px] shadow"
-                  onClick={() => router.push(`/lender/jobs/${job.id}`)}
-                >
-                  <span className="flex items-center justify-center w-[44px] h-[44px] rounded-full">
-                    <RightArrow className="w-7 h-7" />
-                  </span>
-                </Button>
+                <div className="flex items-center gap-3 flex-nowrap">
+                  <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
+                    <MapIcon className="w-6 h-6 mr-1" />
+                    {getCityCountry(job.address)}
+                  </Button>
+                  <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-white transition-colors">
+                    <CalendarIcon className="w-4 h-4 mr-2" />
+                    {job.preferred_date ? new Date(job.preferred_date).toLocaleDateString() : "N/A"}
+                  </Button>
+                  <Button variant="outline" size="sm" className="bg-white border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-[#FBEFF2] transition-colors"
+                    onClick={() => router.push(`/lender/chats/${job.id}`)}>
+                    <MessageIcon className="w-5 h-5 me-1" />
+                    Message
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    className="bg-white text-[#2A020D] hover:bg-[#FBEFF2] p-0 rounded-full flex items-center justify-center transition-colors w-[40px] h-[40px] shadow"
+                    onClick={() => router.push(`/lender/jobs/${job.id}`)}
+                  >
+                    <span className="flex items-center justify-center w-[44px] h-[44px] rounded-full">
+                      <RightArrow className="w-7 h-7" />
+                    </span>
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-
-        {/* Simple pagination controls (server-side) */}
-        {meta.totalJobs > 0 && (
-          <div className="flex items-center justify-between pt-4 mb-6">
-            <button
-              className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
-              onClick={() => goToPage(meta.page - 1)}
-              disabled={meta.page <= 1}
-            >
-              Previous
-            </button>
-            <div className="text-sm text-gray-600">
-              Page {meta.page} of {meta.totalPages} • Showing {(meta.page - 1) * PAGE_SIZE + (visibleJobs.length ? 1 : 0)}-
-              {Math.min(meta.page * PAGE_SIZE, meta.totalJobs)} of {meta.totalJobs}
-            </div>
-            <button
-              className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
-              onClick={() => goToPage(meta.page + 1)}
-              disabled={meta.page >= meta.totalPages}
-            >
-              Next
-            </button>
-          </div>
+          ))
         )}
       </div>
 
+      {/* Pagination controls */}
+      {meta.totalJobs > 0 && (
+        <div className="flex items-center justify-between pt-4 mb-4">
+          <button
+            className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+            onClick={() => goToPage(meta.page - 1)}
+            disabled={meta.page <= 1}
+          >
+            Previous
+          </button>
+          <div className="text-sm text-gray-600">
+            Page {meta.page} of {meta.totalPages} • Showing {(meta.page - 1) * PAGE_SIZE + (visibleJobs.length ? 1 : 0)}-
+            {Math.min(meta.page * PAGE_SIZE, meta.totalJobs)} of {meta.totalJobs}
+          </div>
+          <button
+            className="px-4 py-2 rounded-lg border text-sm disabled:opacity-50"
+            onClick={() => goToPage(meta.page + 1)}
+            disabled={meta.page >= meta.totalPages}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* New Job Request Button */}
       <div className="w-full pb-8">
         <button
           onClick={onNewJob}
