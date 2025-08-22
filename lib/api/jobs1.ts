@@ -70,7 +70,7 @@ export interface Job {
   assigned_appraiser: AssignedAppraiser[];
 }
 
-export type JobFilter = "All" | "in-progress" | "completed" | "cancel";
+export type JobFilter = "All" | "in-progress" | "completed" | "cancelled";
 
 export interface JobListResponse {
   success: boolean;
@@ -156,7 +156,7 @@ export async function getMyJobs(filter: JobFilter = "in-progress"): Promise<Job[
       );
     case "completed":
       return allJobs.filter((job) => job.status === "completed");
-    case "cancel":
+    case "cancelled":
       return allJobs.filter((job) => job.status === "cancelled");
     default:
       return allJobs;

@@ -64,7 +64,7 @@ export function JobCard({ title, location, jobStatus }: JobCardProps) {
               : normalizedStatus === "cancelled"
               ? "#ef4444"
               : normalizedStatus === "accepted" || normalizedStatus === "active"
-              ? "#00F90A"
+              ? "#22c55e"
               : "#FFC107"
             }}
         >
