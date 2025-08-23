@@ -84,7 +84,9 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
     "/lender/jobs",
     "/lender/transaction",
     "/appraiser/dashboard",
-    "/appraiser/jobs"
+    "/appraiser/jobs",
+    "/appraiser/settings/property",
+               
   ];
 
   return (
@@ -206,13 +208,15 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         </header>
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto">
-          <div className="p-6">
-            {React.isValidElement(children) && searchEnabledRoutes.includes(pathname)
-              ? React.cloneElement(children as React.ReactElement<any>, { searchQuery })
-              : children}
-          </div>
-        </main>
+        {/* Content */}
+<main className="flex-1 overflow-y-auto">
+  <div className="p-6">
+    {React.isValidElement(children) && searchEnabledRoutes.includes(pathname)
+      ? React.cloneElement(children as React.ReactElement<any>, { key: searchQuery, searchQuery })
+      : children}
+  </div>
+</main>
+
       </div>
     </div>
   )

@@ -21,17 +21,52 @@ interface QuotationsListProps {
   quotations: Quotation[];
   activeFilter: FilterKey;
   loading: boolean;
+  searchQuery?: string;
 }
 
 const getStatusColor = (approved: boolean) => {
   return approved ? "bg-[#019D23]" : "bg-[#FFC107]";
 };
 
-const QuotationsList: React.FC<QuotationsListProps> = ({ quotations, activeFilter, loading }) => {
-  const filteredQuotations = quotations.filter((quotation) => {
+const QuotationsList: React.FC<QuotationsListProps> = ({ 
+  quotations, 
+  activeFilter, 
+  loading, 
+  searchQuery = "" 
+}) => {
+  // First filter by tab (pending/accepted/all)
+  const tabFilteredQuotations = quotations.filter((quotation) => {
     if (activeFilter === "pending") return !quotation.approved;
     if (activeFilter === "accepted") return quotation.approved;
     return true; // "all"
+  });
+
+  // Then filter by search query
+  const filteredQuotations = tabFilteredQuotations.filter((quotation) => {
+    if (!searchQuery) return true;
+    
+    const searchLower = searchQuery.toLowerCase();
+    
+    // Search through property type
+    const propertyType = quotation.property_type?.property_type?.toLowerCase() || "";
+    
+    // Search through appraiser name
+    const appraiserName = quotation.appraiser?.name?.toLowerCase() || "";
+    
+    // Search through cost values (convert to string for searching)
+    const cost = quotation.cost?.toString().toLowerCase() || "";
+    const costOfAppraiser = quotation.cost_of_appraiser?.toString().toLowerCase() || "";
+    
+    // Search through status
+    const status = quotation.approved ? "approved" : "pending";
+    
+    return (
+      propertyType.includes(searchLower) ||
+      appraiserName.includes(searchLower) ||
+      cost.includes(searchLower) ||
+      costOfAppraiser.includes(searchLower) ||
+      status.includes(searchLower)
+    );
   });
 
   if (loading) {
@@ -46,7 +81,7 @@ const QuotationsList: React.FC<QuotationsListProps> = ({ quotations, activeFilte
     return (
       <div className="flex items-center justify-center py-24">
         <span className="text-gray-500 text-xl font-medium">
-          No quotations found.
+          {searchQuery ? "No quotations found matching your search." : "No quotations found."}
         </span>
       </div>
     );
@@ -61,9 +96,9 @@ return (
       >
         {/* LEFT SIDE - Icon and Quotation Info */}
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
             <BuildingIcon className="w-6 h-6 text-[#2A020D]" />
-          </div>
+            </div>
 
           <div className="flex flex-col">
             <h3 className="font-semibold text-base text-gray-900 mb-1">
@@ -72,9 +107,12 @@ return (
             <p className="text-sm text-gray-700 mb-1">
               Estimated Market Value Range: <span className="font-semibold text-gray-900">${quotation.cost}</span>
             </p>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 mb-1">
               Fees For Appraisal: <span className="font-semibold text-gray-900">${quotation.cost_of_appraiser}</span>
             </p>
+            {/* <p className="text-sm text-gray-600">
+              Appraiser: <span className="font-medium text-gray-800">{quotation.appraiser?.name}</span>
+            </p> */}
           </div>
         </div>
 
@@ -107,7 +145,6 @@ return (
     ))}
   </div>
 );
-
 
 };
 

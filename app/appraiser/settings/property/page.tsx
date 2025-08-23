@@ -37,18 +37,20 @@ type FilterKey = "proposal" | "all" | "pending" | "accepted";
 
 const FILTERS: { name: string; key: FilterKey }[] = [
   { name: "Proposal", key: "proposal" },
-  { name: "All Requests", key: "all" },
-  { name: "Pending", key: "pending" },
-  { name: "Accepted", key: "accepted" },
+  { name: "All Request", key: "all" },
+  { name: "Pending Request", key: "pending" },
+  { name: "Accepted Request", key: "accepted" },
 ];
 
-const PropertyPreferencePage = () => {
+// ✅ MAIN CONTENT COMPONENT (This will receive searchQuery)
+const PropertyPreferenceContent = ({ searchQuery = "" }: { searchQuery?: string }) => {
   const [activeFilter, setActiveFilter] = useState<FilterKey>("proposal");
+  const [hasSearched, setHasSearched] = useState(false);
   const [properties, setProperties] = useState<Property[]>([]);
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const loadData = async () => {
+  const loadData = async (showToast = true) => {
     try {
       setLoading(true);
       const [propertiesRes, quotationsRes] = await Promise.all([
@@ -57,7 +59,9 @@ const PropertyPreferencePage = () => {
       ]);
       setProperties(propertiesRes.property || []);
       setQuotations(quotationsRes.quotations || []);
-      toast.success("Data loaded successfully!");
+      if (showToast) {
+        toast.success("Data loaded successfully!");
+      }
     } catch (err: any) {
       toast.error("Could not load data");
       console.error("Load data error:", err);
@@ -67,14 +71,26 @@ const PropertyPreferencePage = () => {
   };
 
   useEffect(() => {
-    loadData();
+    loadData(false); // Don't show toast on initial load
   }, []);
 
+  // ✅ Handle search query changes - auto-switch to "all" if searching
+  useEffect(() => {
+    if (searchQuery && searchQuery.trim() !== "") {
+      if (!hasSearched && activeFilter === "proposal") {
+        setActiveFilter("all"); // Switch to "all" only on first search
+        setHasSearched(true);
+      }
+    } else if (searchQuery === "" && hasSearched) {
+      // Reset when search is cleared
+      setHasSearched(false);
+    }
+  }, [searchQuery, activeFilter, hasSearched]);
+
   return (
-    <DashboardLayout role="appraiser">
+    <>
       <Toaster position="top-center" />
       <div className="p-2">
-       
         {/* Filter Tabs */}
         <div className="flex gap-4 mb-4">
           {FILTERS.map((filter) => (
@@ -96,7 +112,7 @@ const PropertyPreferencePage = () => {
         {activeFilter === "proposal" ? (
           <ProposalForm 
             properties={properties} 
-            onSuccess={loadData}
+            onSuccess={() => loadData(true)} // Show toast when form succeeds
             loading={loading}
           />
         ) : (
@@ -104,9 +120,19 @@ const PropertyPreferencePage = () => {
             quotations={quotations} 
             activeFilter={activeFilter}
             loading={loading}
+            searchQuery={searchQuery}
           />
         )}
       </div>
+    </>
+  );
+};
+
+// ✅ PAGE COMPONENT (Clean wrapper)
+const PropertyPreferencePage = () => {
+  return (
+    <DashboardLayout role="appraiser">
+      <PropertyPreferenceContent />
     </DashboardLayout>
   );
 };
