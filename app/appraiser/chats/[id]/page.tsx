@@ -127,13 +127,13 @@ export default function ChatDetailPage() {
           participants={participants}
         />
 
-       <div className="flex-1 w-full flex flex-col items-center overflow-y-auto pb-20 scrollbar-hide">
-  <div className="max-w-6xl w-full mx-auto flex flex-col gap-6 px-4">
+        <div className="flex-1 w-full flex flex-col items-center overflow-y-auto pb-20 scrollbar-hide px-2 md:px-4">
+          <div className="w-full max-w-6xl mx-auto flex flex-col gap-4 md:gap-6">
             {(() => {
               const groupedMessages = groupMessagesByDate(messages);
               
               return messages.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 text-sm md:text-base">
                   No messages yet. Start the conversation!
                 </div>
               ) : (
@@ -155,13 +155,15 @@ export default function ChatDetailPage() {
           </div>
         </div>
 
-        <MessageInput
-          newMessage={newMessage}
-          setNewMessage={setNewMessage}
-          onSendMessage={handleSendMessage}
-          onKeyPress={handleKeyPress}
-          sending={sending}
-        />
+       <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white border-t border-gray-200">
+          <MessageInput
+            newMessage={newMessage}
+            setNewMessage={setNewMessage}
+            onSendMessage={handleSendMessage}
+            onKeyPress={handleKeyPress}
+            sending={sending}
+          />
+        </div>
       </div>
     </DashboardLayout>
   );
