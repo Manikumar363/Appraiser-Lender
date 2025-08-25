@@ -105,9 +105,9 @@ export function ComplexJobStatusModal({
           ×
         </button>
 
-        <div className="p-8 pt-16">
-          <div className="bg-[#FBEFF2] rounded-lg p-6 mb-6 shadow-sm">
-            <div className="flex justify-between items-center">
+        <div className="p-4 md:p-8 pt-12 md:pt-16">
+          <div className="bg-[#FBEFF2] rounded-lg p-4 md:p-6 mb-6 shadow-sm">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0">
               <div className="flex items-center gap-4 flex-1">
                 <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
                   <BuildingIcon className="w-6 h-6 text-[#2A020D]" />
@@ -122,13 +122,13 @@ export function ComplexJobStatusModal({
                   </p>
                 </div>
 
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ml-4 bg-yellow-400 text-black">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ml-0 md:ml-4 bg-yellow-400 text-black mt-2 md:mt-0">
                   <LoadIcon className="w-3 h-3" />
                   Post Visit Summary
                 </span>
               </div>
 
-              <div className="flex gap-2 ml-6">
+              <div className="flex flex-wrap gap-2 ml-0 md:ml-6 w-full md:w-auto">
                 <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[#2A020D] text-[#2A020D] bg-white text-sm font-medium whitespace-nowrap">
                   <span className="text-xs">
                     <Notes />
@@ -204,7 +204,7 @@ export function ComplexJobStatusModal({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
                   Location{" "}
@@ -227,10 +227,10 @@ export function ComplexJobStatusModal({
               </div>
 
               <div>
-                <label className="block mb-14 text-[#000000] font-urbanist font-semibold">
+                <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
                   Upload Document
                 </label>
-                <div className="border-2 border-dashed h-[11rem] border-gray-300 rounded-lg p-8 bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div className="border-2 border-dashed h-48 md:h-[11rem] border-gray-300 rounded-lg p-4 md:p-8 bg-gray-50 hover:bg-gray-100 transition-colors">
                   <input
                     type="file"
                     multiple
@@ -247,7 +247,7 @@ export function ComplexJobStatusModal({
                       <div className="flex justify-center mb-3">
                         <UploadIcon className="w-6 h-6 text-gray-400" />
                       </div>
-                      <p className="text-gray-600 font-medium">
+                      <p className="text-gray-600 font-medium text-sm md:text-base">
                         Upload any additional PDF or images related to this job
                       </p>
                     </div>
@@ -327,49 +327,47 @@ export function ComplexJobStatusModal({
             </div>
 
             <div>
-  <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
-    Status
-  </label>
-  <Listbox value={selectedStatus} onChange={setSelectedStatus}>
-    <div className="relative">
-      <Listbox.Button className="w-full h-12 border border-gray-300 rounded-full px-12 py-3 bg-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] text-left">
-        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-          <LoadIcon className="w-5 h-5 text-gray-400" />
-        </div>
-        <span className="block truncate">
-          {selectedStatus === 'completed' ? 'Completed' : 'Select status'}
-        </span>
-        <ChevronDown className="w-5 h-5 text-gray-400" />
-      </Listbox.Button>
-      
-      <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-lg border border-gray-200 text-base overflow-auto focus:outline-none">
-        <Listbox.Option
-          value="completed"
-          className={({ active, selected }) =>
-            `cursor-pointer select-none relative py-3 pl-8 pr-4 ${
-              active ? 'bg-[#4e1b29]' : ''
-            } ${selected ? 'bg-[#2A020D] text-white' : 'text-gray-900'}`
-          }
-        >
-          {({ selected }) => (
-            <>
-              <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                Completed
-              </span>
-              {selected && (
-                <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-                  <Check className="h-4 w-4" />
-                </span>
-              )}
-            </>
-          )}
-        </Listbox.Option>
-      </Listbox.Options>
-    </div>
-  </Listbox>
-</div>
-
-
+              <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
+                Status
+              </label>
+              <Listbox value={selectedStatus} onChange={setSelectedStatus}>
+                <div className="relative">
+                  <Listbox.Button className="w-full h-12 border border-gray-300 rounded-full px-12 py-3 bg-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-[#2A020D] text-left">
+                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                      <LoadIcon className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <span className="block truncate">
+                      {selectedStatus === 'completed' ? 'Completed' : 'Select status'}
+                    </span>
+                    <ChevronDown className="w-5 h-5 text-gray-400" />
+                  </Listbox.Button>
+                  
+                  <Listbox.Options className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-lg border border-gray-200 text-base overflow-auto focus:outline-none">
+                    <Listbox.Option
+                      value="completed"
+                      className={({ active, selected }) =>
+                        `cursor-pointer select-none relative py-3 pl-8 pr-4 ${
+                          active ? 'bg-[#4e1b29]' : ''
+                        } ${selected ? 'bg-[#2A020D] text-white' : 'text-gray-900'}`
+                      }
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                            Completed
+                          </span>
+                          {selected && (
+                            <span className="absolute inset-y-0 left-0 flex items-center pl-2">
+                              <Check className="h-4 w-4" />
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </Listbox.Option>
+                  </Listbox.Options>
+                </div>
+              </Listbox>
+            </div>
 
             {error && (
               <div className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-200">

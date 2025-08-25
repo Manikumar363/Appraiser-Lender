@@ -165,14 +165,14 @@ export default function AppraiserJobsContent({
     });
 
   return (
-    <div className=" p-2">
+    <div className="p-2">
       <div className="flex-1">
-        {/* Full-Width Filter Buttons */}
-        <div className="flex gap-4 mb-6">
+        {/* Full-Width Filter Buttons - Wrap on mobile */}
+        <div className="flex flex-wrap gap-2 mb-6">
           {FILTERS.map((f) => (
             <button
               key={f.key}
-              className={`w-full py-2 rounded-full transition ${
+              className={`flex-1 md:w-auto py-2 rounded-full transition ${
                 activeFilter === f.key
                   ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
                   : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"
@@ -235,10 +235,10 @@ export default function AppraiserJobsContent({
                 const totalMinutes = Math.max(Math.floor(diff / (1000 * 60)), 0);
                 return (
                   <span
-                  className={`${baseClass} text-[#2A020D] border border-[#2A020D]`}
+                    className={`${baseClass} text-[#2A020D] border border-[#2A020D]`}
                   >
-                  <TimerIcon2 />
-                  {`${totalMinutes}m Left`}
+                    <TimerIcon2 />
+                    {`${totalMinutes}m Left`}
                   </span>
                 );
               };
@@ -250,15 +250,15 @@ export default function AppraiserJobsContent({
               return (
                 <div
                   key={job.id}
-                  className="flex justify-between items-center bg-[#FBEFF2] p-4 rounded-lg shadow"
+                  className="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#FBEFF2] p-4 rounded-lg shadow gap-4 md:gap-0"
                 >
                   {/* LEFT SIDE - Icon and Job Info */}
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 w-full md:w-auto">
                     <div>
                       <Building />
                     </div>
 
-                    <div>
+                    <div className="flex-1">
                       <h3 className="font-semibold text-base">
                         {details.property_type || "Appraisal"}
                       </h3>
@@ -292,7 +292,7 @@ export default function AppraiserJobsContent({
                   </div>
 
                   {/* RIGHT SIDE - Timer, User Badge, Action Icons */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-2 w-full md:w-auto">
                     {/* Timer Badge */}
                     {timeLeftBadge}
 
