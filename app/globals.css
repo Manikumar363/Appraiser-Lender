@@ -3,6 +3,20 @@
 @tailwind utilities;
 
 @layer base {
+  /* Ensure no overflow */
+body {
+  overflow-x: hidden;
+}
+
+/* Media query for small screens */
+@media (max-width: 768px) {
+  /* Adjust fonts/buttons if needed */
+  button {
+    min-width: 48px;
+    min-height: 48px;
+  }
+}
+
 /* Custom dropdown option styling */
 select option:hover {
   background-color: #4e1b29 !important;
