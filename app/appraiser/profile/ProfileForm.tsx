@@ -194,9 +194,6 @@ export default function ProfileForm({
 
         {/* Phone Number Field - Same as Signup */}
         <div className="relative">
-          {/* <label className="block text-gray-700 mb-2 text-sm font-medium">
-            Phone Number
-          </label> */}
           <PhoneInput
             country={"us"}
             value={fullPhone}
@@ -209,6 +206,7 @@ export default function ProfileForm({
             containerClass="!w-full"
             buttonClass="!border-r !border-gray-300 !rounded-l-full"
             enableSearch={isEditing}
+            dropdownClass="!max-h-60 !overflow-y-auto !z-50 !w-full !min-w-[250px] !absolute !left-0 !bottom-full !mb-1 !bg-white !shadow-lg !rounded-lg"
           />
         </div>
 
