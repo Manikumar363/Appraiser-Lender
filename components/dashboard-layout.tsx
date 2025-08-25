@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -81,6 +81,18 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
+  // Prevent body scrolling when sidebar is open on mobile
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isSidebarOpen]);
+
   const searchEnabledRoutes = [
     "/lender/dashboard",
     "/lender/jobs",
@@ -92,9 +104,9 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
 
   return (
     <div className="min-h-screen flex bg-[#FFFFFF]">
-      {/* Sidebar - Responsive: hidden and slidable on mobile */}
+      {/* Sidebar - Fixed on all screens, hidden off-screen on mobile */}
       <div
-        className={`w-64 bg-[#2A020D] text-white flex flex-col fixed md:static top-0 left-0 h-screen z-20 transition-transform duration-300 ease-in-out ${
+        className={`w-64 bg-[#2A020D] text-white flex flex-col fixed top-0 left-0 h-screen z-20 transition-transform duration-300 ease-in-out overflow-y-auto ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
@@ -130,7 +142,8 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
           </ul>
         </nav>
 
-        <div className="flex-1"></div>
+        {/* Spacer - Full flex-1 on desktop, removed on mobile for compactness */}
+        <div className="flex-1 hidden md:block"></div>
 
         {/* Bottom Navigation */}
         <nav className="px-4 pb-4">
@@ -167,10 +180,10 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         />
       )}
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-h-screen md:ml-0"> {/* No left margin on mobile */}
+      {/* Main - Offset for fixed sidebar on desktop */}
+      <div className="flex-1 flex flex-col min-h-screen ml-0 md:ml-64">
         {/* Header - Add hamburger for mobile */}
-        <header className="bg-[#2A020D] text-white px-6 py-4 flex items-center justify-between">
+        <header className="bg-[#2A020D] text-white px-6 py-4 flex items-center justify-between sticky top-0 z-10">
           {/* Hamburger button (mobile only) */}
           <button
             className="md:hidden mr-4 text-white"
