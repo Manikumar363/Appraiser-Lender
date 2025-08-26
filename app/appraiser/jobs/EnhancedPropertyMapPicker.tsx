@@ -1,36 +1,36 @@
 "use client";
-import React, { useState, useCallback, useRef } from 'react';
-import { GoogleMap, useJsApiLoader, Marker, Autocomplete } from '@react-google-maps/api';
-
-const libraries: ("places")[] = ["places"];
+import React, { useState, useCallback, useRef } from "react";
+import { GoogleMap, useJsApiLoader, Marker, Autocomplete } from "@react-google-maps/api";
+import { googleMapsConfig } from "../../../lib/api/googleMapsConfig";  // Adjust path if needed
 
 interface EnhancedPropertyMapPickerProps {
   onLocationSelect: (lat: number, lng: number) => void;
   initialLocation?: { latitude: number; longitude: number } | null;
 }
 
-export function EnhancedPropertyMapPicker({ onLocationSelect, initialLocation }: EnhancedPropertyMapPickerProps) {
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    libraries: libraries
-  });
+export function EnhancedPropertyMapPicker({
+  onLocationSelect,
+  initialLocation,
+}: EnhancedPropertyMapPickerProps) {
+  const { isLoaded, loadError } = useJsApiLoader(googleMapsConfig);
 
   const [selectedPosition, setSelectedPosition] = useState<google.maps.LatLng | null>(
-    initialLocation ? 
-    new google.maps.LatLng(initialLocation.latitude, initialLocation.longitude) : 
-    null
+    initialLocation
+      ? new google.maps.LatLng(initialLocation.latitude, initialLocation.longitude)
+      : null
   );
-
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
-  const onMapClick = useCallback((e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      setSelectedPosition(e.latLng);
-      onLocationSelect(e.latLng.lat(), e.latLng.lng());
-    }
-  }, [onLocationSelect]);
+  const onMapClick = useCallback(
+    (e: google.maps.MapMouseEvent) => {
+      if (e.latLng) {
+        setSelectedPosition(e.latLng);
+        onLocationSelect(e.latLng.lat(), e.latLng.lng());
+      }
+    },
+    [onLocationSelect]
+  );
 
   const onPlaceChanged = () => {
     const autocomplete = autocompleteRef.current;
@@ -55,12 +55,11 @@ export function EnhancedPropertyMapPicker({ onLocationSelect, initialLocation }:
       {/* Address Search */}
       <div className="mb-3">
         <Autocomplete
-          onLoad={(autocomplete) => { autocompleteRef.current = autocomplete; }}
-          onPlaceChanged={onPlaceChanged}
-          options={{
-            types: ['address'],
-            componentRestrictions: { country: 'us' }
+          onLoad={(autocomplete) => {
+            autocompleteRef.current = autocomplete;
           }}
+          onPlaceChanged={onPlaceChanged}
+          options={{ types: ["address"], componentRestrictions: { country: "us" } }}
         >
           <input
             type="text"
@@ -69,13 +68,13 @@ export function EnhancedPropertyMapPicker({ onLocationSelect, initialLocation }:
           />
         </Autocomplete>
       </div>
-
       {/* Map */}
       <GoogleMap
-        mapContainerStyle={{ width: '100%', height:'11rem', borderRadius: '8px' }}
-        center={initialLocation ? 
-          { lat: initialLocation.latitude, lng: initialLocation.longitude } : 
-          { lat: 41.8781, lng: -87.6298 }
+        mapContainerStyle={{ width: "100%", height: "11rem", borderRadius: "8px" }}
+        center={
+          initialLocation
+            ? { lat: initialLocation.latitude, lng: initialLocation.longitude }
+            : { lat: 41.8781, lng: -87.6298 }
         }
         zoom={initialLocation ? 15 : 5}
         onLoad={setMap}
@@ -88,20 +87,18 @@ export function EnhancedPropertyMapPicker({ onLocationSelect, initialLocation }:
         }}
       >
         {selectedPosition && (
-          <Marker 
-            position={selectedPosition}
-            title="Property Location"
-          />
+          <Marker position={selectedPosition} title="Property Location" />
         )}
       </GoogleMap>
-
       {/* Selected Position Display */}
-        {selectedPosition && (
-          <div className="mt-2 text-sm text-green-700">
-            <strong>Selected:</strong> {selectedPosition.lat().toFixed(6)}, {selectedPosition.lng().toFixed(6)}
-          </div>
-        )}
-      
+      {selectedPosition && (
+        <div className="mt-2 text-sm text-green-700">
+          <strong>Selected:</strong> {selectedPosition.lat().toFixed(6)},{" "}
+          {selectedPosition.lng().toFixed(6)}
+        </div>
+      )}
     </div>
-  ) : <div className="loading-message">Loading map...</div>;
+  ) : (
+    <div className="loading-message">Loading map...</div>
+  );
 }
