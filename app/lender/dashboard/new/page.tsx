@@ -1,33 +1,35 @@
 "use client"
 
 import type React from "react"
-import { useState} from "react"
+import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import DashboardLayout from "../../../../components/dashboard-layout"
 import { MapPin, ChevronDown, Phone, LocateIcon, FileText, StickyNote } from "lucide-react"
 import { UserIcon, TargettIcon, DollerIcon, SecondaryProfileIcon, CalendarIcon, DateIcon, UploadIcon, LocationIcon } from "../../../../components/icons"
 import { postJob } from "@/lib/api/jobs1"
-
-import "react-phone-input-2/lib/style.css";
-import { CountryData } from "react-phone-input-2";
-import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from "@react-google-maps/api";
-import { useCallback } from "react";
-import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
-import type { Libraries } from "@react-google-maps/api";
-import { Description } from "@radix-ui/react-toast"
-import Select, { components } from "react-select";
+import "react-phone-input-2/lib/style.css"
 import dynamic from "next/dynamic"
+import axios from "axios"
+import toast, { Toaster } from "react-hot-toast"
+import Select from "react-select"
+import {
+  GoogleMap,
+  Marker,
+  Autocomplete,
+  useJsApiLoader,
+} from "@react-google-maps/api"
+import {
+  MAPS_LOADER_BASE,
+  MAPS_LIBRARIES,
+  getClientMapsApiKey,
+} from "@/lib/maps/loaderConfig"
 
-// Import Library type from @react-google-maps/api and use Library[] type for libraries
+// --- remove local GOOGLE_MAP_LIBRARIES, reuse shared one ---
+// const GOOGLE_MAP_LIBRARIES: Libraries = ["places"];
 
-const GOOGLE_MAP_LIBRARIES: Libraries = ["places"]; // <-- define outside component
-
-// Add this function at the top of your component or in a utils file
-const allowOnlyAlphabets = (value: string) => value.replace(/[^a-zA-Z\s]/g, "");
-
-// Dynamically import PhoneInput on the client only to avoid SSR/hydration issues
 const PhoneInput = dynamic(() => import("react-phone-input-2"), { ssr: false })
+
+const allowOnlyAlphabets = (value: string) => value.replace(/[^a-zA-Z\s]/g, "");
 
 const allowOnlyDigits = (value: string) => value.replace(/[^0-9]/g, "");
 
@@ -137,10 +139,23 @@ export default function NewJobRequestPage() {
   const [uploading, setUploading] = useState(false) // ADD
 
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
-    libraries: GOOGLE_MAP_LIBRARIES, // <-- use the constant here
-  });
+  // Guarded key fetch
+  const mapsApiKey = getClientMapsApiKey()
+  const mapsEnabled = !!mapsApiKey
+
+  const { isLoaded } = mapsEnabled
+    ? useJsApiLoader({
+        ...MAPS_LOADER_BASE,
+        libraries: MAPS_LIBRARIES as unknown as any, // fallback cast
+        googleMapsApiKey: mapsApiKey!,
+      })
+    : { isLoaded: false }
+
+  // (OPTIONAL) if you want a dev check for mismatches
+  if (process.env.NODE_ENV !== "production" && mapsEnabled) {
+    // stable signature debug
+    // console.log("Job page maps loader sig", JSON.stringify({ ...MAPS_LOADER_BASE, libraries: MAPS_LIBRARIES }))
+  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -521,16 +536,16 @@ export default function NewJobRequestPage() {
               </div>
               {/* Property Address */}
               <div>
-                {isLoaded ? (
+                {mapsEnabled && isLoaded ? (
                   <div className="relative w-[90%] mx-auto">
-                    <label className="block text-base font-medium text-gray-900 mb-2">Property Address</label>
+                    <label className="block text-base font-medium text-gray-900 mb-2">
+                      Property Address
+                    </label>
                     <LocationIcon className="absolute left-4 top-[55%] -translate-y-[4%] text-gray-700" />
                     <Autocomplete
-                      
                       onLoad={setAutocomplete}
                       onPlaceChanged={handlePlaceChanged}
                     >
-                      
                       <input
                         type="text"
                         value={formData.address}
@@ -543,36 +558,47 @@ export default function NewJobRequestPage() {
                   </div>
                 ) : (
                   <div className="relative w-[90%] mx-auto">
-                    <label className="block text-base font-medium text-gray-900 mb-2">Property Address</label>
+                    <label className="block text-base font-medium text-gray-900 mb-2">
+                      Property Address
+                    </label>
                     <input
                       type="text"
                       value={formData.address}
                       onChange={(e) => handleInputChange("address", e.target.value)}
-                      placeholder="Loading Google Maps..."
-                      className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-[#2A020D] focus:border-transparent text-sm"
+                      placeholder={
+                        mapsEnabled ? "Loading Google Maps..." : "Maps API key missing"
+                      }
+                      className="w-full pl-12 pr-4 py-3 border border-gray-600 rounded-full focus:outline-none text-sm"
                       disabled
                     />
                   </div>
                 )}
-                {/* Map below the address input */}
                 <div
                   className="relative w-[90%] mx-auto mt-4 rounded-2xl border border-gray-500 overflow-hidden"
-                  style={{ height: 130 }} // Adjust height as needed (e.g., 90px)
+                  style={{ height: 130 }}
                 >
-                  {isLoaded && (
+                  {mapsEnabled && isLoaded && (
                     <GoogleMap
                       mapContainerStyle={{ width: "100%", height: "100%" }}
                       center={marker || mapCenter}
                       zoom={15}
                       onClick={(e) => {
-                        setMarker({ lat: e.latLng!.lat(), lng: e.latLng!.lng() });
+                        if (!e.latLng) return
+                        setMarker({ lat: e.latLng.lat(), lng: e.latLng.lng() })
                       }}
                       options={{
-                        disableDefaultUI: true, // Optional: hides controls for a cleaner look
+                        disableDefaultUI: true,
+                        clickableIcons: false,
+                        // mapId: process.env.NEXT_PUBLIC_GOOGLE_MAP_ID
                       }}
                     >
                       {marker && <Marker position={marker} />}
                     </GoogleMap>
+                  )}
+                  {(!mapsEnabled || !isLoaded) && (
+                    <div className="flex items-center justify-center h-full text-xs text-gray-500">
+                      {mapsEnabled ? "Loading map..." : "Map unavailable"}
+                    </div>
                   )}
                 </div>
               </div>

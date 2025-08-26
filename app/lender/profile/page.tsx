@@ -7,41 +7,74 @@ import api from "@/lib/api/axios";
 import Image from "next/image";
 import {
   EmailIcon,
-  CompanyIcon,
   DesignationIcon,
   ThirdPrimaryIcon,
   CheckmarkIcon,
-  LocationIcon,
 } from "@/components/icons";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import type { CountryData } from 'react-phone-input-2';
-import axios from "axios";
-import { GoogleMap, Marker, useJsApiLoader, Autocomplete } from '@react-google-maps/api';
+import type { CountryData } from "react-phone-input-2";
 import toast, { Toaster } from "react-hot-toast";
-import type { Libraries } from "@react-google-maps/api";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import NextDynamic from "next/dynamic";
 
+// Force dynamic rendering (optional — keep only if you really need it)
+export const dynamic = "force-dynamic";
+const MapSection = NextDynamic(() => import("./MapSection"), { ssr: false });
 
-const mapContainerStyle = {
-  width: '100%',
-  height: '136px', // h-64
-};
+interface GeoPoint {
+  type: "Point";
+  coordinates: [number, number]; // [lng, lat]
+}
 
-const GOOGLE_MAP_LIBRARIES: Libraries = ["places"];
+interface RawLocationLL {
+  latitude: number;
+  longitude: number;
+}
+
+interface RawLocationGeo {
+  type: "Point";
+  coordinates: [number, number];
+}
+
+interface LenderProfile {
+  name?: string;
+  email?: string;
+  applicant?: string;
+  phone?: string;
+  image?: string;
+  country_code?: string;
+  address?: string;
+  province?: string;
+  city?: string;
+  postal_code?: string;
+  location?: RawLocationLL | RawLocationGeo;
+  [k: string]: any;
+}
+
+interface FormDataState {
+  name: string;
+  email: string;
+  applicant: string;
+  location: GeoPoint;
+  phone: string;
+  image: string;
+  country_code: string;
+  address: string;
+  province: string;
+  city: string;
+  postal_code: string;
+}
 
 export default function LenderProfilePage() {
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<LenderProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataState>({
     name: "",
     email: "",
     applicant: "",
-    location: {
-      type: "Point",
-      coordinates: [0, 0], // [lng, lat]
-    },
+    location: { type: "Point", coordinates: [0, 0] },
     phone: "",
     image: "",
     country_code: "",
@@ -53,228 +86,168 @@ export default function LenderProfilePage() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // Add state for address, map center, and marker
-  const [address, setAddress] = useState(formData.address || "");
-  const [mapCenter, setMapCenter] = useState({ lat: 43.6532, lng: -79.3832 });
+  const [address, setAddress] = useState("");
   const [marker, setMarker] = useState({ lat: 43.6532, lng: -79.3832 });
-  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
-  const [lastPhoneCountryData, setLastPhoneCountryData] = useState<any>({ format: "+91 99999 99999" });
-  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-    libraries: GOOGLE_MAP_LIBRARIES,
-  });
+  const [lastPhoneCountryData, setLastPhoneCountryData] = useState<CountryData | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    let cancelled = false;
+    (async () => {
       try {
         const res = await profileApi.getLenderProfile();
-        if (res.success) {
-          setProfile(res.user);
-          setFormData({
-            name: res.user.name || "",
-            email: res.user.email || "",
-            applicant: res.user.applicant || "",
-            location: res.user.location || { latitude: 0, longitude: 0 },
-            phone: res.user.phone || "",
-            image: res.user.image || "",
-            country_code: res.user.country_code || "",
-            address: res.user.address || "",
-            province: res.user.province || "", 
-            city: res.user.city || "",
-            postal_code: res.user.postal_code || "",
-          });
-          setAddress(res.user.address || "");
+        if (!res.success || cancelled) return;
+        const u: LenderProfile = res.user;
 
-          // Handle both formats for location
-          let lat = 43.6532, lng = -79.3832;
-          if (res.user.location) {
-            if ("latitude" in res.user.location && "longitude" in res.user.location) {
-              lat = res.user.location.latitude;
-              lng = res.user.location.longitude;
-            } else if ("coordinates" in res.user.location && Array.isArray(res.user.location.coordinates)) {
-              lng = res.user.location.coordinates[0];
-              lat = res.user.location.coordinates[1];
-            }
+        let lat = 43.6532;
+        let lng = -79.3832;
+        if (u.location) {
+            // Two possible shapes
+          if ("latitude" in u.location && "longitude" in u.location) {
+            lat = u.location.latitude;
+            lng = u.location.longitude;
+          } else if ("coordinates" in u.location && Array.isArray(u.location.coordinates)) {
+            lng = u.location.coordinates[0];
+            lat = u.location.coordinates[1];
           }
-          setMapCenter({ lat, lng });
-          setMarker({ lat, lng });
-        } else {
-          console.error("❌ Failed to load profile");
         }
-      } catch (err) {
-        console.error("❌ Error fetching profile:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchProfile();
+        setMarker({ lat, lng });
+        setAddress(u.address || "");
+        setFormData({
+          name: u.name || "",
+          email: u.email || "",
+          applicant: u.applicant || "",
+          location: { type: "Point", coordinates: [lng, lat] },
+            // Normalize phone: ensure one +
+          phone: u.phone ? (u.phone.startsWith("+") ? u.phone : `+${u.phone}`) : "",
+          image: u.image || "",
+          country_code: u.country_code || "",
+          address: u.address || "",
+          province: u.province || "",
+          city: u.city || "",
+          postal_code: u.postal_code || "",
+        });
+        setProfile(u);
+      } catch (e) {
+        console.error("Error fetching profile", e);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
+
+  const clearFieldError = (field: string) =>
+    setFieldErrors((prev) => {
+      if (!(field in prev)) return prev;
+      const { [field]: _, ...rest } = prev;
+      return rest;
+    });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
+    setFormData((p) => ({ ...p, [name]: value }));
+    clearFieldError(name);
+  };
+
+  const handlePhoneChange = (value: string, data: CountryData) => {
+    const normalized = value.startsWith("+") ? value : `+${value}`;
+    setFormData((p) => ({
+      ...p,
+      phone: normalized,
+      country_code: data.dialCode || p.country_code,
     }));
-  }
-  
-  const handlePhoneChange = (value: string, data: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      phone: value.startsWith("+") ? value : `+${value}`,
-      country_code: data.dialCode || "",
+    setLastPhoneCountryData(data);
+  };
+
+  const handleAddressChange = (val: string) => {
+    setAddress(val);
+    setFormData((p) => ({ ...p, address: val }));
+  };
+
+  const handleMarkerChange = (lat: number, lng: number) => {
+    setMarker({ lat, lng });
+    setFormData((p) => ({
+      ...p,
+      location: { type: "Point", coordinates: [lng, lat] },
     }));
-    setLastPhoneCountryData(data); // Save the country data for validation
   };
 
-  // Geocode function
-  const geocodeAddress = async (addr: string) => {
-    if (!addr) return;
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/geocode/json`,
-        {
-          params: {
-            address: addr,
-            key: apiKey,
-          },
-        }
-      );
-      const location = response.data.results[0]?.geometry.location;
-      if (location) {
-        setMapCenter({ lat: location.lat, lng: location.lng });
-        setMarker({ lat: location.lat, lng: location.lng });
-        setFormData((prev) => ({
-          ...prev,
-          address: addr,
-          location: {
-            type: "Point",
-            coordinates: [location.lng, location.lat],
-          },
-        }));
-      }
-    } catch (error) {
-      // Optionally show error
-    }
-  };
-
-  // Address input change handler
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setAddress(value);
-    geocodeAddress(value);
-  };
-
-  const handlePlaceChanged = () => {
-    if (autocomplete) {
-      const place = autocomplete.getPlace();
-      if (place.geometry?.location) {
-        const lat = place.geometry.location.lat();
-        const lng = place.geometry.location.lng();
-        setMapCenter({ lat, lng });
-        setMarker({ lat, lng });
-        setAddress(place.formatted_address || "");
-        setFormData((prev) => ({
-          ...prev,
-          address: place.formatted_address || "",
-          location: {
-            type: "Point",
-            coordinates: [lng, lat],
-          },
-        }));
-      }
-    }
-  };
-
-  // Validation function
   function validateFields() {
-    const errors: { [key: string]: string } = {};
-
-    // Name validation: only letters and spaces
-    if (!/^[A-Za-z\s]+$/.test(formData.name.trim())) {
+    const errors: Record<string, string> = {};
+    if (!formData.name.trim() || !/^[A-Za-z\s]+$/.test(formData.name.trim())) {
       errors.name = "Name should contain only letters and spaces";
     }
-
-    // Applicant validation: only letters and spaces
-    if (!/^[A-Za-z\s]+$/.test(formData.applicant.trim())) {
+    if (!formData.applicant.trim() || !/^[A-Za-z\s]+$/.test(formData.applicant.trim())) {
       errors.applicant = "Applicant should contain only letters and spaces";
     }
-
-    // Email validation: basic email regex
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      errors.email = "Please enter a valid email address";
+      errors.email = "Enter a valid email";
     }
-
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitLoading) return;
     setSubmitLoading(true);
     setError("");
     setSuccess("");
 
-    // Validate fields
     if (!validateFields()) {
       setSubmitLoading(false);
       return;
     }
 
-    // Use the full phone number and country code for validation
-    const phone = formData.phone;
-    const countryCode = lastPhoneCountryData?.countryCode || "IN"; // fallback to India
-
-    if (!isValidPhoneNumber("+" + phone.replace(/\D/g, ""), countryCode)) {
-      toast.error("Please enter a valid phone number for your country.");
+    const iso2 = (lastPhoneCountryData?.countryCode || formData.country_code || "US").toUpperCase();
+    if (formData.phone && !isValidPhoneNumber(formData.phone, iso2 as any)) {
+      toast.error("Invalid phone number");
       setSubmitLoading(false);
       return;
     }
 
     try {
-      const res = await api.patch(
+      const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+
+      await api.patch(
         "/lender/profile",
         {
-          name: formData.name,
-          email: formData.email,
-          applicant: formData.applicant,
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          applicant: formData.applicant.trim(),
+          // If backend expects lat/long pair:
           location: {
             latitude: marker.lat,
             longitude: marker.lng,
+            // If backend expects GeoJSON instead remove latitude/longitude above and send:
+            // type: "Point",
+            // coordinates: [marker.lng, marker.lat],
           },
           phone: formData.phone,
+          address: formData.address,
         },
-        {
-          headers: {
-            Authorization: `${localStorage.getItem("authToken")}`,
-          },
-        }
+        token
+          ? {
+              headers: {
+                Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
+              },
+            }
+          : undefined
       );
-      console.log("✅ Profile updated:", res.data);
 
       setIsEditing(false);
+      toast.success("Profile updated");
 
-      // Show toast notification
-      toast.success("Profile updated successfully!");
-
-      setTimeout(() => {
-        setSuccess("");
-      }, 3000);
-
-      // Optionally refresh profile
-      const updatedProfile = await profileApi.getLenderProfile();
-      if (updatedProfile.success) {
-        setProfile(updatedProfile.user);
-      }
+      const refreshed = await profileApi.getLenderProfile();
+      if (refreshed.success) setProfile(refreshed.user);
     } catch (err: any) {
-      console.error("❌ Failed to update profile:", err);
-      setError(err.response?.data?.message || "Failed to update profile");
-      toast.error("Failed to update profile");
+      const msg = err?.response?.data?.message || "Failed to update profile";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSubmitLoading(false);
     }
@@ -282,40 +255,37 @@ export default function LenderProfilePage() {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    if (profile) {
-      setFormData({
-        name: profile.name || "",
-        email: profile.email || "",
-        applicant: profile.applicant || "",
-        location: profile.location || { type: "Point", coordinates: [0, 0] },
-        phone: profile.phone || "",
-        image: profile.image || "",
-        country_code: profile.country_code || "",
-        address: profile.address || "",
-        province: profile.province || "",
-        city: profile.city || "",
-        postal_code: profile.postal_code || "",
-      });
-      setAddress(profile.address || "");
-      if (profile.location && profile.location.coordinates) {
-        setMapCenter({
-          lat: profile.location.coordinates[1],
-          lng: profile.location.coordinates[0],
-        });
-        setMarker({
-          lat: profile.location.coordinates[1],
-          lng: profile.location.coordinates[0],
-        });
+    if (!profile) return;
+    let lat = marker.lat;
+    let lng = marker.lng;
+    if (profile.location) {
+      if ("latitude" in profile.location && "longitude" in profile.location) {
+        lat = profile.location.latitude;
+        lng = profile.location.longitude;
+      } else if ("coordinates" in profile.location && Array.isArray(profile.location.coordinates)) {
+        lng = profile.location.coordinates[0];
+        lat = profile.location.coordinates[1];
       }
     }
+    setFormData({
+      name: profile.name || "",
+      email: profile.email || "",
+      applicant: profile.applicant || "",
+      location: { type: "Point", coordinates: [lng, lat] },
+      phone: profile.phone ? (profile.phone.startsWith("+") ? profile.phone : `+${profile.phone}`) : "",
+      image: profile.image || "",
+      country_code: profile.country_code || "",
+      address: profile.address || "",
+      province: profile.province || "",
+      city: profile.city || "",
+      postal_code: profile.postal_code || "",
+    });
+    setAddress(profile.address || "");
+    setMarker({ lat, lng });
+    setFieldErrors({});
+    setError("");
+    setSuccess("");
   };
-
-  function getNationalNumberLength(country: any) {
-  if (country && country.format) {
-    return (country.format.match(/\d/g) || []).length;
-  }
-  return 10; // fallback
-}
 
   if (loading) return <div className="p-10 text-center">Loading...</div>;
   if (!profile) return <div className="p-10 text-center text-red-600">Profile failed to load.</div>;
@@ -339,9 +309,7 @@ export default function LenderProfilePage() {
               {formData.name || "Your Name"}
             </h1>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-gray-600">
-                {formData.email || "Your Email"}
-              </span>
+              <span className="text-gray-600">{formData.email || "Your Email"}</span>
               <CheckmarkIcon />
             </div>
             <div className="flex items-center gap-2 mb-6">
@@ -351,6 +319,7 @@ export default function LenderProfilePage() {
 
             {!isEditing ? (
               <button
+                type="button"
                 onClick={() => setIsEditing(true)}
                 className="bg-[#2A020D] hover:bg-[#4e1b29] text-white px-6 py-2 rounded-full font-medium transition"
               >
@@ -358,6 +327,7 @@ export default function LenderProfilePage() {
               </button>
             ) : (
               <button
+                type="button"
                 onClick={handleCancelEdit}
                 className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-full font-medium transition"
               >
@@ -366,12 +336,9 @@ export default function LenderProfilePage() {
             )}
           </div>
 
-          <form
-            onSubmit={handleUpdateProfile}
-            className="flex-1 space-y-4 max-w-4xl mx-auto w-full"
-          >
+          <form onSubmit={handleUpdateProfile} className="flex-1 space-y-4 max-w-4xl mx-auto w-full">
             {/* Name */}
-            <div className="relative">
+            <div>
               <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
                   <ThirdPrimaryIcon />
@@ -392,8 +359,8 @@ export default function LenderProfilePage() {
             </div>
 
             {/* Email */}
-            <div className="relative">
-              <div className="flex items-center  rounded-full px-4 py-3 border border-gray-600">
+            <div>
+              <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
                   <EmailIcon />
                 </div>
@@ -412,9 +379,9 @@ export default function LenderProfilePage() {
               {fieldErrors.email && <p className="text-red-600 text-xs mt-1">{fieldErrors.email}</p>}
             </div>
 
-            {/* Designation */}
-            <div className="relative">
-              <div className="flex items-center  rounded-full px-4 py-3 border border-gray-600">
+            {/* Applicant */}
+            <div>
+              <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
                 <div className="mr-3">
                   <DesignationIcon />
                 </div>
@@ -430,15 +397,20 @@ export default function LenderProfilePage() {
                   }`}
                 />
               </div>
-              {fieldErrors.applicant && <p className="text-red-600 text-xs mt-1">{fieldErrors.applicant}</p>}
+              {fieldErrors.applicant && (
+                <p className="text-red-600 text-xs mt-1">{fieldErrors.applicant}</p>
+              )}
             </div>
-           
 
-           <div className="relative">
-
-              <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
+            {/* Phone */}
+            <div>
+              <div
+                className={`flex items-center rounded-full px-4 py-3 border border-gray-600 ${
+                  !isEditing ? "opacity-70" : ""
+                }`}
+              >
                 <PhoneInput
-                  country={"us"}
+                  country="us"
                   value={formData.phone}
                   onChange={handlePhoneChange}
                   containerClass="flex-1"
@@ -447,89 +419,32 @@ export default function LenderProfilePage() {
                   inputProps={{
                     readOnly: !isEditing,
                     disabled: !isEditing,
-                    style: { height: "25px" }
+                    style: { height: "25px" },
                   }}
                   enableSearch
+                  disabled={!isEditing}
                 />
               </div>
             </div>
 
-            {/* Location Address Field */}
-            <div className="relative">
-              <div className="flex items-center rounded-full px-4 py-3 border border-gray-600">
-                <LocationIcon />
-                {isLoaded ? (
-                  <Autocomplete
-                    onLoad={setAutocomplete}
-                    onPlaceChanged={handlePlaceChanged}
-                  >
-                    <input
-                      type="text"
-                      name="address"
-                      value={address}
-                      onChange={handleAddressChange}
-                      placeholder="Enter Location Address"
-                      readOnly={!isEditing}
-                      className={`flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none ${
-                        !isEditing ? "cursor-not-allowed" : ""
-                      }`}
-                    />
-                  </Autocomplete>
-                ) : (
-                  <input
-                    type="text"
-                    name="address"
-                    value={address}
-                    onChange={handleAddressChange}
-                    placeholder="Loading Google Maps..."
-                    readOnly
-                    className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 outline-none cursor-not-allowed"
-                  />
-                )}
-              </div>
-            </div>
+            {/* Map + Address */}
+            <MapSection
+              isEditing={isEditing}
+              address={address}
+              onAddressChange={handleAddressChange}
+              marker={marker}
+              onMarkerChange={handleMarkerChange}
+            />
 
-            {/* Map */}
-            <div className="w-full h-[136px] rounded-lg overflow-hidden border border-gray-600 mt-2">
-              {isLoaded && (
-                <GoogleMap
-                  mapContainerStyle={mapContainerStyle}
-                  center={mapCenter}
-                  zoom={15}
-                  onClick={isEditing ? (e) => {
-                    const lat = e.latLng?.lat();
-                    const lng = e.latLng?.lng();
-                    if (lat && lng) {
-                      setMarker({ lat, lng });
-                      setMapCenter({ lat, lng });
-                      setFormData((prev) => ({
-                        ...prev,
-                        location: {
-                          type: "Point",
-                          coordinates: [lng, lat],
-                        },
-                      }));
-                    }
-                  } : undefined}
-                  options={{
-                    disableDefaultUI: true,
-                    clickableIcons: false,
-                  }}
-                >
-                  <Marker position={marker} />
-                </GoogleMap>
-              )}
-            </div>
-
-            {error && <p className="text-red-600">{error}</p>}
-            {success && <p className="text-green-600">{success}</p>}
+            {error && <p className="text-red-600 text-sm">{error}</p>}
+            {success && <p className="text-green-600 text-sm">{success}</p>}
 
             {isEditing && (
               <div>
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-3 rounded-full font-medium"
+                  className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-3 rounded-full font-medium disabled:opacity-60"
                 >
                   {submitLoading ? "Updating..." : "Update Profile"}
                 </button>
