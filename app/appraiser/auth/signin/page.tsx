@@ -11,9 +11,7 @@ import { authApi } from "@/lib/api/auth";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AppraiserSignInPage() {
-  const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">(
-    "appraiser"
-  );
+  const [selectedRole, setSelectedRole] = useState<"appraiser" | "lender">("appraiser");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,8 +22,7 @@ export default function AppraiserSignInPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   }, []);
 
   const handleRoleChange = (role: "appraiser" | "lender") => {
@@ -82,8 +79,7 @@ export default function AppraiserSignInPage() {
       }, 1000);
     } catch (err: any) {
       const status = err?.response?.status;
-      const message =
-        err?.response?.data?.message || err?.message || "Sign in failed";
+      const message = err?.response?.data?.message || err?.message || "Sign in failed";
 
       if (status === 401 || status === 403) {
         setPassword("");
@@ -139,10 +135,10 @@ export default function AppraiserSignInPage() {
         }}
       />
 
-      <div className="flex flex-col justify-center min-h-screen w-full items-center">
-        <div className="w-full max-w-[765px] px-6">
+      <div className="flex flex-col justify-center min-h-screen w-full items-center px-4 sm:px-6">
+        <div className="w-full ">
           <div className="mb-4 mt-0">
-            <h1 className="text-3xl font-semibold text-gray-800">Sign In as</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">Sign In as</h1>
           </div>
 
           <div className="mb-6">
@@ -154,7 +150,7 @@ export default function AppraiserSignInPage() {
 
           <div className="mb-5">
             <h2
-              className="text-[42px] font-semibold text-gray-800 leading-[100%] mb-1"
+              className="text-3xl sm:text-[42px] font-semibold text-gray-800 leading-[100%] mb-1"
               style={{
                 fontFamily: "Urbanist",
                 fontWeight: 600,
@@ -182,7 +178,7 @@ export default function AppraiserSignInPage() {
               autoComplete="email"
             />
 
-            <div className="relative w-[765px]">
+            <div className="relative w-full">
               <AuthInput
                 ref={passwordRef}
                 type={showPassword ? "text" : "password"}
@@ -196,14 +192,14 @@ export default function AppraiserSignInPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute top-1/2 right-6 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10 transition-colors"
+                className="absolute top-1/2 right-4 sm:right-6 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10 transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
 
-            <div className="w-[765px] mx-auto flex justify-end mt-2 mb-4">
+            <div className="w-full mx-auto flex justify-end mt-2 mb-4">
               <Link
                 href="/appraiser/auth/forgot-password"
                 className="text-[#333333] font-semibold hover:underline transition-all"
@@ -214,14 +210,14 @@ export default function AppraiserSignInPage() {
 
             <button
               type="submit"
-              className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium hover:bg-[#4e1b29] transition-colors text-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2A020D] text-white py-3 sm:py-4 rounded-full font-medium hover:bg-[#4e1b29] transition-colors text-base sm:text-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
           </form>
 
-          <div className="w-[765px] mx-auto flex justify-center mt-8">
+          <div className="w-full mx-auto flex justify-center mt-8">
             <span className="text-gray-600">Don't Have An Account? </span>
             <Link
               href="/appraiser/auth/signup"

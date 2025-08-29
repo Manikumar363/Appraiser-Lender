@@ -1,31 +1,35 @@
-'import client'
-import type React from "react"
-
+"use client";
+import type React from "react";
 
 interface AuthLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
-    <div className="min-h-screen flex overflow-hidden">
-      {/* Left side - Logo (40% width) */}
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left side */}
       <div className="hidden lg:flex lg:w-[40%] bg-[#2A020D] items-center justify-center p-8">
         <div className="flex items-center justify-center">
-          <img src="/images/logolight.svg" alt="EMADI Appraisers" className="w-85 h-auto filter brightness-0 invert" />
+          <img
+            src="/images/logolight.svg"
+            alt="EMADI Appraisers"
+            className="w-85 h-auto filter brightness-0 invert"
+          />
         </div>
       </div>
 
-      {/* Right side - Form (60% width) */}
-      <div className="w-full lg:w-[60%] bg-[#FFFFFF] overflow-y-auto">
-        <div className="min-h-screen flex justify-start items-start px-6 lg:px-12 py-12">
-         <div className="w-full max-w-[713px] flex flex-col gap-6 px-6">
-          {children}
-         </div>
+      {/* Right side  */}
+      <div className="flex-1 w-full overflow-y-auto flex flex-col">
+        <div className="flex-1 min-h-screen flex justify-center items-center px-2 sm:px-2 lg:px-10 py-4">
+          <div className="w-full flex flex-col">
+  {children}
+</div>
+
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AuthLayout
+export default AuthLayout;

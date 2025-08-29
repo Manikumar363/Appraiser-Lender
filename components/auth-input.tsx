@@ -27,7 +27,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
 
     return (
       <div className="relative mb-6">
-        <div className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-800 z-10">
+        <div className="absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 text-gray-800 z-10">
           <IconComponent size={20} />
         </div>
         <input
@@ -39,7 +39,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-[765px] pl-14 pr-6 h-[56px] py-4 bg-white border border-neutral-600 rounded-full text-gray-700 placeholder-gray-700 focus:outline-none focus:border-[#2A020D] focus:ring-0 transition-all text-base shadow-sm"
+          className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 h-[56px] py-4 bg-white border border-neutral-600 rounded-full text-gray-700 placeholder-gray-700 focus:outline-none focus:border-[#2A020D] focus:ring-0 transition-all text-base shadow-sm"
         />
       </div>
     );
