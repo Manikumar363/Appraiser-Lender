@@ -332,7 +332,7 @@ export function SimpleJobStatusModal({
               <label className="block mb-2 text-gray-700 font-medium">
                 Upload Document
               </label>
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-8 bg-gray-50 hover:bg-gray-100 transition-colors h-48 md:h-auto">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-8 bg-gray-50 hover:bg-gray-100 transition-colors min-h-48 md:h-auto"> {/* Changed h-48 to min-h-48 for better mobile flow */}
                 <input
                   type="file"
                   multiple
@@ -375,13 +375,14 @@ export function SimpleJobStatusModal({
                       </div>
                     </div>
 
-                    <div className="max-h-32 overflow-y-auto">
+                    <div className="max-h-40 md:max-h-32 overflow-y-auto space-y-2"> {/* Increased max-h on mobile, added space-y-2 for vertical spacing */}
                       {files.map((file, index) => (
                         <div
                           key={index}
-                          className="flex items-center justify-between p-2 bg-white rounded-md mb-1 text-sm"
+                          className="flex items-center justify-between p-3 bg-white rounded-md text-sm shadow-sm" 
                         >
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <div className="flex items-center gap-3 flex-1 min-w-0"> {/* Increased gap to 3 */}
+                            <span className="text-gray-800 font-medium">{index + 1}.</span> {/* Added numbering */}
                             <div className="w-4 h-4 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
                               {file.type.includes("pdf") ? (
                                 <span className="text-red-600 text-xs font-bold">
@@ -397,7 +398,7 @@ export function SimpleJobStatusModal({
                               {file.name}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-3"> {/* Increased gap to 3 */}
                             <span className="text-gray-500 text-xs">
                               {(file.size / 1024).toFixed(1)} KB
                             </span>
@@ -414,7 +415,7 @@ export function SimpleJobStatusModal({
                       ))}
                     </div>
 
-                    <div className="text-center mt-2">
+                    <div className="text-center mt-3"> {/* Increased mt-3 for spacing */}
                       <button
                         type="button"
                         onClick={() => setFiles([])}

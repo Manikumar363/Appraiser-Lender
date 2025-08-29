@@ -227,103 +227,105 @@ export function ComplexJobStatusModal({
               </div>
 
               <div>
-                <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
-                  Upload Document
-                </label>
-                <div className="border-2 border-dashed h-48 md:h-[11rem] border-gray-300 rounded-lg p-4 md:p-8 bg-gray-50 hover:bg-gray-100 transition-colors">
-                  <input
-                    type="file"
-                    multiple
-                    accept="application/pdf,image/*,.jpg,.jpeg,.png,.gif"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="file-upload-complex"
-                  />
-                  <label
-                    htmlFor="file-upload-complex"
-                    className="cursor-pointer"
-                  >
-                    <div className="text-center">
-                      <div className="flex justify-center mb-3">
-                        <UploadIcon className="w-6 h-6 text-gray-400" />
-                      </div>
-                      <p className="text-gray-600 font-medium text-sm md:text-base">
-                        Upload any additional PDF or images related to this job
-                      </p>
-                    </div>
-                  </label>
+  <label className="block mb-2 text-[#000000] font-urbanist font-semibold">
+    Upload Document
+  </label>
+  <div className="border-2 border-dashed min-h-48 md:h-[11rem] border-gray-300 rounded-lg p-4 md:p-8 bg-gray-50 hover:bg-gray-100 transition-colors"> {/* Changed h-48 to min-h-48 for dynamic expansion */}
+    <input
+      type="file"
+      multiple
+      accept="application/pdf,image/*,.jpg,.jpeg,.png,.gif"
+      onChange={handleFileChange}
+      className="hidden"
+      id="file-upload-complex"
+    />
+    <label
+      htmlFor="file-upload-complex"
+      className="cursor-pointer"
+    >
+      <div className="text-center">
+        <div className="flex justify-center mb-3">
+          <UploadIcon className="w-6 h-6 text-gray-400" />
+        </div>
+        <p className="text-gray-600 font-medium text-sm md:text-base">
+          Upload any additional PDF or images related to this job
+        </p>
+      </div>
+    </label>
 
-                  {files.length > 0 && (
-                    <div className="mt-4">
-                      <div className="text-center mb-3">
-                        <div className="inline-flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                          <svg
-                            className="w-4 h-4"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                          {files.length} file(s) selected
-                        </div>
-                      </div>
+    {files.length > 0 && (
+      <div className="mt-4">
+        <div className="text-center mb-3">
+          <div className="inline-flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
+            <svg
+              className="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {files.length} file(s) selected
+          </div>
+        </div>
 
-                      <div className="max-h-32 overflow-y-auto">
-                        {files.map((file, index) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between p-2 bg-white rounded-md mb-1 text-sm"
-                          >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <div className="w-4 h-4 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
-                                {file.type.includes("pdf") ? (
-                                  <span className="text-red-600 text-xs font-bold">
-                                    PDF
-                                  </span>
-                                ) : (
-                                  <span className="text-[#2A020D] text-xs font-bold">
-                                    IMG
-                                  </span>
-                                )}
-                              </div>
-                              <span className="truncate text-gray-700">
-                                {file.name}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500 text-xs">
-                                {(file.size / 1024).toFixed(1)} KB
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => removeFile(index)}
-                                className="text-red-500 hover:text-red-700 text-xs p-1"
-                                title="Remove file"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div className="text-center mt-2">
-                        <button
-                          type="button"
-                          onClick={() => setFiles([])}
-                          className="text-sm text-red-600 hover:text-red-800 underline"
-                        >
-                          Clear all files
-                        </button>
-                      </div>
-                    </div>
+        <div className="max-h-40 md:max-h-32 overflow-y-auto space-y-2"> {/* Added responsive max-h and space-y-2 for spacing */}
+          {files.map((file, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between p-3 bg-white rounded-md text-sm shadow-sm"
+            >
+              <div className="flex items-center gap-3 flex-1 min-w-0"> {/* Increased gap to 3 */}
+                <span className="text-gray-800 font-medium">{index + 1}.</span> {/* Added numbering */}
+                <div className="w-4 h-4 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
+                  {file.type.includes("pdf") ? (
+                    <span className="text-red-600 text-xs font-bold">
+                      PDF
+                    </span>
+                  ) : (
+                    <span className="text-[#2A020D] text-xs font-bold">
+                      IMG
+                    </span>
                   )}
                 </div>
+                <span className="truncate text-gray-700">
+                  {file.name}
+                </span>
               </div>
+              <div className="flex items-center gap-3"> {/* Increased gap to 3 */}
+                <span className="text-gray-500 text-xs">
+                  {(file.size / 1024).toFixed(1)} KB
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(index)}
+                  className="text-red-500 hover:text-red-700 text-xs p-1"
+                  title="Remove file"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-3"> {/* Increased mt-3 for spacing */}
+          <button
+            type="button"
+            onClick={() => setFiles([])}
+            className="text-sm text-red-600 hover:text-red-800 underline"
+          >
+            Clear all files
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
+
             </div>
 
             <div>
