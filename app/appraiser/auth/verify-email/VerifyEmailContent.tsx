@@ -54,7 +54,7 @@ export function AppraiserVerifyEmailContent() {
 
   // Block after too many attempts
   useEffect(() => {
-    if (attempts >= 3) {
+    if (attempts >= 6) {
       setIsBlocked(true);
       toast.error("Too many failed attempts. Please try again in 5 minutes.");
       setTimeout(() => {
@@ -224,12 +224,12 @@ export function AppraiserVerifyEmailContent() {
       />
 
       {/* UI Structure matching lender side exactly */}
-      <div className="flex flex-col justify-center items-center min-h-screen w-full text-center px-4">
-        <h1 className="text-4xl font-bold text-gray-800 mb-4 self-start text-left">
+      <div className="flex flex-col justify-center items-center min-h-screen w-full text-center px-4 sm:px-6">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 self-start text-left">
           Email Verification
         </h1>
 
-        <p className="text-gray-600 mb-8 text-base self-start text-left">
+        <p className="text-gray-600 mb-8 text-sm sm:text-base self-start text-left">
           Enter the verification code we just sent on your email address{" "}
           <span className="text-orange-500 font-medium">{email}</span>
           {attempts > 0 && (
@@ -256,14 +256,14 @@ export function AppraiserVerifyEmailContent() {
           </p>
         )}
 
-        <div className="flex items-center justify-center gap-4 mb-8 mt-2">
-          <div className="bg-[#FBEFF2] text-[#2A020D] px-5 py-2 rounded-full font-medium text-base border border-[#2A020D]">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 mt-2 w-full">
+          <div className="bg-[#FBEFF2] text-[#2A020D] px-4 sm:px-5 py-2 rounded-full font-medium text-sm sm:text-base border border-[#2A020D]">
             {formatTime(timeLeft)}
           </div>
           <button
             onClick={handleResend}
             disabled={!canResend || resendLoading}
-            className={`px-5 py-2 rounded-full font-medium transition-colors text-base ${
+            className={`w-full sm:w-auto px-4 sm:px-5 py-2 rounded-full font-medium transition-colors text-sm sm:text-base ${
               canResend && !resendLoading
                 ? "bg-orange-600 text-white hover:bg-orange-600"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -276,7 +276,7 @@ export function AppraiserVerifyEmailContent() {
         <button
           onClick={handleVerify}
           disabled={otp.length !== 4 || loading || isBlocked}
-          className={`w-full py-4 rounded-full font-medium transition-colors text-base ${
+          className={`w-full py-3 sm:py-4 rounded-full font-medium transition-colors text-sm sm:text-base ${
             otp.length === 4 && !loading && !isBlocked
               ? "bg-[#2A020D] text-white hover:bg-[#4e1b29]"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"

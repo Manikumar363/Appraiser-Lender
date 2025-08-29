@@ -79,13 +79,13 @@ export default function AppraiserForgotPasswordPage() {
           },
         }}
       />
-      <div className="flex items-center justify-center min-h-screen px-6">
-        <div className="w-full max-w-[765px]">
+      <div className="flex items-center justify-center min-h-screen px-4 sm:px-6">
+        <div className="w-full">
           <div className="mb-4">
-            <h1 className="text-4xl font-bold text-gray-900 mb-5">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-5">
               Forgot Password
             </h1>
-            <p className="text-gray-800 text-base">
+            <p className="text-gray-800 text-sm sm:text-base">
               Don't worry! It happens. Please enter the email address linked
               with your account.
             </p>
@@ -104,7 +104,7 @@ export default function AppraiserForgotPasswordPage() {
             <button
               type="submit"
               disabled={loading}
-              className={`w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-medium transition-colors ${
+              className={`w-full bg-[#2A020D] text-white py-3 sm:py-4 rounded-full font-medium transition-colors ${
                 loading ? "opacity-60 cursor-not-allowed" : "hover:bg-[#4e1b29]"
               }`}
             >
@@ -115,7 +115,7 @@ export default function AppraiserForgotPasswordPage() {
             <p className="text-red-600 text-sm mt-2">{formError}</p>
           )}
 
-          <div className="mt-6 w-[765px] text-center">
+          <div className="mt-6 w-full text-center">
             <Link
               href="/appraiser/auth/signin"
               className="text-[#2A020D] hover:underline text-sm font-medium"
