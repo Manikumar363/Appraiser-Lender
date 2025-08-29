@@ -163,130 +163,128 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="w-full max-w-[765px] mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5 w-full">
+      <AuthInput
+        ref={usernameRef}
+        type="text"
+        placeholder="Type your username here"
+        value={username}
+        onChange={setUsername}
+        icon="user"
+      />
+
+      <AuthInput
+        ref={emailRef}
+        type="email"
+        placeholder="Type your email here"
+        value={email}
+        onChange={setEmail}
+        icon="email"
+      />
+
+      {/* Enhanced password input with validation feedback */}
+      <div className="space-y-1">
         <AuthInput
-          ref={usernameRef}
-          type="text"
-          placeholder="Type your username here"
-          value={username}
-          onChange={setUsername}
-          icon="user"
+          ref={passwordRef}
+          type="password"
+          placeholder="Type your password here"
+          value={password}
+          onChange={handlePasswordChange}
+          icon="password"
         />
+        {/* Real-time password validation feedback */}
+        {password && passwordStrength && (
+          <p className="text-red-500 text-sm ml-4">{passwordStrength}</p>
+        )}
+        {password && !passwordStrength && password.length >= 8 && (
+          <p className="text-green-600 text-sm ml-4">✓ Password looks good</p>
+        )}
+      </div>
 
-        <AuthInput
-          ref={emailRef}
-          type="email"
-          placeholder="Type your email here"
-          value={email}
-          onChange={setEmail}
-          icon="email"
+      {/* Phone Input - matching lender side exactly */}
+      <div className="relative">
+        {/* <label className="block text-gray-700 mb-2 text-sm font-medium">
+          Phone Number
+        </label> */}
+        <PhoneInput
+          country={"us"}
+          value={fullPhone}
+          onChange={setFullPhone}
+          placeholder="Type your phone number here"
+          inputClass="!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#2A020D] focus:!shadow-md transition-all"
+          containerClass="!w-full"
+          buttonClass="!border-r !border-black !rounded-l-full"
+          enableSearch
         />
+      </div>
 
-        {/* Enhanced password input with validation feedback */}
-        <div className="space-y-1">
-          <AuthInput
-            ref={passwordRef}
-            type="password"
-            placeholder="Type your password here"
-            value={password}
-            onChange={handlePasswordChange}
-            icon="password"
+      {/* Terms checkbox */}
+      <div className="w-full flex flex-row flex-wrap items-center justify-center gap-3 sm:gap-3 sm:flex-nowrap">
+        <div className="relative pt-1 flex-shrink-0">
+          <input
+            type="checkbox"
+            id="terms"
+            checked={acceptTerms}
+            onChange={(e) => setAcceptTerms(e.target.checked)}
+            className="sr-only"
           />
-          {/* Real-time password validation feedback */}
-          {password && passwordStrength && (
-            <p className="text-red-500 text-sm ml-4">{passwordStrength}</p>
-          )}
-          {password && !passwordStrength && password.length >= 8 && (
-            <p className="text-green-600 text-sm ml-4">✓ Password looks good</p>
-          )}
-        </div>
-
-        {/* Phone Input - matching lender side exactly */}
-        <div className="relative">
-          {/* <label className="block text-gray-700 mb-2 text-sm font-medium">
-            Phone Number
-          </label> */}
-          <PhoneInput
-            country={"us"}
-            value={fullPhone}
-            onChange={setFullPhone}
-            placeholder="Type your phone number here"
-            inputClass="!w-[765px] w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-black focus:!border-[#2A020D] focus:!shadow-md transition-all"
-            containerClass="!w-full"
-            buttonClass="!border-r !border-black !rounded-l-full"
-            enableSearch
-          />
-        </div>
-
-        {/* Terms checkbox - matching lender side layout */}
-        <div className="w-[765px] mx-auto flex items-center justify-center gap-3">
-          <div className="relative pt-1">
-            <input
-              type="checkbox"
-              id="terms"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
-              className="sr-only"
-            />
-            <label
-              htmlFor="terms"
-              className={`flex items-center justify-center w-5 h-5 rounded border-2 cursor-pointer transition-colors ${
-                acceptTerms
-                  ? "bg-[#2A020D] border-[#2A020D]"
-                  : "bg-white border-gray-300"
-              }`}
-            >
-              {acceptTerms && (
-                <svg
-                  className="w-4 h-4 text-white"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              )}
-            </label>
-          </div>
-
           <label
             htmlFor="terms"
-            className="text-gray-700 text-base cursor-pointer flex flex-wrap gap-2 items-center justify-center"
+            className={`flex items-center justify-center w-5 h-5 rounded border-2 cursor-pointer transition-colors ${
+              acceptTerms
+                ? "bg-[#2A020D] border-[#2A020D]"
+                : "bg-white border-gray-300"
+            }`}
           >
-            <span className="flex flex-wrap gap-2">
-              <Link
-                href="/appraiser/terms"
-                className="text-[#333333] hover:underline font-medium"
+            {acceptTerms && (
+              <svg
+                className="w-4 h-4 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
               >
-                Terms of Use
-              </Link>
-              <span></span>
-              <Link
-                href="/appraiser/privacy"
-                className="text-[#333333] hover:underline font-medium"
-              >
-                Privacy Policy
-              </Link>
-            </span>
+                <path
+                  fillRule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            )}
           </label>
         </div>
 
-        {/* Submit Button - matching lender side width */}
-        <button
-          type="submit"
-          className="w-[765px] bg-[#2A020D] text-white py-4 rounded-full font-semibold hover:bg-[#4e1b29] transition-colors text-base mb-2 shadow-sm disabled:opacity-50"
-          disabled={loading}
+        <label
+          htmlFor="terms"
+          className="text-gray-700 text-base cursor-pointer flex flex-row flex-wrap gap-2 items-center justify-center"
         >
-          {loading ? "Creating Account..." : "Sign Up"}
-        </button>
-      </form>
+          <span className="flex flex-row flex-wrap gap-2 items-center">
+            <Link
+              href="/appraiser/terms"
+              className="text-[#333333] hover:underline font-medium"
+            >
+              Terms of Use
+            </Link>
+            <span>&amp;</span>
+            <Link
+              href="/appraiser/privacy"
+              className="text-[#333333] hover:underline font-medium"
+            >
+              Privacy Policy
+            </Link>
+          </span>
+        </label>
+      </div>
+
+      {/* Submit Button - matching lender side width */}
+      <button
+        type="submit"
+        className="w-full bg-[#2A020D] text-white py-3 sm:py-4 rounded-full font-semibold hover:bg-[#4e1b29] transition-colors text-base sm:text-lg mb-2 shadow-sm disabled:opacity-50"
+        disabled={loading}
+      >
+        {loading ? "Creating Account..." : "Sign Up"}
+      </button>
 
       {/* Footer Link - matching lender side alignment */}
-      <div className="w-[765px] mx-auto text-center mt-4">
+      <div className="w-full text-center mt-4">
         <span className="text-gray-700 text-base">
           Already Have An Account?{" "}
         </span>
@@ -297,6 +295,6 @@ export default function SignUpForm() {
           Sign In
         </Link>
       </div>
-    </div>
+    </form>
   );
 }

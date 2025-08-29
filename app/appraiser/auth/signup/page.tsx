@@ -44,26 +44,33 @@ export default function AppraiserSignUpPage() {
         }}
       />
 
-      <div className="mt-10 mb-6 space-y-4">
-        <h1 className="text-3xl font-semibold text-gray-800">Sign Up as</h1>
-        <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
+      <div className="flex flex-col justify-center min-h-screen w-full items-center px-4 sm:px-6">
+        <div className="w-full">
+          <div className="mb-4 mt-0">
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800">Sign Up as</h1>
+          </div>
+
+          <div className="mb-6">
+            <RoleSelector selectedRole={selectedRole} onRoleChange={handleRoleChange} />
+          </div>
+
+          <div className="mb-5">
+            <h2
+              className="text-3xl sm:text-[42px] font-semibold text-gray-800 leading-[100%] mb-1"
+              style={{
+                fontFamily: 'Urbanist',
+                fontWeight: 600,
+                fontStyle: 'normal',
+                letterSpacing: '0',
+              }}
+            >
+              Create Your Appraiser Account
+            </h2>
+          </div>
+
+          <SignUpForm />
+        </div>
       </div>
-
-      <h2
-        className="mb-3 w-full max-w-[713px] mx-auto"
-        style={{
-          fontFamily: 'Urbanist',
-          fontWeight: 600,
-          fontStyle: 'normal',
-          fontSize: '42px',
-          lineHeight: '100%',
-          letterSpacing: '0',
-        }}
-      >
-        Create Your Appraiser Account
-      </h2>
-
-      <SignUpForm />
     </AuthLayout>
   );
 }
