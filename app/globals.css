@@ -4,43 +4,42 @@
 
 @layer base {
   /* Ensure no overflow */
-body {
-  overflow-x: hidden;
-}
-
-/* Media query for small screens */
-@media (max-width: 768px) {
-  /* Adjust fonts/buttons if needed */
-  button {
-    min-width: 48px;
-    min-height: 48px;
+  body {
+    overflow-x: hidden;
   }
-}
 
-/* Custom dropdown option styling */
-select option:hover {
-  background-color: #4e1b29 !important;
-  color: white !important;
-}
+  /* Media query for small screens */
+  @media (max-width: 768px) {
+    /* Adjust fonts/buttons if needed */
+    button {
+      min-width: 48px;
+      min-height: 48px;
+    }
+  }
 
-select option:checked {
-  background-color: #4e1b29 !important;
-  color: white !important;
-}
+  /* Custom dropdown option styling */
+  select option:hover {
+    background-color: #4e1b29 !important;
+    color: white !important;
+  }
 
-/* For webkit browsers */
-select:focus option:checked {
-  background-color: #4e1b29 !important;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  scrollbar-width: none;  /* Firefox */
-}
+  select option:checked {
+    background-color: #4e1b29 !important;
+    color: white !important;
+  }
 
-.scrollbar-hide::-webkit-scrollbar { 
-  display: none;  /* Safari and Chrome */
-}
+  /* For webkit browsers */
+  select:focus option:checked {
+    background-color: #4e1b29 !important;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+  }
 
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
 
   :root {
     --background: 0 0% 100%;
@@ -107,3 +106,34 @@ select:focus option:checked {
   display: none;
 }
 
+/* hide horizontal scrollbar while preserving scroll */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Desktop typography overrides */
+@media (min-width: 1024px) {
+  .desktop-font {
+    font-family: "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .desktop-font .tx-heading {
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  .desktop-font .tx-small {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .desktop-font .tx-body {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .desktop-font button {
+    font-weight: 500;
+  }
+}

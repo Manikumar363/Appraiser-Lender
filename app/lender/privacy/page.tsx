@@ -4,59 +4,68 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from '../../../components/dashboard-layout';
 import { contentApi } from '@/lib/api/contentApi';
 
-
-interface Section {
-  title: string;
-  content: string;
-  list?: string[];
-}
-
 export default function PrivacyPolicyPage() {
-  const [contentHtml, setContentHtml] = useState<string>("");
+  const [contentHtml, setContentHtml] = useState<string>('');
 
   useEffect(() => {
-    // Simulate API call (replace with actual fetch in real usage)
     const fetchData = async () => {
-      try{
+      try {
         const res = await contentApi.getPrivacyPolicyLender();
         const policy = res.content.find(
-          (item: any) => item.type === "PRIVACY_POLICY_LENDER"
+          (item: any) => item.type === 'PRIVACY_POLICY_LENDER'
         );
-        // Wrap plain text in <p> if not HTML
-        if (policy?.content?.trim().startsWith("<")) {
+        if (policy?.content?.trim().startsWith('<')) {
           setContentHtml(policy.content);
         } else {
-          setContentHtml(`<p>${policy?.content || "No privacy policy found."}</p>`);
+          setContentHtml(
+            `<p>${policy?.content || 'No privacy policy found.'}</p>`
+          );
         }
-
-      }catch(err) {
-        setContentHtml("<p>Failed to load privacy policy.</p>");
+      } catch {
+        setContentHtml('<p>Failed to load privacy policy.</p>');
       }
     };
-
     fetchData();
   }, []);
 
   return (
-    <DashboardLayout role='lender'>
-    <div className="px-2 py-4 text-gray-800 max-w-4xl ml-8 space-y-4">
-      {/* Header */}
-      <div>
-        <h2 className="text-yellow-400 text-sm font-semibold uppercase tracking-widest">
-          01-SEPT-2023
-        </h2>
-        <h1 className="text-3xl font-bold text-[#2A020D] mt-1">
-          Privacy Policy
-        </h1>
-      </div>
+    <DashboardLayout role="lender">
+      <div
+        className="
+          w-full
+          max-w-4xl
+          mx-auto md:ml-8 md:mr-0
+          px-4 sm:px-6
+          py-6 sm:py-8 md:py-10
+          text-gray-800
+          space-y-6 sm:space-y-8
+        "
+      >
+        <header>
+          <h2 className="text-[11px] xs:text-xs sm:text-sm font-semibold uppercase tracking-widest text-yellow-400">
+            01-SEPT-2023
+          </h2>
+          <h1 className="mt-1 text-2xl sm:text-3xl md:text-3xl font-bold text-[#2A020D] leading-tight">
+            Privacy Policy
+          </h1>
+        </header>
 
-      {/* Sections */}
-      
-        <section className="prose max-w-none">
+        <section
+          className="
+            prose max-w-none
+            prose-p:leading-relaxed
+            prose-ul:pl-5
+            prose-li:marker:text-[#2A020D]
+            prose-a:text-[#2A020D] prose-a:underline hover:prose-a:no-underline
+            prose-headings:scroll-mt-24
+            prose-h2:text-xl sm:prose-h2:text-2xl
+            prose-h3:text-lg sm:prose-h3:text-xl
+            text-sm sm:text-base
+          "
+        >
           <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
         </section>
-
-    </div>
+      </div>
     </DashboardLayout>
   );
 }

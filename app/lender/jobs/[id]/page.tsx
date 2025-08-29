@@ -119,11 +119,13 @@ export default function JobDetailPage() {
   return (
     <DashboardLayout role="lender">
       <Toaster position="top-center" />
-      <div className="p-6 min-h-screen">
+      {/* Mobile: allow its own vertical scroll & tighter padding.
+          Desktop: keep original look. */}
+      <div className="min-h-screen md:p-6 p-4 overflow-y-auto md:overflow-visible">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-start md:items-center justify-between mb-6 gap-2 md:gap-0">
           <button
-            className="w-10 h-10 flex items-center justify-center rounded-full shadow mb-4"
+            className="w-10 h-10 flex items-center justify-center rounded-full shadow md:mb-0 mb-2"
             onClick={() => router.back()}
             aria-label="Back"
           >
@@ -133,15 +135,15 @@ export default function JobDetailPage() {
         </div>
 
         {/* Info Card */}
-        <div className="bg-[#FBEFF2] rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
-          <div className="flex items-center justify-between">
+        <div className="bg-[#FBEFF2] rounded-lg p-5 md:p-6 shadow-sm border border-gray-200 mb-6">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5 md:gap-0">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#2A020D] rounded-full flex items-center justify-center">
                 <BuildingIcon className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
                 <h2 className="text-lg font-semibold">{job.intended_username}</h2>
-                <p className="text-gray-600 text-sm mb-1">{job.address}</p>
+                <p className="text-gray-600 text-sm mb-1 break-words">{job.address}</p>
                 <Badge
                   className="w-fit text-white inline-flex items-center px-4 py-2 rounded-full text-sm font-medium cursor-pointer"
                   style={{
@@ -162,7 +164,7 @@ export default function JobDetailPage() {
                 </Badge>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
               <Button variant="outline" size="sm" className="bg-[#FBEFF2] truncate border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
                 <MapIcon className="w-6 h-6 mr-1 " />
                 {getCityCountry(job.address)}
@@ -184,9 +186,9 @@ export default function JobDetailPage() {
         </div>
 
         {/* Progress */}
-        <div className="bg-[#FBEFF2] rounded-lg p-6 shadow-sm border border-gray-200 mb-6">
+        <div className="bg-[#FBEFF2] rounded-lg p-5 md:p-6 shadow-sm border border-gray-200 mb-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">Job Summary</h3>
-          <div className="flex items-center justify-center gap-8">
+          <div className="flex items-center justify-center gap-6 md:gap-8 flex-wrap md:flex-nowrap">
             {progressSteps.map((step, i) => (
               <div key={i} className="flex flex-col items-center">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2
@@ -274,7 +276,7 @@ export default function JobDetailPage() {
 
         {!isPaid && (
           <Button
-            className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-7 rounded-lg text-lg"
+            className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-6 md:py-7 rounded-lg text-lg"
             onClick={handlePayNowClick}
             disabled={intentLoading}
           >

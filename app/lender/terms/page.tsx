@@ -1,51 +1,76 @@
 'use client';
-import { useState,useEffect } from "react";
-import DashboardLayout from "../../../components/dashboard-layout"
-import { contentApi } from "@/lib/api/contentApi";
-import { set } from "date-fns";
+import { useState, useEffect } from 'react';
+import DashboardLayout from '../../../components/dashboard-layout';
+import { contentApi } from '@/lib/api/contentApi';
 
-interface Section {
-  title: string;
-  content: string;
-  list?: string[];
-}
 export default function LenderTermsPage() {
-  const [contentHtml, setContentHtml] = useState<string>("");
+  const [contentHtml, setContentHtml] = useState<string>('');
 
   useEffect(() => {
-    // Simulating API fetch
     const fetchData = async () => {
-      try{
-      const res = await contentApi.getAll();
-
-      const terms = res.content.find(
-        (item:any) => item.type === "TERMS_AND_CONDITOINS_LENDER"
-      );
-      setContentHtml(terms?.content || "<P>No terms found.</P>");
-      }catch(err){
-        setContentHtml("<p>Failed to load terms.</p>");
+      try {
+        const res = await contentApi.getAll();
+        const terms = res.content.find(
+          (item: any) => item.type === 'TERMS_AND_CONDITOINS_LENDER'
+        );
+        setContentHtml(terms?.content || '<p>No terms found.</p>');
+      } catch {
+        setContentHtml('<p>Failed to load terms.</p>');
       }
-      
     };
     fetchData();
   }, []);
+
   return (
     <DashboardLayout role="lender">
+      {/* Outer wrapper: keep desktop width, center & tighten on mobile */}
+      <div
+        className="
+          w-full
+          max-w-4xl
+          mx-auto md:ml-8 md:mr-0
+          px-4 sm:px-6
+          py-6 sm:py-8 md:py-10
+          text-gray-800
+          space-y-6 sm:space-y-8
+        "
+      >
+        {/* Heading area */}
+        <header>
+          <h2 className="text-[11px] xs:text-xs sm:text-sm font-semibold uppercase tracking-widest text-yellow-400">
+            Agreement
+          </h2>
+            <h1
+              className="
+                mt-1
+                text-2xl sm:text-3xl md:text-3xl
+                font-bold text-[#2A020D]
+                leading-tight
+              "
+            >
+              Terms &amp; Condition
+            </h1>
+        </header>
 
-       <div className="px-6 py-10 text-gray-800 max-w-4xl ml-8 space-y-8">
-      <div>
-        <h2 className="text-yellow-400 text-sm font-semibold uppercase tracking-widest">
-          Agreement
-        </h2>
-        <h1 className="text-3xl font-bold text-[#2A020D] mt-1">
-          Terms &amp; Condition
-        </h1>
-      </div>
-
-        <section className="prose max-w-none">
+        {/* Content */}
+        <section
+          className="
+            prose max-w-none
+            prose-p:leading-relaxed
+            prose-ul:pl-5
+            prose-li:marker:text-[#2A020D]
+            prose-a:text-[#2A020D] prose-a:underline hover:prose-a:no-underline
+            prose-headings:scroll-mt-24
+            prose-h2:text-xl sm:prose-h2:text-2xl
+            prose-h3:text-lg sm:prose-h3:text-xl
+            text-sm sm:text-base
+          "
+        >
           <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
         </section>
-    </div>
+
+        
+      </div>
     </DashboardLayout>
   )
 }
