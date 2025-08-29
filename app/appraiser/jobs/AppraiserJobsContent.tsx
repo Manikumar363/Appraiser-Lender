@@ -165,14 +165,14 @@ export default function AppraiserJobsContent({
     });
 
   return (
-    <div className="p-2">
+    <div className="p-1">
       <div className="flex-1">
         {/* Full-Width Filter Buttons - Wrap on mobile */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-2 mb-4">
           {FILTERS.map((f) => (
             <button
               key={f.key}
-              className={`flex-1 md:w-auto py-2 rounded-full transition ${
+              className={`flex-1 overflow-hidden md:w-auto py-2 rounded-full transition ${
                 activeFilter === f.key
                   ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
                   : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"

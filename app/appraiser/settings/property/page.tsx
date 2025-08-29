@@ -92,11 +92,11 @@ const PropertyPreferenceContent = ({ searchQuery = "" }: { searchQuery?: string 
       <Toaster position="top-center" />
       <div className="p-2">
         {/* Filter Tabs */}
-        <div className="flex gap-4 mb-4">
+        <div className="flex gap-4 mb-2">
           {FILTERS.map((filter) => (
             <button
               key={filter.key}
-              className={`w-full py-2 rounded-full transition ${
+              className={`w-full py-1 rounded-full transition md:py-2 overflow-hidden ${
                 activeFilter === filter.key
                   ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
                   : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"

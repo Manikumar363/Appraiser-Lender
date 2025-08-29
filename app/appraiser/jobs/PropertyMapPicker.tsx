@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { googleMapsConfig } from "../../../lib/api/googleMapsConfig";  // Adjust path if needed
 
 interface PropertyMapPickerProps {
   onLocationSelect: (lat: number, lng: number) => void;
@@ -23,20 +24,13 @@ export function PropertyMapPicker({
   onLocationSelect,
   initialLocation,
 }: PropertyMapPickerProps) {
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: "google-map-script",
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-  });
+  const { isLoaded, loadError } = useJsApiLoader(googleMapsConfig);
 
-  const [selectedPosition, setSelectedPosition] =
-    useState<google.maps.LatLng | null>(
-      initialLocation
-        ? new google.maps.LatLng(
-            initialLocation.latitude,
-            initialLocation.longitude
-          )
-        : null
-    );
+  const [selectedPosition, setSelectedPosition] = useState<google.maps.LatLng | null>(
+    initialLocation
+      ? new google.maps.LatLng(initialLocation.latitude, initialLocation.longitude)
+      : null
+  );
 
   const onMapClick = useCallback(
     (e: google.maps.MapMouseEvent) => {
@@ -51,9 +45,7 @@ export function PropertyMapPicker({
   if (loadError) {
     return (
       <div className="w-full h-[300px] bg-red-50 border border-red-200 rounded-lg flex items-center justify-center">
-        <p className="text-red-600">
-          Error loading map. Please check your API key.
-        </p>
+        <p className="text-red-600">Error loading map. Please check your API key.</p>
       </div>
     );
   }
@@ -77,10 +69,7 @@ export function PropertyMapPicker({
         }}
       >
         {selectedPosition && (
-          <Marker
-            position={selectedPosition}
-            title="Selected Property Location"
-          />
+          <Marker position={selectedPosition} title="Selected Property Location" />
         )}
       </GoogleMap>
       <div className="mt-3 p-3 bg-[#FBEFF2] rounded-lg">
@@ -89,7 +78,7 @@ export function PropertyMapPicker({
         </p>
         {selectedPosition && (
           <div className="mt-2 text-sm text-green-700">
-            <strong>Selected:</strong> {selectedPosition.lat().toFixed(6)},{" "}
+            <strong>Selected:</strong> {selectedPosition.lat().toFixed(6)},
             {selectedPosition.lng().toFixed(6)}
           </div>
         )}
