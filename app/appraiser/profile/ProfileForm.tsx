@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { toast } from "sonner"; 
 import api from "@/lib/api/axios";
@@ -21,6 +21,7 @@ interface ProfileFormProps {
   isEditing: boolean;
   hasChanges: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPhoneChange: (fullPhone: string) => void;
   onEdit: () => void;
   onCancel: () => void;
   onUpdate: (profile: any) => void;
@@ -33,6 +34,7 @@ export default function ProfileForm({
   isEditing,
   hasChanges,
   onInputChange,
+  onPhoneChange,
   onEdit,
   onCancel,
   onUpdate,
@@ -41,37 +43,18 @@ export default function ProfileForm({
   const [submitLoading, setSubmitLoading] = useState(false);
   const [fullPhone, setFullPhone] = useState(formData.phone || "");
 
-  // Parse phone number for API (same logic as signup)
-  const parsePhoneNumber = (phone: string) => {
-    if (!phone) return { countryCode: "", phoneNumber: "" };
-    
-    if (phone.startsWith("+")) {
-      const match = phone.match(/^\+\d+/);
-      if (match) {
-        const countryCode = match[0];
-        const phoneNumber = phone.slice(countryCode.length).replace(/\D/g, "");
-        return { countryCode, phoneNumber };
-      }
-    }
-    return { countryCode: "+1", phoneNumber: phone.replace(/\D/g, "") };
-  };
+  useEffect(() => {
+    setFullPhone(formData.phone || "");
+  }, [formData.phone]);
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm() || !hasChanges) return;
 
-    // Validate phone number
-    if (fullPhone && fullPhone.replace(/\D/g, "").length < 10) {
-      toast.error("Please enter a valid phone number.");
-      return;
-    }
-
     setSubmitLoading(true);
     
     try {
-      const { countryCode, phoneNumber } = parsePhoneNumber(fullPhone);
-      
       await api.patch(
         "/user/profile",
         {
@@ -79,8 +62,7 @@ export default function ProfileForm({
           email: formData.email.trim(),
           company_name: formData.company_name.trim(),
           designation: formData.designation.trim(),
-          phone: phoneNumber, // Send just the number
-          countryCode: countryCode, // Send country code separately if your API expects it
+          phone: fullPhone,  // Send full value directly
         },
         {
           headers: {
@@ -91,10 +73,10 @@ export default function ProfileForm({
 
       toast.success("Profile updated successfully!");
 
-      // Refresh profile data
       const updatedProfile = await profileApi.getProfile();
       if (updatedProfile.success) {
         onUpdate(updatedProfile.user);
+        setFullPhone(updatedProfile.user.phone || "");  // Force sync
       }
       
     } catch (err: any) {
@@ -145,18 +127,18 @@ export default function ProfileForm({
             <Tick />
           </div>
           <div className="flex items-center gap-1 text-gray-700">
-            <span>{"+"+formData.phone}</span>
+            <span>{fullPhone}</span>
             <Tick />
           </div>
         </div>
 
         {!isEditing ? (
-            <button
+          <button
             onClick={onEdit}
             className="bg-[#2A020D] hover:bg-[#2A020Df5] text-white px-6 py-2 rounded-full font-medium transition"
-            >
+          >
             Edit Profile
-            </button>
+          </button>
         ) : (
           <button
             onClick={onCancel}
@@ -192,14 +174,19 @@ export default function ProfileForm({
           </div>
         ))}
 
-        {/* Phone Number Field - Same as Signup */}
+        {/* Phone Number Field - Enhanced for single-digit changes */}
         <div className="relative">
           <PhoneInput
             country={"us"}
             value={fullPhone}
-            onChange={setFullPhone}
+            onChange={(value) => {
+              setFullPhone(value);
+              onPhoneChange(value);
+            }}
             placeholder="Type your phone number here"
             disabled={!isEditing}
+            jumpCursorToEnd={true}  // Ensures cursor moves, helping minimal edits register
+            copyNumbersOnly={false}  // Keeps formatting for accurate saves
             inputClass={`!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-gray-300 focus:!border-[#2A020D] focus:!shadow-md transition-all ${
               !isEditing ? "!bg-gray-50 !cursor-not-allowed" : "!bg-white"
             }`}
@@ -221,7 +208,7 @@ export default function ProfileForm({
                   : "bg-[#2A020D] hover:bg-[#2A020Df5] text-white"
               }`}
             >
-              {submitLoading ? "Updating..." : "Save Changes"}
+              {submitLoading ? "Updating..." : "Update Profile"}
             </button>
           </div>
         )}
