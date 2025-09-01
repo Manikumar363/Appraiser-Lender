@@ -1,6 +1,7 @@
 'use client'
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from "next/navigation";
+import { useGlobalSearch } from '@/components/search-context';
 import { Job, JobFilter, getMyJobsPaginated } from "../../../lib/api/jobs1";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +9,6 @@ import { BuildingIcon, MapIcon, MessageIcon, CalendarIcon, LoadIcon, RightArrow 
 import { Plus } from "lucide-react";
 
 interface JobsContentProps {
-  searchQuery: string;
   activeFilter: JobFilter;
   setActiveFilter: (f: JobFilter) => void;
   onNewJob: () => void;
@@ -23,109 +23,79 @@ function getCityCountry(address: string) {
 const formatMobileDate = (d?: string) =>
   d ? new Date(d).toLocaleDateString(undefined, { day: "2-digit", month: "2-digit", year: "2-digit" }) : "N/A";
 
+// Helper (ensure exists)
+function strIncludes(a: any, q: string) {
+  return (a || '').toString().toLowerCase().includes(q);
+}
+
 export default function JobsContent({
-  searchQuery,
   activeFilter,
   setActiveFilter,
   onNewJob,
 }: JobsContentProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-
+  const { search } = useGlobalSearch();
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
+  const [currentPage, setCurrentPage] = useState(1);
   const PAGE_SIZE = 10;
-  const [currentPage, setCurrentPage] = useState<number>(() => {
-    const p = Number(searchParams.get("page") || "1");
-    return Number.isFinite(p) && p > 0 ? p : 1;
-  });
-  const [meta, setMeta] = useState<{ page: number; totalPages: number; totalJobs: number }>({
-    page: 1,
-    totalPages: 1,
-    totalJobs: 0,
-  });
 
-  const setPageInUrl = (page: number) => {
-    const sp = new URLSearchParams(Array.from(searchParams.entries()));
-    sp.set("page", String(page));
-    router.replace(`/lender/jobs?${sp.toString()}`);
-  };
-
-  const goToPage = (page: number) => {
-    const safe = Math.min(Math.max(1, page), meta.totalPages || 1);
-    if (safe === currentPage) return;
-    setCurrentPage(safe);
-    setPageInUrl(safe);
-    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const fetchJobs = useCallback(async () => {
-    try {
+  // Fetch once (or refetch on activeFilter if your API is server‑filtered)
+  useEffect(() => {
+    let ignore = false;
+    (async () => {
       setLoading(true);
-      setError("");
-      const res = await getMyJobsPaginated({
-        page: currentPage,
-        limit: PAGE_SIZE,
-        search: searchQuery,
-        status: "All",
-      });
-      setJobs(res.jobs || []);
-      setMeta({
-        page: res.page,
-        totalPages: res.totalPages,
-        totalJobs: res.total_jobs,
-      });
-    } catch (e: any) {
-      setError(e?.message || "Failed to fetch jobs");
-    } finally {
-      setLoading(false);
-    }
-  }, [currentPage, searchQuery, activeFilter]);
+      try {
+        const res = await getMyJobsPaginated?.({ page: 1, limit: 500 });
+        if (!ignore) setJobs(res?.jobs || []);
+      } catch {
+        if (!ignore) setJobs([]);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+    return () => { ignore = true; };
+  }, []);
 
-  useEffect(() => { fetchJobs(); }, [fetchJobs]);
+  // Normalize search (debounce)
+  const [debounced, setDebounced] = useState(search);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim().toLowerCase()), 180);
+    return () => clearTimeout(t);
+  }, [search]);
 
+  // Reset page on search/filter change
   useEffect(() => {
     setCurrentPage(1);
-    setPageInUrl(1);
-  }, [searchQuery, activeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [debounced, activeFilter]);
 
-  const strIncludes = (v: string | undefined, q: string) => (v || "").toLowerCase().includes(q.toLowerCase());
-  const matchesFilter = (job: Job, filter: JobFilter) => {
-    const status = (job.job_status || "").toLowerCase();
-    switch (filter) {
-      case "in-progress":
-        return [
-          "pending",
-            "accepted",
-            "client_visit",
-            "site_visit_scheduled",
-            "post_visit_summary",
-            "active"
-        ].includes(status);
-      case "completed": return status === "completed";
-      case "cancelled": return status === "cancelled";
-      case "All":
-      default: return true;
-    }
-  };
+  function matchesFilter(job: Job, filter: JobFilter) {
+    if (filter === 'All') return true;
+    const s = (job.job_status || '').toLowerCase();
+    if (filter === 'completed') return s === 'completed';
+    if (filter === 'cancelled') return s === 'cancelled';
+    // in-progress bucket
+    return ['active','accepted','pending','in_progress','in-progress','client_visit','site_visit_scheduled','post_visit_summary','post_visit_summary','job_request'].includes(s);
+  }
 
-  const visibleJobs = useMemo(() => {
-    const q = (searchQuery || "").trim().toLowerCase();
-    return jobs.filter((job) => {
-      const matchSearch =
-        !q ||
-        strIncludes(job.property_type, q) ||
-        strIncludes(job.address, q) ||
-        strIncludes(job.job_status, q) ||
-        strIncludes(job.status, q);
-      return matchSearch && matchesFilter(job, activeFilter);
+  const filtered = useMemo(() => {
+    const q = debounced;
+    return jobs.filter(j => {
+      if (!matchesFilter(j, activeFilter)) return false;
+      if (!q) return true;
+      return [
+        j.intended_username,
+        j.address,
+        j.job_status,
+        j.id
+      ].some(field => strIncludes(field, q));
     });
-  }, [jobs, searchQuery, activeFilter]);
+  }, [jobs, debounced, activeFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   if (loading) return <div className="p-6 text-sm">Loading jobs...</div>;
-  if (error) return <div className="p-6 text-red-500 text-sm">Error: {error}</div>;
 
   return (
     <div className="flex flex-col h-full min-h-[calc(90vh-14px)]">
@@ -134,9 +104,12 @@ export default function JobsContent({
       {/* Filter Tabs (desktop widened) */}
       <div
         role="tablist"
-        aria-label="Job status filters"
-        className="flex flex-nowrap gap-2 mb-4 overflow-x-auto hide-scrollbar
-                   md:overflow-visible md:mb-10 md:grid md:grid-cols-4 md:gap-6"
+        className="
+        flex flex-nowrap gap-2 mb-4 overflow-x-auto hide-scrollbar
+          sm:justify-center
+          md:grid md:grid-cols-4 md:gap-4 md:overflow-visible
+          xl:mb-10
+        "
       >
         {([
           { key: "All", label: "All" },
@@ -153,7 +126,8 @@ export default function JobsContent({
               onClick={() => setActiveFilter(f.key)}
               className={`whitespace-nowrap rounded-full border px-5 py-2 text-xs font-medium transition
                           shrink-0
-                          md:px-0 md:h-16 md:text-base md:font-semibold md:w-full md:flex md:items-center md:justify-center
+                          md:text-sm md:px-6 md:py-2.5
+                          lg:px-0 lg:h-16 lg:text-base lg:font-semibold lg:w-full lg:flex lg:items-center lg:justify-center
                           ${active
                             ? "bg-[#2A020D] border-[#2A020D] text-white shadow-sm"
                             : "bg-white border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2]"}`}
@@ -165,12 +139,12 @@ export default function JobsContent({
       </div>
 
       {/* Jobs List */}
-      {visibleJobs.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="flex items-center justify-center py-24 flex-1">
           <span className="text-gray-500 text-sm md:text-lg font-medium">No jobs found.</span>
         </div>
       ) : (
-        visibleJobs.map((job) => {
+        paged.map((job) => {
           const status = job.job_status?.toLowerCase();
           const statusBg =
             status === "completed" || status === "accepted" || status === "active" ? "#22c55e"
@@ -185,57 +159,57 @@ export default function JobsContent({
               key={job.id}
               className="bg-[#FBEFF2] rounded-xl border border-[#E6F9F3] shadow hover:shadow-md transition mb-4 p-3 md:p-4"
             >
-              {/* Mobile layout */}
-              <div className="md:hidden flex flex-col gap-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-[#2A020D] rounded-full flex items-center justify-center">
-                    <BuildingIcon className="w-5 h-5 text-white" />
+              {/* Unified Mobile + Tablet layout (desktop hidden) */}
+              <div className="flex flex-col gap-3 xl:hidden">
+                <div className="flex items-start gap-3 md:gap-4">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-[#2A020D] rounded-full flex items-center justify-center">
+                    <BuildingIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-gray-900 truncate">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">
                         {job.intended_username}
                       </h3>
                       <Badge
-                        className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium text-white"
+                        className="flex items-center gap-1 px-2 md:px-3 py-0.5 rounded-full text-[10px] md:text-xs font-medium text-white"
                         style={{ backgroundColor: statusBg }}
                       >
-                        <LoadIcon className="w-3 h-3" />
+                        <LoadIcon className="w-3 h-3 md:w-4 md:h-4" />
                         {statusText}
                       </Badge>
                     </div>
-                    <p className="text-[11px] text-gray-600 mt-1 line-clamp-1">{job.address}</p>
+                    <p className="text-[11px] md:text-xs text-gray-600 mt-1 line-clamp-1">{job.address}</p>
                   </div>
                   <button
                     onClick={() => router.push(`/lender/jobs/${job.id}`)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-white border hover:bg-[#FFEFF4]"
+                    className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-white border hover:bg-[#FFEFF4]"
                     aria-label="Open"
                   >
-                    <RightArrow className="w-4 h-4" />
+                    <RightArrow className="w-4 h-4 md:w-5 md:h-5" />
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-full border bg-white px-2 py-1 text-[10px]">
-                    <MapIcon className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-2 md:gap-3">
+                  <span className="inline-flex items-center gap-1 rounded-full border bg-white px-2 md:px-3 py-1 text-[10px] md:text-xs">
+                    <MapIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     {getCityCountry(job.address).split(",")[0] || "Loc"}
                   </span>
-                  <span className="inline-flex items-center gap-1 rounded-full border bg-white px-2 py-1 text-[10px]">
-                    <CalendarIcon className="w-3.5 h-3.5" />
+                  <span className="inline-flex items-center gap-1 rounded-full border bg-white px-2 md:px-3 py-1 text-[10px] md:text-xs">
+                    <CalendarIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     {formatMobileDate(job.preferred_date)}
                   </span>
                   <button
                     onClick={() => router.push(`/lender/chats/${job.id}`)}
-                    className="ml-auto w-8 h-8 flex items-center justify-center rounded-full bg-white border hover:bg-[#FFEFF4]"
+                    className="ml-auto w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full bg-white border hover:bg-[#FFEFF4]"
                     aria-label="Message"
                   >
-                    <MessageIcon className="w-4 h-4" />
+                    <MessageIcon className="w-4 h-4 md:w-5 md:h-5" />
                   </button>
                 </div>
               </div>
 
-              {/* Desktop layout (original look preserved) */}
-              <div className="hidden md:flex items-center justify-between">
+              {/* Desktop layout (≥1024px) */}
+              <div className="hidden xl:flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-[#2A020D] rounded-full flex items-center justify-center">
                     <BuildingIcon className="w-8 h-8 text-white" />
@@ -274,7 +248,7 @@ export default function JobsContent({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="bg-white border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-[#FBEFF2] transition-colors"
+                    className="bg:white border border-[#2A020D] text-[#2A020D] rounded-full px-4 py-4 flex items-center gap-2 hover:bg-[#FBEFF2] transition-colors"
                     onClick={() => router.push(`/lender/chats/${job.id}`)}
                   >
                     <MessageIcon className="w-5 h-5" />
@@ -296,27 +270,27 @@ export default function JobsContent({
         })
       )}
 
-      {meta.totalJobs > 0 && (
+      {filtered.length > 0 && (
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-2 mb-4 text-sm">
           <div className="flex items-center gap-2">
             <button
               className="px-4 py-2 rounded-lg border bg-white disabled:opacity-50 text-xs md:text-sm"
-              onClick={() => goToPage(meta.page - 1)}
-              disabled={meta.page <= 1}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage <= 1}
             >
               Prev
             </button>
             <button
               className="px-4 py-2 rounded-lg border bg-white disabled:opacity-50 text-xs md:text-sm"
-              onClick={() => goToPage(meta.page + 1)}
-              disabled={meta.page >= meta.totalPages}
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage >= totalPages}
             >
               Next
             </button>
           </div>
           <div className="text-gray-600 text-xs md:text-sm">
-            Page {meta.page} of {meta.totalPages} • {(meta.page - 1) * PAGE_SIZE + (visibleJobs.length ? 1 : 0)}-
-            {Math.min(meta.page * PAGE_SIZE, meta.totalJobs)} of {meta.totalJobs}
+            Page {currentPage} of {totalPages} • {(currentPage - 1) * PAGE_SIZE + (paged.length ? 1 : 0)}-
+            {Math.min(currentPage * PAGE_SIZE, filtered.length)} of {filtered.length}
           </div>
         </div>
       )}

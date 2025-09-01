@@ -2,8 +2,11 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "next-themes"
-import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { Suspense } from "react";
+import { GlobalSearchProvider } from "@/components/search-context";
+
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -18,10 +21,18 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+      </head>
       <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
-          {children}
+          <GlobalSearchProvider>
+            {/* Wrap all children so any useSearchParams inside (e.g. dashboard-layout) is inside Suspense */}
+            <Suspense fallback={<div className="p-6 text-sm text-gray-500">Loading...</div>}>
+              {children}
+            </Suspense>
+          </GlobalSearchProvider>
           <Toaster position="top-center" richColors closeButton />
         </ThemeProvider>
       </body>

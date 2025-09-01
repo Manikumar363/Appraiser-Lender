@@ -8,7 +8,6 @@ interface MessageBubbleProps {
 
 export default function MessageBubble({ message, user }: MessageBubbleProps) {
   const isLender = message.senderRole === "lender";
-  const isCurrentUserLender = user?.role === "lender" && isLender;
 
   const getDisplayRole = (role: string) => {
     switch (role.toLowerCase()) {
@@ -25,56 +24,86 @@ export default function MessageBubble({ message, user }: MessageBubbleProps) {
 
   return (
     <div
-      className={`flex items-center mb-4 ${isLender ? "justify-end" : "justify-start"}`}
+      className={`flex mb-3 sm:mb-4 ${isLender ? "justify-end" : "justify-start"}`}
     >
-      {/* Avatar on left for non-lender */}
+      {/* Avatar (left for non‑lender) */}
       {!isLender && (
         <img
           src={message.avatar}
           alt={message.senderName}
-          className="w-10 h-10 rounded-full object-cover mr-3 flex-shrink-0"
+            className="
+              rounded-full object-cover mr-2 sm:mr-3 flex-shrink-0
+              w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
+            "
           onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
+            (e.target as HTMLImageElement).src = "/placeholder.svg";
           }}
         />
       )}
 
-      {/* Message Bubble Container */}
-      <div className="flex flex-col max-w-md min-w-[280px]">
-        <div className="rounded-[20px] px-6 py-4 bg-[#E9FFFD] shadow-sm">
-          {/* Name & Role Row */}
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-base font-bold text-gray-900 truncate mr-2">
+      {/* Bubble */}
+      <div
+        className={`
+          flex flex-col
+          max-w-[85%] sm:max-w-[70%] md:max-w-[60%] lg:max-w-md
+          ${isLender ? "items-end" : "items-start"}
+        `}
+      >
+        <div
+          className={`
+            rounded-2xl sm:rounded-[20px]
+            px-3 py-2 sm:px-5 sm:py-3 md:px-6 md:py-4
+            bg-[#FBEFF2] shadow-sm w-full
+          `}
+        >
+          {/* Name + Role */}
+          <div className="flex items-center justify-between gap-2 mb-2 md:mb-3">
+            <span
+              className="
+                font-semibold truncate
+                text-sm sm:text-base text-gray-900
+              "
+              title={message.senderName}
+            >
               {message.senderName}
             </span>
-            <span className="text-sm font-medium text-[#2A020D] flex-shrink-0">
+            <span className="text-[11px] sm:text-xs md:text-sm font-medium text-[#2A020D] flex-shrink-0">
               {getDisplayRole(message.senderRole)}
             </span>
           </div>
-          
-          {/* Message Content */}
-          <div className="text-base text-gray-900 mb-3 leading-relaxed break-words">
-            {message.content}
-          </div>
-          
-          {/* Time & Status Row */}
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-500">{message.timestamp}</span>
+
+          {/* Content */}
+            <div
+              className="
+                text-sm sm:text-[15px] md:text-base
+                text-gray-900 leading-relaxed
+                break-words whitespace-pre-wrap
+              "
+            >
+              {message.content}
+            </div>
+
+          {/* Time + Status */}
+          <div className="flex justify-between items-center mt-2 md:mt-3">
+            <span className="text-[10px] sm:text-xs text-gray-500">
+              {message.timestamp}
+            </span>
             <CheckCircle className="w-4 h-4 text-yellow-500 flex-shrink-0" />
           </div>
         </div>
       </div>
 
-      {/* Avatar on right for lender */}
+      {/* Avatar (right for lender) */}
       {isLender && (
         <img
           src={message.avatar}
           alt={message.senderName}
-          className="w-10 h-10 rounded-full object-cover ml-3 flex-shrink-0"
+          className="
+            rounded-full object-cover ml-2 sm:ml-3 flex-shrink-0
+            w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
+          "
           onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
+            (e.target as HTMLImageElement).src = "/placeholder.svg";
           }}
         />
       )}

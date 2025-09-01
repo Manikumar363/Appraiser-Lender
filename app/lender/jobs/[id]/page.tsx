@@ -119,33 +119,31 @@ export default function JobDetailPage() {
   return (
     <DashboardLayout role="lender">
       <Toaster position="top-center" />
-      {/* Mobile: allow its own vertical scroll & tighter padding.
-          Desktop: keep original look. */}
-      <div className="min-h-screen md:p-6 p-4 overflow-y-auto md:overflow-visible">
+      <div className="min-h-screen p-4 sm:p-5 md:p-6 overflow-y-auto md:overflow-visible w-full">
         {/* Header */}
-        <div className="flex items-start md:items-center justify-between mb-6 gap-2 md:gap-0">
+        <div className="flex items-start xl:items-center justify-between mb-6 gap-2">
           <button
-            className="w-10 h-10 flex items-center justify-center rounded-full shadow md:mb-0 mb-2"
+            className="w-10 h-10 flex items-center justify-center rounded-full shadow mb-2 xl:mb-0 bg-white hover:bg-[#FBEFF2] transition"
             onClick={() => router.back()}
             aria-label="Back"
           >
-            <LeftArrow className="w-10 h-10" />
+            <LeftArrow className="w-6 h-6" />
           </button>
-          <h1 className="text-xl font-semibold text-gray-900">Job Details</h1>
+          <h1 className="text-lg sm:text-xl font-semibold text-gray-900">Job Details</h1>
         </div>
 
         {/* Info Card */}
-        <div className="bg-[#FBEFF2] rounded-lg p-5 md:p-6 shadow-sm border border-gray-200 mb-6">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5 md:gap-0">
+        <div className="bg-[#FBEFF2] rounded-lg p-4 sm:p-5 md:p-6 shadow-sm border border-gray-200 mb-6">
+          <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-5">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 bg-[#2A020D] rounded-full flex items-center justify-center">
                 <BuildingIcon className="w-6 h-6 text-white" />
               </div>
               <div className="flex flex-col">
-                <h2 className="text-lg font-semibold">{job.intended_username}</h2>
-                <p className="text-gray-600 text-sm mb-1 break-words">{job.address}</p>
+                <h2 className="text-base sm:text-lg font-semibold">{job.intended_username}</h2>
+                <p className="text-gray-600 text-xs sm:text-sm mb-1 break-words">{job.address}</p>
                 <Badge
-                  className="w-fit text-white inline-flex items-center px-4 py-2 rounded-full text-sm font-medium cursor-pointer"
+                  className="w-fit text-white inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium"
                   style={{
                     backgroundColor:
                       job.job_status === "active" ||
@@ -157,28 +155,81 @@ export default function JobDetailPage() {
                         ? "#22c55e"
                         : job.job_status === "cancelled"
                         ? "#ef4444"
-                        : "#FFC107"                
-                  }}>
-                  <LoadIcon className="w-4 h-4 mr-2" />
+                        : "#FFC107"
+                  }}
+                >
+                  <LoadIcon className="w-4 h-4 mr-1.5" />
                   {job.job_status}
                 </Badge>
               </div>
             </div>
-            <div className="flex flex-wrap md:flex-nowrap items-center gap-3">
-              <Button variant="outline" size="sm" className="bg-[#FBEFF2] truncate border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
-                <MapIcon className="w-6 h-6 mr-1 " />
-                {getCityCountry(job.address)}
+
+            {/* Action buttons mobile (compact 3-up grid) */}
+            <div className="mt-3 grid grid-cols-3 gap-2 sm:hidden w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                aria-label="Location"
+                className="flex items-center justify-center gap-1 rounded-full bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] px-2 py-1 text-[10px] font-medium hover:bg-[#F3DDE4]"
+              >
+                <MapIcon className="w-3.5 h-3.5" />
+                <span className="truncate">{getCityCountry(job.address).split(',')[0]}</span>
               </Button>
-              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors">
-                <CalendarIcon className="w-4 h-4 mr-2" />
-                {new Date(job.preferred_date).toLocaleDateString()}
+              <Button
+                variant="outline"
+                size="sm"
+                aria-label="Preferred date"
+                className="flex items-center justify-center gap-1 rounded-full bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] px-2 py-1 text-[10px] font-medium hover:bg-[#F3DDE4]"
+              >
+                <CalendarIcon className="w-3.5 h-3.5" />
+                <span>{new Date(job.preferred_date).toLocaleDateString()}</span>
               </Button>
-              <Button variant="outline" size="sm" className="bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4] transition-colors"
-              onClick={() => router.push(`/lender/chats/${job.id}`)}>
-                <MessageIcon className="w-5 h-5 mr-1" />
-                Message
+              <Button
+                variant="outline"
+                size="sm"
+                aria-label="Open chat"
+                onClick={() => router.push(`/lender/chats/${job.id}`)}
+                className="flex items-center justify-center gap-1 rounded-full bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] px-2 py-1 text-[10px] font-medium hover:bg-[#F3DDE4]"
+              >
+                <MessageIcon className="w-3.5 h-3.5" />
+                <span>Chat</span>
               </Button>
-              <Button variant="ghost" size="sm" className="text-white hover:text-white p-2">
+            </div>
+
+            {/* Action buttons tablet/desktop */}
+            <div className="hidden sm:flex flex-wrap xl:flex-nowrap items-center gap-2 sm:gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 xl:flex-none bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 sm:px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4]"
+              >
+                <MapIcon className="w-5 h-5" />
+                <span className="text-xs sm:text-sm">{getCityCountry(job.address)}</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 xl:flex-none bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 sm:px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4]"
+              >
+                <CalendarIcon className="w-4 h-4" />
+                <span className="text-xs sm:text-sm">
+                  {new Date(job.preferred_date).toLocaleDateString()}
+                </span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(`/lender/chats/${job.id}`)}
+                className="flex-1 xl:flex-none bg-[#FBEFF2] border border-[#2A020D] text-[#2A020D] rounded-full px-4 sm:px-6 py-2 flex items-center gap-2 hover:bg-[#F3DDE4]"
+              >
+                <MessageIcon className="w-5 h-5" />
+                <span className="text-xs sm:text-sm">Message</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[#2A020D] hover:bg-[#FBEFF2] p-2 rounded-full"
+              >
                 <RightArrow className="w-5 h-5" />
               </Button>
             </div>
@@ -186,17 +237,27 @@ export default function JobDetailPage() {
         </div>
 
         {/* Progress */}
-        <div className="bg-[#FBEFF2] rounded-lg p-5 md:p-6 shadow-sm border border-gray-200 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Job Summary</h3>
-          <div className="flex items-center justify-center gap-6 md:gap-8 flex-wrap md:flex-nowrap">
+        <div className="bg-[#FBEFF2] rounded-lg p-4 sm:p-5 md:p-6 shadow-sm border border-gray-200 mb-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">
+            Job Summary
+          </h3>
+          <div className="flex gap-4 sm:gap-6 xl:gap-8 overflow-x-auto xl:overflow-visible pb-2 xl:pb-0 no-scrollbar flex-nowrap xl:flex-wrap justify-start xl:justify-center">
             {progressSteps.map((step, i) => (
-              <div key={i} className="flex flex-col items-center">
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2
-                  ${step.status === "completed" ? "bg-[#2A020D]" : step.status === "current" ? "bg-white border-[14px] border-[#4B0E1C]" : "bg-gray-400"}
-                `}>
-                  {step.status === "current" && <div className="bg-[#2A020D]" />}
-                </div>
-                <span className="text-sm text-gray-600 text-center">{step.name}</span>
+              <div key={i} className="flex flex-col items-center min-w-[64px]">
+                <div
+                  className={`
+                    rounded-full flex items-center justify-center mb-1.5 sm:mb-2
+                    w-10 h-10 sm:w-11 sm:h-11 xl:w-12 xl:h-12
+                    ${step.status === "completed"
+                      ? "bg-[#2A020D]"
+                      : step.status === "current"
+                      ? "bg-white border-[10px] sm:border-[12px] border-[#4B0E1C]"
+                      : "bg-gray-400"}
+                  `}
+                />
+                <span className="text-[10px] sm:text-xs text-gray-600 text-center leading-tight">
+                  {step.name}
+                </span>
               </div>
             ))}
           </div>
@@ -204,52 +265,49 @@ export default function JobDetailPage() {
 
         {/* Files */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Uploaded Files</h3>
-          <div className="flex flex-wrap gap-4 mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+            Uploaded Files
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 mb-4">
             {job.lender_doc &&
-              job.lender_doc
-                .split(",")
-                .map((url, idx) => {
-                  const ext = url.split(".").pop()?.toLowerCase();
-                  const isPdf = ext === "pdf";
-                  const isImage = ext === "png" || ext === "jpg" || ext === "jpeg";
-                  return (
-                    <div key={idx} className="bg-[#FBEFF2] rounded-xl py-7 px-3 w-[200px] flex flex-col items-center text-center shadow-md">
-                      {isPdf ? (
-                        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
-                      ) : isImage ? (
-                        <ImageIcon className="w-6 h-6 text-gray-700 mb-2" />
-                      ) : (
-                        <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
-                      )}
-                      <a
-                        href={url}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-medium text-gray-700 text-sm mb-1 truncate max-w-[160px] block"
-                        title={url.split("/").pop()} // Show full filename on hover
-                      >
-                        {url.split("/").pop()}
-                      </a>
-                      <span className="text-gray-500 text-sm">
-                        {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })
-                          .replace("about ", "")
-                          .replace("day", "d")
-                          .replace("days", "d")}
-                      </span>
-                    </div>
-                  );
-                })}
+              job.lender_doc.split(",").map((url, idx) => {
+                const ext = url.split(".").pop()?.toLowerCase();
+                const isPdf = ext === "pdf";
+                const isImage = ["png", "jpg", "jpeg"].includes(ext || "");
+                return (
+                  <div
+                    key={idx}
+                    className="bg-[#FBEFF2] rounded-xl py-5 sm:py-6 px-3 flex flex-col items-center text-center shadow-md"
+                  >
+                    {(isPdf || !isImage) ? (
+                      <PDFIcon className="w-6 h-6 text-gray-700 mb-2" />
+                    ) : (
+                      <ImageIcon className="w-6 h-6 text-gray-700 mb-2" />
+                    )}
+                    <a
+                      href={url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-gray-700 text-[11px] sm:text-sm mb-1 truncate w-full"
+                      title={url.split("/").pop()}
+                    >
+                      {url.split("/").pop()}
+                    </a>
+                    <span className="text-gray-500 text-[10px] sm:text-xs">
+                      {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })
+                        .replace("about ", "")
+                        .replace("day", "d")
+                        .replace("days", "d")}
+                    </span>
+                  </div>
+                );
+              })}
           </div>
           {job.lender_doc && (
             <Button
-              className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-7 rounded-lg"
-              onClick={() => {
-                job.lender_doc.split(",").forEach((url) => {
-                  window.open(url, "_blank");
-                });
-              }}
+              className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-5 sm:py-6 rounded-lg text-sm sm:text-base"
+              onClick={() => job.lender_doc.split(",").forEach(u => window.open(u, "_blank"))}
             >
               Download All
             </Button>
@@ -258,16 +316,22 @@ export default function JobDetailPage() {
 
         {/* Transaction */}
         <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-          <div className="bg-[#FBEFF2] rounded-xl px-5 py-4 flex items-center justify-between shadow-md max-w-md">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">
+            Transaction Summary
+          </h3>
+          <div className="bg-[#FBEFF2] rounded-xl px-4 sm:px-5 py-4 flex items-center justify-between shadow-md w-full xl:max-w-md">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-[#2A020D] rounded-full flex items-center justify-center">
-                <CardIcon className="w-8 h-8 text-white" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#2A020D] rounded-full flex items-center justify-center">
+                <CardIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <span className="text-xl font-semibold text-gray-900">${job.price}</span>
+              <span className="text-lg sm:text-xl font-semibold text-gray-900">
+                ${job.price}
+              </span>
             </div>
             <Badge
-              className={`${isPaid ? "bg-green-500 hover:bg-green-400" : "bg-orange-400 hover:bg-orange-300"} text-white px-4 py-2 rounded-full text-lg transition-colors duration-200 cursor-pointer`}
+              className={`${
+                isPaid ? "bg-green-500 hover:bg-green-400" : "bg-orange-400 hover:bg-orange-300"
+              } text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm sm:text-base transition-colors`}
             >
               {isPaid ? "Completed" : "Pending"}
             </Badge>
@@ -276,7 +340,7 @@ export default function JobDetailPage() {
 
         {!isPaid && (
           <Button
-            className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-6 md:py-7 rounded-lg text-lg"
+            className="w-full bg-[#2A020D] hover:bg-[#4e1b29] text-white py-5 sm:py-6 xl:py-7 rounded-lg text-sm sm:text-base"
             onClick={handlePayNowClick}
             disabled={intentLoading}
           >
@@ -286,17 +350,12 @@ export default function JobDetailPage() {
 
         {/* Stripe modal */}
         {showCheckout && clientSecret && (
-          <Elements
-            stripe={stripePromise}
-            options={{ clientSecret, appearance: { theme: "stripe" } }}
-          >
+          <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe" } }}>
             <StripeCheckout
               jobId={job.id}
               onClose={() => setShowCheckout(false)}
               onSuccess={async () => {
-                // Optimistic UI
-                setJob(prev => (prev ? { ...prev, payment_status: "completed" } as JobDetail : prev))
-                // Reconcile with backend
+                setJob(prev => (prev ? { ...prev, payment_status: "completed" } as JobDetail : prev));
                 await pollJobUntilPaid(id);
               }}
             />

@@ -109,28 +109,40 @@ export default function ResetPasswordForm() {
   return (
     <DashboardLayout role="lender">
       <Toaster position="top-right" />
-      <form onSubmit={handleResetPassword} className="flex flex-col min-h-[85vh]">
-        <div className="space-y-6 px-4 py-6 flex-grow">
+      {/* Constrain width so mobile does not auto “zoom out” to fit a too‑wide inner layout */}
+      <form
+        onSubmit={handleResetPassword}
+        className="w-full flex flex-col min-h-[85vh] px-3 sm:px-6"
+      >
+        <div className="w-full max-w-md mx-auto flex-grow py-6 space-y-6">
           {/* Old Password */}
           <div>
-            <label className="block text-lg font-semibold text-gray-800 mb-2">
+            <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-2">
               Old Password
             </label>
-            <div className="flex items-center rounded-full px-6 py-4 shadow-sm border border-gray-600">
-              <LockIcon className="mr-4" />
+            <div
+              className="
+                flex items-center rounded-full
+                px-4 py-3 sm:px-6 sm:py-4
+                shadow-sm border border-gray-400 bg-white
+                focus-within:ring-2 focus-within:ring-[#2A020D]/40
+              "
+            >
+              <LockIcon className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6" />
               <input
-                type={showOld ? "text" : "password"} // CHANGED
+                type={showOld ? 'text' : 'password'}
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
-                className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
-                placeholder="Type your password here"
+                className="flex-1 min-w-0 outline-none text-sm sm:text-base text-gray-800 placeholder-gray-400 bg-transparent"
+                placeholder="Current password"
                 autoComplete="current-password"
+                inputMode="text"
               />
               <button
                 type="button"
                 onClick={() => setShowOld(v => !v)}
-                aria-label={showOld ? "Hide password" : "Show password"}
-                className="ml-3 text-gray-600 hover:text-gray-800"
+                aria-label={showOld ? 'Hide password' : 'Show password'}
+                className="ml-2 sm:ml-3 text-gray-600 hover:text-gray-800"
               >
                 {showOld ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
@@ -139,46 +151,52 @@ export default function ResetPasswordForm() {
 
           {/* New Password */}
           <div>
-            <label className="block text-lg font-semibold text-gray-800 mb-2">
+            <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-2">
               New Password
             </label>
-            <div className="flex items-center rounded-full px-6 py-4 shadow-sm border border-gray-600">
-              <LockIcon className="mr-4" />
+            <div
+              className="
+                flex items-center rounded-full
+                px-4 py-3 sm:px-6 sm:py-4
+                shadow-sm border border-gray-400 bg-white
+                focus-within:ring-2 focus-within:ring-[#2A020D]/40
+              "
+            >
+              <LockIcon className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6" />
               <input
-                type={showNew ? "text" : "password"}
+                type={showNew ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
-                placeholder="Type your password here"
+                className="flex-1 min-w-0 outline-none text-sm sm:text-base text-gray-800 placeholder-gray-400 bg-transparent"
+                placeholder="New password"
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 onClick={() => setShowNew(v => !v)}
-                aria-label={showNew ? "Hide password" : "Show password"}
-                className="ml-3 text-gray-600 hover:text-gray-800"
+                aria-label={showNew ? 'Hide password' : 'Show password'}
+                className="ml-2 sm:ml-3 text-gray-600 hover:text-gray-800"
               >
                 {showNew ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
             </div>
 
-            {/* NEW: Live strength checklist */}
             {newPassword.length > 0 && (
-              <ul className="mt-3 space-y-1 text-sm">
-                <li className={`flex items-center gap-2 ${validations.minLength ? "text-green-600" : "text-gray-600"}`}>
-                  {validations.minLength ? <Check size={14} /> : <X size={14} />} At least 8 characters
+              <ul className="mt-3 space-y-1 text-xs sm:text-sm">
+                <li className={`flex items-center gap-1.5 ${validations.minLength ? 'text-green-600' : 'text-gray-600'}`}>
+                  {validations.minLength ? <Check size={14} /> : <X size={14} />} 8+ characters
                 </li>
-                <li className={`flex items-center gap-2 ${validations.hasUpper ? "text-green-600" : "text-gray-600"}`}>
-                  {validations.hasUpper ? <Check size={14} /> : <X size={14} />} One uppercase letter
+                <li className={`flex items-center gap-1.5 ${validations.hasUpper ? 'text-green-600' : 'text-gray-600'}`}>
+                  {validations.hasUpper ? <Check size={14} /> : <X size={14} />} Uppercase
                 </li>
-                <li className={`flex items-center gap-2 ${validations.hasLower ? "text-green-600" : "text-gray-600"}`}>
-                  {validations.hasLower ? <Check size={14} /> : <X size={14} />} One lowercase letter
+                <li className={`flex items-center gap-1.5 ${validations.hasLower ? 'text-green-600' : 'text-gray-600'}`}>
+                  {validations.hasLower ? <Check size={14} /> : <X size={14} />} Lowercase
                 </li>
-                <li className={`flex items-center gap-2 ${validations.hasNumber ? "text-green-600" : "text-gray-600"}`}>
-                  {validations.hasNumber ? <Check size={14} /> : <X size={14} />} One number
+                <li className={`flex items-center gap-1.5 ${validations.hasNumber ? 'text-green-600' : 'text-gray-600'}`}>
+                  {validations.hasNumber ? <Check size={14} /> : <X size={14} />} Number
                 </li>
-                <li className={`flex items-center gap-2 ${validations.hasSpecial ? "text-green-600" : "text-gray-600"}`}>
-                  {validations.hasSpecial ? <Check size={14} /> : <X size={14} />} One special character
+                <li className={`flex items-center gap-1.5 ${validations.hasSpecial ? 'text-green-600' : 'text-gray-600'}`}>
+                  {validations.hasSpecial ? <Check size={14} /> : <X size={14} />} Special char
                 </li>
               </ul>
             )}
@@ -190,24 +208,31 @@ export default function ResetPasswordForm() {
 
           {/* Retype Password */}
           <div>
-            <label className="block text-lg font-semibold text-gray-800 mb-2">
+            <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-2">
               Retype Password
             </label>
-            <div className="flex items-center rounded-full px-6 py-4 shadow-sm border border-gray-600">
-              <LockIcon className="mr-4" />
+            <div
+              className="
+                flex items-center rounded-full
+                px-4 py-3 sm:px-6 sm:py-4
+                shadow-sm border border-gray-400 bg-white
+                focus-within:ring-2 focus-within:ring-[#2A020D]/40
+              "
+            >
+              <LockIcon className="mr-3 sm:mr-4 w-5 h-5 sm:w-6 sm:h-6" />
               <input
-                type={showConfirm ? "text" : "password"} // CHANGED
+                type={showConfirm ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="flex-1 outline-none text-gray-800 placeholder-gray-400 bg-transparent"
-                placeholder="Retype your new password here"
+                className="flex-1 min-w-0 outline-none text-sm sm:text-base text-gray-800 placeholder-gray-400 bg-transparent"
+                placeholder="Repeat new password"
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm(v => !v)}
-                aria-label={showConfirm ? "Hide password" : "Show password"}
-                className="ml-3 text-gray-600 hover:text-gray-800"
+                aria-label={showConfirm ? 'Hide password' : 'Show password'}
+                className="ml-2 sm:ml-3 text-gray-600 hover:text-gray-800"
               >
                 {showConfirm ? <Eye size={18} /> : <EyeOff size={18} />}
               </button>
@@ -215,14 +240,20 @@ export default function ResetPasswordForm() {
           </div>
         </div>
 
-
-        <div className="px-4 pb-6 mt-auto">
+        {/* Submit */}
+        <div className="w-full max-w-md mx-auto px-1 pb-8">
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2A020D] text-white py-4 px-6 rounded-full font-medium hover:bg-[#4e1b29] transition-colors text-lg"
+            className="
+              w-full bg-[#2A020D] text-white
+              py-3 sm:py-4 px-6
+              rounded-full font-medium
+              text-base sm:text-lg
+              hover:bg-[#4e1b29] disabled:opacity-60 transition
+            "
           >
-            {loading ? "Updating..." : "Update Password"}
+            {loading ? 'Updating...' : 'Update Password'}
           </button>
         </div>
       </form>

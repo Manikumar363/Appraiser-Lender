@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useGlobalSearch } from "./search-context";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import {
   Notification,
@@ -52,10 +53,11 @@ const appraiserBottomNav = [
 ];
 
 const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // New state for mobile sidebar toggle
-  const pathname = usePathname();
+  const { search, setSearch } = useGlobalSearch();
   const router = useRouter();
+  const pathname = usePathname();
+  const params = useSearchParams();
 
   const topNavigationItems = role === "lender" ? lenderTopNav : appraiserTopNav;
   const bottomNavigationItems = role === "lender" ? lenderBottomNav : appraiserBottomNav;
@@ -92,6 +94,22 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
       document.body.style.overflow = "unset";
     };
   }, [isSidebarOpen]);
+
+  // Sync context with ?q= on first mount / route change
+  useEffect(() => {
+    const q = params.get("q") || "";
+    if (q !== search) setSearch(q);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Update URL (shallow) when search changes
+  const updateSearch = (val: string) => {
+    setSearch(val);
+    const qp = new URLSearchParams(Array.from(params.entries()));
+    if (val) qp.set("q", val);
+    else qp.delete("q");
+    router.replace(`${pathname}?${qp.toString()}`, { scroll: false });
+  };
 
   const searchEnabledRoutes = [
     "/lender/dashboard",
@@ -201,8 +219,8 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
             <input
               type="text"
               placeholder="Search anything..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={search}
+              onChange={(e) => updateSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-transparent rounded-full text-white placeholder-white/80 focus:outline-none focus:ring-0 border-none shadow-none"
               style={{
                 border: "none",
@@ -244,9 +262,7 @@ const DashboardLayout = ({ children, role }: DashboardLayoutProps) => {
         {/* Content */}
         <main className="flex-1 overflow-y-auto">
           <div className="p-6">
-            {React.isValidElement(children) && searchEnabledRoutes.includes(pathname)
-              ? React.cloneElement(children as React.ReactElement<any>, { key: searchQuery, searchQuery })
-              : children}
+            {children /* children can now read search via context */}
           </div>
         </main>
       </div>

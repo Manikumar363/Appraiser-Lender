@@ -1,29 +1,34 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, XCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import DashboardLayout from "../../../components/dashboard-layout";
-import { getMyJobs } from "../../../lib/api/jobs1"; // <-- Use lender jobs API
+import { getMyJobs } from "../../../lib/api/jobs1";
 import { chatApi } from "@/lib/api/chat";
 import ChatListItem from "./components/ChatListItem";
 import { ChatJob } from "./components/types";
+import { useGlobalSearch } from "@/components/search-context";
 
 export default function LenderChatPage() {
   const [chatJobs, setChatJobs] = useState<ChatJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { search } = useGlobalSearch();
+  const [debounced, setDebounced] = useState(search.trim().toLowerCase());
 
   const router = useRouter();
-  const { toast } = useToast();
+
+  // Debounce global search for this page
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(search.trim().toLowerCase()), 180);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const fetchChatJobs = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
-      // Fetch jobs for lender
       const response = await getMyJobs("All");
 
       const jobsWithParticipants = await Promise.all(
@@ -36,35 +41,44 @@ export default function LenderChatPage() {
             status: job.job_status || job.status,
             lastActivity: job.updated_at,
           };
-
           try {
             const chatImages = await chatApi.getChatImages(job.id);
             mappedJob.participants = chatImages.chat || {};
-          } catch (err) {
-            console.warn(`Failed to fetch participants for job ${job.id}:`, err);
+          } catch {
             mappedJob.participants = {};
           }
-
           return mappedJob;
         })
       );
 
       setChatJobs(jobsWithParticipants);
-    } catch (err: any) {
+    } catch (err) {
       setError("Failed to load chat conversations");
-      toast({
-        title: "Error",
-        description: "Failed to load conversations. Please try again.",
-        variant: "destructive",
-      });
+      setChatJobs([]);
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, []);
 
   useEffect(() => {
     fetchChatJobs();
   }, [fetchChatJobs]);
+
+  const filteredChats = useMemo(() => {
+    if (!debounced) return chatJobs;
+    return chatJobs.filter((c) => {
+      const participantsStr = Object.values(c.participants || {})
+        .map((p: any) => (p?.name || p?.username || "") as string)
+        .join(" ")
+        .toLowerCase();
+      return (
+        c.title.toLowerCase().includes(debounced) ||
+        c.location.toLowerCase().includes(debounced) ||
+        (c.status || "").toLowerCase().includes(debounced) ||
+        participantsStr.includes(debounced)
+      );
+    });
+  }, [chatJobs, debounced]);
 
   const handleChatClick = (jobId: string) => {
     router.push(`/lender/chats/${jobId}`);
@@ -102,15 +116,12 @@ export default function LenderChatPage() {
     <DashboardLayout role="lender">
       <div className="p-6">
         <div className="space-y-4 max-w-6xl flex flex-col mx-auto">
-          {chatJobs.length === 0 ? (
+          {filteredChats.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-500">No conversations available.</p>
-              <p className="text-gray-400 text-sm mt-2">
-                Create or accept jobs to start conversations
-              </p>
+              <p className="text-gray-500">No conversations match your search.</p>
             </div>
           ) : (
-            chatJobs.map((chat) => (
+            filteredChats.map((chat) => (
               <ChatListItem
                 key={chat.jobId}
                 chat={chat}
