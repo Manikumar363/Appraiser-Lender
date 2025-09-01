@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";  // Added useEffect for initialization
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { toast } from "sonner"; 
 import api from "@/lib/api/axios";
@@ -21,7 +21,7 @@ interface ProfileFormProps {
   isEditing: boolean;
   hasChanges: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPhoneChange: (phoneNumber: string) => void;  // New prop for syncing phone to formData
+  onPhoneChange: (phoneNumber: string) => void;
   onEdit: () => void;
   onCancel: () => void;
   onUpdate: (profile: any) => void;
@@ -72,9 +72,8 @@ export default function ProfileForm({
     
     if (!validateForm() || !hasChanges) return;
 
-    // Validate phone number
-    const { phoneNumber } = parsePhoneNumber(fullPhone);
-    if (phoneNumber.length < 10) {
+    // Reverted to your original validation
+    if (fullPhone && fullPhone.replace(/\D/g, "").length < 10) {
       toast.error("Please enter a valid phone number.");
       return;
     }
@@ -91,8 +90,8 @@ export default function ProfileForm({
           email: formData.email.trim(),
           company_name: formData.company_name.trim(),
           designation: formData.designation.trim(),
-          phone: phoneNumber, // Send just the number
-          countryCode: countryCode, // Send country code separately if your API expects it
+          phone: phoneNumber,
+          countryCode: countryCode,
         },
         {
           headers: {
@@ -107,12 +106,6 @@ export default function ProfileForm({
       const updatedProfile = await profileApi.getProfile();
       if (updatedProfile.success) {
         onUpdate(updatedProfile.user);
-        // Sync fullPhone after update
-        let newFullPhone = updatedProfile.user.phone || "";
-        if (newFullPhone && !newFullPhone.startsWith("+")) {
-          newFullPhone = `+${newFullPhone}`;
-        }
-        setFullPhone(newFullPhone);
       }
       
     } catch (err: any) {
@@ -163,7 +156,7 @@ export default function ProfileForm({
             <Tick />
           </div>
           <div className="flex items-center gap-1 text-gray-700">
-            <span>{fullPhone}</span>  {/* Updated to use fullPhone for accurate display */}
+            <span>{fullPhone}</span>
             <Tick />
           </div>
         </div>
@@ -210,7 +203,7 @@ export default function ProfileForm({
           </div>
         ))}
 
-        {/* Phone Number Field - Same as Signup, with sync to formData */}
+        {/* Phone Number Field - With syncing for button enabling */}
         <div className="relative">
           <PhoneInput
             country={"us"}
@@ -218,7 +211,7 @@ export default function ProfileForm({
             onChange={(value) => {
               setFullPhone(value);
               const { phoneNumber } = parsePhoneNumber(value);
-              onPhoneChange(phoneNumber);  // Sync to formData for change detection
+              onPhoneChange(phoneNumber);  // Sync to enable button
             }}
             placeholder="Type your phone number here"
             disabled={!isEditing}
