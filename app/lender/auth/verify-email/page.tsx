@@ -185,16 +185,33 @@ export default function LenderVerifyEmailPage() {
 
   return (
     <AuthLayout>
-      <div className="py-44 flex flex-col justify-center items-center w-full text-center px-4">
+      <div
+        className="
+          w-full min-h-screen flex flex-col items-center
+          px-5 sm:px-8
+        "
+      >
+        {/* Inner container: mobile tighter, desktop original spacing */}
+        <div
+          className="
+            w-full max-w-[760px]
+            pt-28 pb-16
+            sm:pt-36 sm:pb-24
+            lg:pt-44 lg:pb-44
+            flex flex-col
+          "
+        >
+          <h1 className="text-[32px] sm:text-4xl font-bold text-gray-800 mb-4 text-left">
+            Email Verification
+          </h1>
 
-        <h1 className="text-4xl font-bold text-gray-800 mb-4 self-start text-left">Email Verification</h1>
+          <p className="text-gray-600 mb-8 text-sm sm:text-base text-left leading-relaxed">
+            Enter the verification code we just sent to
+            {" "}
+            <span className="text-orange-500 font-medium break-all">{email}</span>
+          </p>
 
-        <p className="text-gray-600 mb-8 text-base self-start text-left">
-          Enter the verification code we just sent on your email address{" "}
-          <span className="text-orange-500 font-medium">{email}</span>
-        </p>
-
-        <OTPInput length={4} value={otp} onChange={setOtp} onComplete={()=>{}}/>
+          <OTPInput length={4} value={otp} onChange={setOtp} onComplete={() => {}} />
 
         {error && (
            <p className="text-red-600 text-sm text-center mt-0 mb-0">{error}</p>
@@ -217,39 +234,37 @@ export default function LenderVerifyEmailPage() {
           </button>
         </div>
 
-        <button
-          onClick={handleVerify}
-          disabled={otp.length !== 4}
-          className={`w-full py-4 rounded-full font-medium transition-colors text-base ${
-            otp.length === 4
-              ? "bg-[#2A020D] text-white hover:bg-[#4e1b29]"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          {loading ? "Verifying..." : "Verify"}
-        </button>
+          <button
+            onClick={handleVerify}
+            disabled={otp.length !== 4 || loading}
+            className={`
+              w-full py-4 rounded-full font-medium text-base transition-colors
+              ${otp.length === 4 && !loading
+                ? "bg-[#2A020D] text-white hover:bg-[#4e1b29]"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"}
+            `}
+          >
+            {loading ? "Verifying..." : "Verify"}
+          </button>
 
-        <Toaster 
-          position="top-center"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#ffffff',
-              color: '#374151',
-              border: '1px solid #e5e7eb',
-              borderRadius: '12px',
-              fontSize: '14px',
-              maxWidth: '450px',
-              padding: '12px 16px',
-            },
-            success: {
-              iconTheme: { primary: '#10b981', secondary: '#ffffff' },
-            },
-            error: {
-              iconTheme: { primary: '#ef4444', secondary: '#ffffff' },
-            },
-          }}
-        />
+          <Toaster
+            position="top-center"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#ffffff',
+                color: '#374151',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                fontSize: '14px',
+                maxWidth: '450px',
+                padding: '12px 16px',
+              },
+              success: { iconTheme: { primary: '#10b981', secondary: '#ffffff' } },
+              error: { iconTheme: { primary: '#ef4444', secondary: '#ffffff' } },
+            }}
+          />
+        </div>
       </div>
     </AuthLayout>
   )
