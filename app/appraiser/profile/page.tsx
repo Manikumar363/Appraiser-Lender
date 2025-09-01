@@ -63,9 +63,9 @@ export default function AppraiserProfilePage() {
   };
 
   // New handler to sync phone changes to formData
-  const handlePhoneChange = (phoneNumber: string) => {
-    setFormData((prev) => ({ ...prev, phone: phoneNumber }));
-  };
+  const handlePhoneChange = (fullPhone: string) => {
+  setFormData((prev) => ({ ...prev, phone: fullPhone }));
+};
 
   const validateForm = (): boolean => {
     if (!formData.name.trim()) {

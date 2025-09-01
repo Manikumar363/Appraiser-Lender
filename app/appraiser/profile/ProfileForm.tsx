@@ -21,7 +21,7 @@ interface ProfileFormProps {
   isEditing: boolean;
   hasChanges: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPhoneChange: (phoneNumber: string) => void;
+  onPhoneChange: (fullPhone: string) => void;
   onEdit: () => void;
   onCancel: () => void;
   onUpdate: (profile: any) => void;
@@ -43,46 +43,18 @@ export default function ProfileForm({
   const [submitLoading, setSubmitLoading] = useState(false);
   const [fullPhone, setFullPhone] = useState(formData.phone || "");
 
-  // Initialize fullPhone with "+" for PhoneInput compatibility
   useEffect(() => {
-    let initialPhone = formData.phone || "";
-    if (initialPhone && !initialPhone.startsWith("+")) {
-      initialPhone = `+${initialPhone}`;
-    }
-    setFullPhone(initialPhone);
+    setFullPhone(formData.phone || "");
   }, [formData.phone]);
-
-  // Parse phone number for API (same logic as signup)
-  const parsePhoneNumber = (phone: string) => {
-    if (!phone) return { countryCode: "", phoneNumber: "" };
-    
-    if (phone.startsWith("+")) {
-      const match = phone.match(/^\+\d+/);
-      if (match) {
-        const countryCode = match[0];
-        const phoneNumber = phone.slice(countryCode.length).replace(/\D/g, "");
-        return { countryCode, phoneNumber };
-      }
-    }
-    return { countryCode: "+1", phoneNumber: phone.replace(/\D/g, "") };
-  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm() || !hasChanges) return;
 
-    // Reverted to your original validation
-    if (fullPhone && fullPhone.replace(/\D/g, "").length < 10) {
-      toast.error("Please enter a valid phone number.");
-      return;
-    }
-
     setSubmitLoading(true);
     
     try {
-      const { countryCode, phoneNumber } = parsePhoneNumber(fullPhone);
-      
       await api.patch(
         "/user/profile",
         {
@@ -90,8 +62,7 @@ export default function ProfileForm({
           email: formData.email.trim(),
           company_name: formData.company_name.trim(),
           designation: formData.designation.trim(),
-          phone: phoneNumber,
-          countryCode: countryCode,
+          phone: fullPhone,  // Send full value directly
         },
         {
           headers: {
@@ -102,10 +73,10 @@ export default function ProfileForm({
 
       toast.success("Profile updated successfully!");
 
-      // Refresh profile data
       const updatedProfile = await profileApi.getProfile();
       if (updatedProfile.success) {
         onUpdate(updatedProfile.user);
+        setFullPhone(updatedProfile.user.phone || "");  // Force sync
       }
       
     } catch (err: any) {
@@ -203,18 +174,19 @@ export default function ProfileForm({
           </div>
         ))}
 
-        {/* Phone Number Field - With syncing for button enabling */}
+        {/* Phone Number Field - Enhanced for single-digit changes */}
         <div className="relative">
           <PhoneInput
             country={"us"}
             value={fullPhone}
             onChange={(value) => {
               setFullPhone(value);
-              const { phoneNumber } = parsePhoneNumber(value);
-              onPhoneChange(phoneNumber);  // Sync to enable button
+              onPhoneChange(value);
             }}
             placeholder="Type your phone number here"
             disabled={!isEditing}
+            jumpCursorToEnd={true}  // Ensures cursor moves, helping minimal edits register
+            copyNumbersOnly={false}  // Keeps formatting for accurate saves
             inputClass={`!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-gray-300 focus:!border-[#2A020D] focus:!shadow-md transition-all ${
               !isEditing ? "!bg-gray-50 !cursor-not-allowed" : "!bg-white"
             }`}
