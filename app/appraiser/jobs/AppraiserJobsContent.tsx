@@ -169,20 +169,22 @@ export default function AppraiserJobsContent({
       <div className="flex-1">
         {/* Full-Width Filter Buttons - Wrap on mobile */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              className={`flex-1 overflow-hidden md:w-auto py-2 rounded-full transition ${
-                activeFilter === f.key
-                  ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
-                  : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"
-              }`}
-              onClick={() => setActiveFilter(f.key)}
-            >
-              {f.name}
-            </button>
-          ))}
-        </div>
+  {FILTERS.map((f) => (
+    <button
+      key={f.key}
+      className={`flex-1 overflow-hidden md:w-auto py-2 rounded-full transition text-sm sm:text-base md:text-lg
+        ${
+          activeFilter === f.key
+            ? "bg-[#2A020D] hover:bg-[#4e1b29] text-white"
+            : "border-[#2A020D] text-[#2A020D] hover:bg-[#FBEFF2] bg-transparent border"
+        }`}
+      onClick={() => setActiveFilter(f.key)}
+    >
+      {f.name}
+    </button>
+  ))}
+</div>
+
 
         {loading && (
           <div className="flex justify-center items-center py-12">

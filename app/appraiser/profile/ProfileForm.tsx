@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";  // Added useEffect for initialization
 import Image from "next/image";
 import { toast } from "sonner"; 
 import api from "@/lib/api/axios";
@@ -21,6 +21,7 @@ interface ProfileFormProps {
   isEditing: boolean;
   hasChanges: boolean;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPhoneChange: (phoneNumber: string) => void;  // New prop for syncing phone to formData
   onEdit: () => void;
   onCancel: () => void;
   onUpdate: (profile: any) => void;
@@ -33,6 +34,7 @@ export default function ProfileForm({
   isEditing,
   hasChanges,
   onInputChange,
+  onPhoneChange,
   onEdit,
   onCancel,
   onUpdate,
@@ -40,6 +42,15 @@ export default function ProfileForm({
 }: ProfileFormProps) {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [fullPhone, setFullPhone] = useState(formData.phone || "");
+
+  // Initialize fullPhone with "+" for PhoneInput compatibility
+  useEffect(() => {
+    let initialPhone = formData.phone || "";
+    if (initialPhone && !initialPhone.startsWith("+")) {
+      initialPhone = `+${initialPhone}`;
+    }
+    setFullPhone(initialPhone);
+  }, [formData.phone]);
 
   // Parse phone number for API (same logic as signup)
   const parsePhoneNumber = (phone: string) => {
@@ -62,7 +73,8 @@ export default function ProfileForm({
     if (!validateForm() || !hasChanges) return;
 
     // Validate phone number
-    if (fullPhone && fullPhone.replace(/\D/g, "").length < 10) {
+    const { phoneNumber } = parsePhoneNumber(fullPhone);
+    if (phoneNumber.length < 10) {
       toast.error("Please enter a valid phone number.");
       return;
     }
@@ -95,6 +107,12 @@ export default function ProfileForm({
       const updatedProfile = await profileApi.getProfile();
       if (updatedProfile.success) {
         onUpdate(updatedProfile.user);
+        // Sync fullPhone after update
+        let newFullPhone = updatedProfile.user.phone || "";
+        if (newFullPhone && !newFullPhone.startsWith("+")) {
+          newFullPhone = `+${newFullPhone}`;
+        }
+        setFullPhone(newFullPhone);
       }
       
     } catch (err: any) {
@@ -145,18 +163,18 @@ export default function ProfileForm({
             <Tick />
           </div>
           <div className="flex items-center gap-1 text-gray-700">
-            <span>{"+"+formData.phone}</span>
+            <span>{fullPhone}</span>  {/* Updated to use fullPhone for accurate display */}
             <Tick />
           </div>
         </div>
 
         {!isEditing ? (
-            <button
+          <button
             onClick={onEdit}
             className="bg-[#2A020D] hover:bg-[#2A020Df5] text-white px-6 py-2 rounded-full font-medium transition"
-            >
+          >
             Edit Profile
-            </button>
+          </button>
         ) : (
           <button
             onClick={onCancel}
@@ -192,12 +210,16 @@ export default function ProfileForm({
           </div>
         ))}
 
-        {/* Phone Number Field - Same as Signup */}
+        {/* Phone Number Field - Same as Signup, with sync to formData */}
         <div className="relative">
           <PhoneInput
             country={"us"}
             value={fullPhone}
-            onChange={setFullPhone}
+            onChange={(value) => {
+              setFullPhone(value);
+              const { phoneNumber } = parsePhoneNumber(value);
+              onPhoneChange(phoneNumber);  // Sync to formData for change detection
+            }}
             placeholder="Type your phone number here"
             disabled={!isEditing}
             inputClass={`!w-full !h-[52px] !text-base !pl-[58px] !pr-4 !rounded-full !border !border-gray-300 focus:!border-[#2A020D] focus:!shadow-md transition-all ${
@@ -221,7 +243,7 @@ export default function ProfileForm({
                   : "bg-[#2A020D] hover:bg-[#2A020Df5] text-white"
               }`}
             >
-              {submitLoading ? "Updating..." : "Save Changes"}
+              {submitLoading ? "Updating..." : "Update Profile"}
             </button>
           </div>
         )}

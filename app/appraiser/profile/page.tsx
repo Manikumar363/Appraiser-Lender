@@ -62,6 +62,11 @@ export default function AppraiserProfilePage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // New handler to sync phone changes to formData
+  const handlePhoneChange = (phoneNumber: string) => {
+    setFormData((prev) => ({ ...prev, phone: phoneNumber }));
+  };
+
   const validateForm = (): boolean => {
     if (!formData.name.trim()) {
       toast.error("Name is required");
@@ -139,6 +144,7 @@ export default function AppraiserProfilePage() {
             isEditing={isEditing}
             hasChanges={hasChanges()}
             onInputChange={handleInputChange}
+            onPhoneChange={handlePhoneChange}  // Added this to pass the handler
             onEdit={() => setIsEditing(true)}
             onCancel={handleCancel}
             onUpdate={(updatedProfile) => {
