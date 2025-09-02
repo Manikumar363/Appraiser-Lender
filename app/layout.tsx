@@ -12,23 +12,34 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "EMADI Lender Portal",
   description: "Lender portal for EMADI Appraisers",
-    generator: 'v0.dev'
+  generator: 'v0.dev'
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+// Pre-render the default theme class & color-scheme so server & client match
+const DEFAULT_THEME = "light";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html
+      lang="en"
+      className={DEFAULT_THEME}              // matches ThemeProvider defaultTheme
+      style={{ colorScheme: DEFAULT_THEME }} // prevent mismatch of color-scheme
+      suppressHydrationWarning               // ignore minor diffs if theme switches early
+    >
       <head>
-        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"
+        />
       </head>
-      <body className={inter.className} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+      <body className={inter.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme={DEFAULT_THEME}
+          enableSystem={false}
+          disableTransitionOnChange
+        >
           <GlobalSearchProvider>
-            {/* Wrap all children so any useSearchParams inside (e.g. dashboard-layout) is inside Suspense */}
             <Suspense fallback={<div className="p-6 text-sm text-gray-500">Loading...</div>}>
               {children}
             </Suspense>
